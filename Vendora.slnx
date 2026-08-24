@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/Vendora.BuildingBlocks.csproj" />
+  </Folder>
+  <Folder Name="/Services/" />
+  <Folder Name="/Services/Identity/">
+    <Project Path="src/Services/Identity/Api/Vendora.Services.Identity.Api.csproj" />
+    <Project Path="src/Services/Identity/Application/Vendora.Services.Identity.Application.csproj" />
+    <Project Path="src/Services/Identity/Domain/Vendora.Services.Identity.Domain.csproj" />
+    <Project Path="src/Services/Identity/Infrastructure/Vendora.Services.Identity.Infrastructure.csproj" />
+  </Folder>
+</Solution>
