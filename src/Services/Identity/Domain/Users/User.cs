@@ -13,6 +13,8 @@ public class User
     public UserStatus Status { get; private set; }
     public DateTime CreatedAt { get; private set; }
     public DateTime? UpdatedAt { get; private set; }
+    public DateTime? EmailVerifiedAt { get; private set; }
+    public bool IsEmailVerified => EmailVerifiedAt is not null;
 
     private User()
     {
@@ -35,7 +37,8 @@ public class User
             Role = UserRole.Customer,
             Status = UserStatus.Active,
             CreatedAt = createdAt,
-            UpdatedAt = null
+            UpdatedAt = null,
+            EmailVerifiedAt = null
         };
     }
 
@@ -61,6 +64,15 @@ public class User
     {
         PasswordHash = passwordHash;
         UpdatedAt = updatedAt;
+    }
+
+    public void Verify(DateTime verifiedAt)
+    {
+        if (EmailVerifiedAt.HasValue)
+            return;
+        
+        EmailVerifiedAt = verifiedAt;
+        UpdatedAt = verifiedAt;
     }
 
     public void Delete(DateTime updatedAt)
