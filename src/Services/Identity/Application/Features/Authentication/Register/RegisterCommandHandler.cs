@@ -50,7 +50,6 @@ public class RegisterCommandHandler(
 
         var verificationToken = await emailVerificationTokenProvider.IssueAsync(
             user.Id,
-            user.Email,
             cancellationToken);
 
         await emailSender.SendAsync(
