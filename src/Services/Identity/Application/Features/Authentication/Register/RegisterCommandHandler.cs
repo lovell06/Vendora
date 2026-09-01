@@ -23,62 +23,62 @@ public class RegisterCommandHandler(
 
         if (string.IsNullOrWhiteSpace(command.Email))
         {
-            var err = new Error
+            logger.LogWarning("Registration rejected because email empty.");
+            
+            return Result.Failure(new Error
             {
                 Code = "email_empty",
                 Message = "Email required.",
                 Type = ErrorType.Validation
-            };
-            logger.LogWarning("Registration rejected because email empty. {utcNow}", utcNow);
-            return Result.Failure(err);
+            });
         }
 
         if (string.IsNullOrWhiteSpace(command.Password))
         {
-            var err = new Error
+            logger.LogWarning("Registration rejected because password empty.");
+            
+            return Result.Failure(new Error
             {
                 Code = "password_empty",
                 Message = "Password required.",
                 Type = ErrorType.Validation
-            };
-            logger.LogWarning("Registration rejected because password empty. {utcNow}", utcNow);
-            return Result.Failure(err);
+            });
         }
 
         if (string.IsNullOrWhiteSpace(command.Email))
         {
-            var err = new Error
+            logger.LogWarning("Registration rejected because full name empty.");
+            
+            return Result.Failure(new Error
             {
                 Code = "full_name_empty",
                 Message = "Full name required.",
                 Type = ErrorType.Validation
-            };
-            logger.LogWarning("Registration rejected because full name empty. {utcNow}", utcNow);
-            return Result.Failure(err);
+            });
         }
 
         if (string.IsNullOrWhiteSpace(command.PhoneNumber))
         {
-            var err = new Error
+            logger.LogWarning("Registration rejected because phone number empty.");
+            
+            return Result.Failure(new Error
             {
                 Code = "phone_number_empty",
                 Message = "Phone number required.",
                 Type = ErrorType.Validation
-            };
-            logger.LogWarning("Registration rejected because phone number empty. {utcNow}", utcNow);
-            return Result.Failure(err);
+            });
         }
 
         if (await userRepository.ExistsByEmailAsync(command.Email, cancellationToken))
         {
-            var err = new Error
+            logger.LogWarning("Registration rejected because email already exists.");
+            
+            return Result.Failure(new Error
             {
                 Code = "email_existed",
                 Message = "Email already exists.",
                 Type = ErrorType.Conflict
-            };
-            logger.LogWarning("Registration rejected because email already exists. {utcNow}", utcNow);
-            return Result.Failure(err);
+            });
         }
 
         var passwordHash = passwordHashProvider.Hash(command.Password);
@@ -94,7 +94,7 @@ public class RegisterCommandHandler(
 
         var affectedRows = await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        logger.LogInformation("{affectedRows} rows affected. {utcNow}", affectedRows, utcNow);
+        logger.LogInformation("{affectedRows} rows affected.", affectedRows);
 
         var verificationToken = await emailVerificationTokenProvider.IssueAsync(
             user.Id,
