@@ -15,6 +15,13 @@ builder.Services
     .AddApplication()
     .AddApi();
 
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.SingleLine = true;
+    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+    options.UseUtcTimestamp = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
