@@ -1,4 +1,5 @@
 using Vendora.Services.Identity.Api.Features.Auth.Register;
+using Vendora.Services.Identity.Api.Features.Auth.VerifyEmail;
 
 namespace Vendora.Services.Identity.Api.Extensions;
 
@@ -17,5 +18,6 @@ public static class EndpointRouteBuilderExtension
     {
         var auth = app.MapGroup("/auth").WithTags("Auth");
         auth.MapRegisterEndpoint();
+        auth.MapVerifyEmailEndpoint();
     }
 }

@@ -66,7 +66,7 @@ public class User
         UpdatedAt = updatedAt;
     }
 
-    public void Verify(DateTime verifiedAt)
+    public void VerifyEmail(DateTime verifiedAt)
     {
         if (EmailVerifiedAt.HasValue)
             return;

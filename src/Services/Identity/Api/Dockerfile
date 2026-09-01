@@ -4,8 +4,12 @@ WORKDIR /src
 
 COPY . .
 
+RUN dotnet restore src/Services/Identity/Api/Vendora.Services.Identity.Api.csproj
+
 RUN dotnet publish \
     src/Services/Identity/Api/Vendora.Services.Identity.Api.csproj \
+    --no-restore \
+    -c Release \
     -o /app/publish
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime

@@ -1,0 +1,15 @@
+**/[Bb]in/
+**/[Oo]bj/
+
+.git/
+.gitignore
+
+initservice.sh
+*.md
+
+docs/
+tests/
+
+.vscode/
+.idea/
+.vs/

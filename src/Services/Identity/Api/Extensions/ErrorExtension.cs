@@ -9,12 +9,12 @@ public static class ErrorExtension
 
         return error.Type switch
         {
-            ErrorType.Conflict => Results.Conflict(error),
-            ErrorType.Failure => Results.BadRequest(error),
-            ErrorType.Forbidden => Results.Forbid(),
-            ErrorType.NotFound => Results.NotFound(error),
-            ErrorType.Unauthorized => Results.Unauthorized(),
-            ErrorType.Validation => Results.BadRequest(error),
+            ErrorType.Conflict => TypedResults.Conflict(error),
+            ErrorType.Failure => TypedResults.BadRequest(error),
+            ErrorType.Forbidden => TypedResults.Forbid(),
+            ErrorType.NotFound => TypedResults.NotFound(error),
+            ErrorType.Unauthorized => TypedResults.Unauthorized(),
+            ErrorType.Validation => TypedResults.BadRequest(error),
             _ => throw new ArgumentOutOfRangeException(nameof(Error))
         };
     }
