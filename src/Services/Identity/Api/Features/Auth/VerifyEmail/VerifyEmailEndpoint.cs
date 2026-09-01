@@ -21,6 +21,6 @@ public static class VerifyEmailEndpoint
             request: command,
             cancellationToken: cancellationToken);
 
-        return result.IsSuccess ? TypedResults.Ok() : result.Error.ToProblem();
+        return result.IsSuccess ? TypedResults.Ok() : result.Error.ToHttpResult();
     }
 }
