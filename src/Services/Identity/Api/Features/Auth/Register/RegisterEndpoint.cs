@@ -21,6 +21,6 @@ public static class RegisterEndpoint
             request: command,
             cancellationToken: cancellationToken);
 
-        return result.IsSuccess ? TypedResults.Ok() : result.Error.ToHttpResult();
+        return result.IsSuccess ? TypedResults.Created() : result.Error.ToHttpResult();
     }
 }
