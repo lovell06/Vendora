@@ -3,6 +3,12 @@
     <Project Path="src/BuildingBlocks/Vendora.BuildingBlocks.csproj" />
   </Folder>
   <Folder Name="/Services/" />
+  <Folder Name="/Services/Catalog/">
+    <Project Path="src/Services/Catalog/Api/Vendora.Services.Catalog.Api.csproj" />
+    <Project Path="src/Services/Catalog/Application/Vendora.Services.Catalog.Application.csproj" />
+    <Project Path="src/Services/Catalog/Domain/Vendora.Services.Catalog.Domain.csproj" />
+    <Project Path="src/Services/Catalog/Infrastructure/Vendora.Services.Catalog.Infrastructure.csproj" />
+  </Folder>
   <Folder Name="/Services/Identity/">
     <Project Path="src/Services/Identity/Api/Vendora.Services.Identity.Api.csproj" />
     <Project Path="src/Services/Identity/Application/Vendora.Services.Identity.Application.csproj" />
