@@ -48,7 +48,7 @@ public class User
         return normalizedEmail;
     }
 
-    public void ChangeFullName(string fullName, DateTime updatedAt)
+    public void Rename(string fullName, DateTime updatedAt)
     {
         FullName = fullName;
         UpdatedAt = updatedAt;
