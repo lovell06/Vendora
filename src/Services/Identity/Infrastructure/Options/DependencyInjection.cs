@@ -10,6 +10,10 @@ public static class DependencyInjection
             .BindConfiguration(SmtpOptions.SectionName)
             .ValidateOnStart();
 
+        services.AddOptions<JwtOptions>()
+            .BindConfiguration(JwtOptions.SectionName)
+            .ValidateOnStart();
+
         return services;
     }
 }
