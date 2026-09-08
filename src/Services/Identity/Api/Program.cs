@@ -13,7 +13,7 @@ builder.Services.AddOpenApi();
 builder.Services
     .AddInfrastructure(builder.Configuration)
     .AddApplication()
-    .AddApi();
+    .AddApi(builder.Configuration);
 
 builder.Logging.AddSimpleConsole(options =>
 {
@@ -30,6 +30,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
