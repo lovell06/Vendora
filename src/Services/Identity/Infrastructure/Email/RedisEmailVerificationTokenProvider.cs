@@ -8,17 +8,16 @@ namespace Vendora.Services.Identity.Infrastructure.Email;
 
 public sealed class RedisEmailVerificationTokenProvider(IConnectionMultiplexer connection) : IEmailVerificationTokenProvider
 {
-    private const string TokenChoices = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private readonly IDatabase _database = connection.GetDatabase();
     public async Task<string> IssueAsync(Guid userId, CancellationToken cancellationToken)
     {
-        var token = RandomNumberGenerator.GetString(TokenChoices, 64);
+        var token = RandomNumberGenerator.GetString(EmailConstants.EmailVerificationTokenChoices, 64);
 
         var tokenHash = Convert.ToBase64String(
             SHA256.HashData(Encoding.UTF8.GetBytes(token)));
 
         var key = RedisKeys.EmailVerification(userId);
-        var ttl = TimeSpan.FromMinutes(5);
+        var ttl = EmailConstants.EmailVerificationTokenTtl;
 
         await _database.StringSetAsync(
             key: key,
