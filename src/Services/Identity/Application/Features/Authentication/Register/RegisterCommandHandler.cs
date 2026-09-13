@@ -83,12 +83,19 @@ public class RegisterCommandHandler(
 
         var passwordHash = passwordHashProvider.Hash(command.Password);
 
-        var user = User.CreateCustomer(
+        var createdUserResult = User.CreateCustomer(
             email: command.Email,
             passwordHash: passwordHash,
             fullName: command.FullName,
             phoneNumber: command.PhoneNumber,
             createdAt: utcNow);
+
+        if (createdUserResult.IsFailure)
+        {
+            return Result.Failure(createdUserResult.Error);
+        }
+
+        var user = createdUserResult.Value;
 
         userRepository.Add(user);
 
