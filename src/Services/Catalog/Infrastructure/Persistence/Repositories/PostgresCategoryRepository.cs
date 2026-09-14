@@ -5,6 +5,12 @@ namespace Vendora.Services.Catalog.Infrastructure.Persistence.Repositories;
 
 public class PostgresCategoryRepository(PostgresDbContext context) : ICategoryRepository
 {
+    public async Task<bool> ExistsByIdAsync(int id, CancellationToken cancellationToken)
+    {
+        return await context.Categories
+            .SingleOrDefaultAsync(cat => cat.Id == id, cancellationToken) is not null;
+    }
+
     public void Add(Category category)
     {
         context.Add(category);
