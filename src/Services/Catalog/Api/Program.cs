@@ -20,7 +20,7 @@ builder.Logging.AddSimpleConsole(config =>
 builder.Services
     .AddApplication()
     .AddInfrastructure(builder.Configuration)
-    .AddApi();
+    .AddApi(builder.Configuration);
 
 var app = builder.Build();
 
@@ -30,6 +30,10 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapEndpoints();
 
