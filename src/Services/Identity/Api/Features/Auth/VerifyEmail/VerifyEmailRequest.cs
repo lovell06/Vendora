@@ -6,10 +6,10 @@ public sealed class VerifyEmailRequest
 {
     public Guid UserId { get; init; }
     public required string Token { get; init; }
-    
-    public VerifyEmailCommand ToCommand()
+
+    public Command ToCommand()
     {
-        return new VerifyEmailCommand
+        return new Command
         {
             UserId = UserId,
             Token = Token

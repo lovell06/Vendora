@@ -9,9 +9,9 @@ public sealed class RegisterRequest
     public required string FullName { get; init; }
     public required string PhoneNumber { get; init; }
 
-    public RegisterCommand ToCommand()
+    public Command ToCommand()
     {
-        return new RegisterCommand
+        return new Command
         {
             Email = Email,
             FullName = FullName,

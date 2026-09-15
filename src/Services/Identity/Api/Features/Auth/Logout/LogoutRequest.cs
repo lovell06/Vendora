@@ -6,10 +6,10 @@ public sealed class LogoutRequest
 {
     public Guid UserId { get; init; }
     public required string RefreshToken { get; init; }
-    
-    public LogoutCommand ToCommand()
+
+    public Command ToCommand()
     {
-        return new LogoutCommand
+        return new Command
         {
             UserId = UserId,
             RefreshToken = RefreshToken
