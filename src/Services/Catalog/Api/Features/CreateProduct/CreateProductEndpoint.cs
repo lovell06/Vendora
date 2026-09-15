@@ -1,4 +1,5 @@
 using MediatR;
+using Vendora.Services.Catalog.Api.Constants;
 using Vendora.Services.Catalog.Api.Extensions;
 
 namespace Vendora.Services.Catalog.Api.Features.CreateProduct;
@@ -7,7 +8,8 @@ public static class CreateProductEndpoint
 {
     public static void MapCreateProductEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPost("/products/create", Handle);
+        group.MapPost("/create", Handle)
+            .RequireAuthorization(AuthorizationPolicies.ManageProducts);
     }
 
     private static async Task<IResult> Handle(

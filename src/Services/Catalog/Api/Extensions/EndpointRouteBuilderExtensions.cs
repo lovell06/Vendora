@@ -6,14 +6,16 @@ internal static class EndpointRouteBuilderExtensions
 {
     internal static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapProducts();
+        var api = app.MapGroup("/api");
+
+        api.MapProducts();
 
         return app;
     }
 
-    private static void MapProducts(this IEndpointRouteBuilder app)
+    private static void MapProducts(this IEndpointRouteBuilder api)
     {
-        var group = app.MapGroup("/products").WithTags("Products");
+        var group = api.MapGroup("/products").WithTags("Products");
 
         group.MapCreateProductEndpoint();
     }
