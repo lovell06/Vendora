@@ -67,6 +67,12 @@ public static class DependencyInjection
                 poilcy.RequireAuthenticatedUser();
                 poilcy.RequireRole(RoleNames.Admin);
             });
+
+            options.AddPolicy(AuthorizationPolicies.ManageCategories, policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole(RoleNames.Admin);
+            });
         });
 
         return services;
