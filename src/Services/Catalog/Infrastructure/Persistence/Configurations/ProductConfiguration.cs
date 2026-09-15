@@ -43,6 +43,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired();
 
         builder.Property(p => p.Status)
+            .HasColumnName("status")
             .HasConversion<string>()
             .HasMaxLength(16)
             .IsRequired();
@@ -64,6 +65,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .IsRequired(false);
 
         builder.HasOne(p => p.Category)
-            .WithMany(cat => cat.Products);
+            .WithMany(cat => cat.Products)
+            .HasForeignKey(p => p.CategoryId);
+
+        builder.HasIndex(p => new { p.CreatedAt, p.Id })
+            .IsUnique()
+            .IsDescending();
     }
 }
