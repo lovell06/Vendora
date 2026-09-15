@@ -7,14 +7,14 @@ using Vendora.Services.Catalog.Domain.Products;
 
 namespace Vendora.Services.Catalog.Application.Features.CreateProduct;
 
-public class CreateProductCommandHandler(
+public class Handler(
     IProductRepository productRepository,
     ICategoryRepository categoryRepository,
     IUnitOfWork unitOfWork,
-    ILogger<CreateProductCommandHandler> logger,
-    TimeProvider clock) : ICommandHandler<CreateProductCommand>
+    ILogger<Handler> logger,
+    TimeProvider clock) : ICommandHandler<Command>
 {
-    public async Task<Result> Handle(CreateProductCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
     {
         var utcNow = clock.GetUtcNow().UtcDateTime;
 

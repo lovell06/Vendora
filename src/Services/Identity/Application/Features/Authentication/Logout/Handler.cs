@@ -4,9 +4,9 @@ using Vendora.Services.Identity.Application.Abstractions.Authentication;
 
 namespace Vendora.Services.Identity.Application.Features.Authentication.Logout;
 
-public class LogoutCommandHandler(IRefreshTokenProvider refreshTokenProvider) : ICommandHandler<LogoutCommand>
+public class Handler(IRefreshTokenProvider refreshTokenProvider) : ICommandHandler<Command>
 {
-    public async Task<Result> Handle(LogoutCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
     {
         await refreshTokenProvider.RevokeAsync(command.UserId, cancellationToken);
 

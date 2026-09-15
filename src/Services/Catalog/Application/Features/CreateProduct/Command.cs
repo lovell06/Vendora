@@ -2,7 +2,7 @@ using Vendora.BuildingBlocks.Cqrs;
 
 namespace Vendora.Services.Catalog.Application.Features.CreateProduct;
 
-public sealed class CreateProductCommand : ICommand
+public sealed class Command : ICommand
 {
     public required string Name { get; init; }
     public string? Description { get; init; }

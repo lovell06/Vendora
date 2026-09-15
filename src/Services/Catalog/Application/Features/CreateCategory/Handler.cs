@@ -6,13 +6,13 @@ using Vendora.Services.Catalog.Domain.Categories;
 
 namespace Vendora.Services.Catalog.Application.Features.CreateCategory;
 
-public class CreateCategoryCommandHandler(
+public class Handler(
     ICategoryRepository categoryRepository,
     IUnitOfWork unitOfWork,
-    ILogger<CreateCategoryCommandHandler> logger,
-    TimeProvider clock) : ICommandHandler<CreateCategoryCommand>
+    ILogger<Handler> logger,
+    TimeProvider clock) : ICommandHandler<Command>
 {
-    public async Task<Result> Handle(CreateCategoryCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
     {
         var utcNow = clock.GetUtcNow().UtcDateTime;
 

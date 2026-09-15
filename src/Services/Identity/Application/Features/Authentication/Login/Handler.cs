@@ -6,14 +6,14 @@ using Vendora.Services.Identity.Domain.Users;
 
 namespace Vendora.Services.Identity.Application.Features.Authentication.Login;
 
-public class LoginCommandHandler(
+public class Handler(
     IUserRepository userRepository,
     IPasswordHashProvider passwordHashProvider,
     IAccessTokenProvider accessTokenProvider,
     IRefreshTokenProvider refreshTokenProvider,
-    ILogger<LoginCommandHandler> logger) : ICommandHandler<LoginCommand, LoginResponse>
+    ILogger<Handler> logger) : ICommandHandler<Command, Response>
 {
-    public async Task<Result<LoginResponse>> Handle(LoginCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Response>> Handle(Command command, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetByEmailAsync(command.Email, cancellationToken);
 
@@ -21,7 +21,7 @@ public class LoginCommandHandler(
         {
             logger.LogWarning("Login rejected because user is not found.");
 
-            return Result<LoginResponse>.Failure(new Error
+            return Result<Response>.Failure(new Error
             {
                 Code = "login.unauthorized",
                 Message = "Email or password invalid.",
@@ -33,7 +33,7 @@ public class LoginCommandHandler(
         {
             logger.LogWarning("Login rejected because password invalid.");
 
-            return Result<LoginResponse>.Failure(new Error
+            return Result<Response>.Failure(new Error
             {
                 Code = "login.unauthorized",
                 Message = "Email or password invalid.",
@@ -44,7 +44,7 @@ public class LoginCommandHandler(
         var accessToken = accessTokenProvider.Issue(user);
         var refreshToken = await refreshTokenProvider.IssueAsync(user.Id, cancellationToken);
 
-        return Result<LoginResponse>.Success(new LoginResponse
+        return Result<Response>.Success(new Response
         {
             UserId = user.Id,
             AccessToken = accessToken,

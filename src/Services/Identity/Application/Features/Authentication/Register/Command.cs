@@ -2,7 +2,7 @@ using Vendora.BuildingBlocks.Cqrs;
 
 namespace Vendora.Services.Identity.Application.Features.Authentication.Register;
 
-public sealed class RegisterCommand : ICommand
+public sealed class Command : ICommand
 {
     public required string Email { get; init; }
     public required string Password { get; init; }

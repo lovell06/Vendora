@@ -12,9 +12,9 @@ public sealed class CreateProductRequest
     public required string Currency { get; init; }
     public bool IsVisible { get; init; }
 
-    public CreateProductCommand ToCommand()
+    public Command ToCommand()
     {
-        return new CreateProductCommand
+        return new Command
         {
             Name = Name,
             Description = Description,

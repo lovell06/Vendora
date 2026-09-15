@@ -6,9 +6,9 @@ public sealed class CreateCategoryRequest
 {
     public required string Name { get; init; }
 
-    public CreateCategoryCommand ToCommand()
+    public Command ToCommand()
     {
-        return new CreateCategoryCommand
+        return new Command
         {
             Name = Name
         };

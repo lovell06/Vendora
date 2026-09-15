@@ -8,16 +8,16 @@ using Vendora.Services.Identity.Domain.Users;
 
 namespace Vendora.Services.Identity.Application.Features.Authentication.Register;
 
-public class RegisterCommandHandler(
+public class Handler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
     IPasswordHashProvider passwordHashProvider,
     IEmailSender emailSender,
     IEmailVerificationTokenProvider emailVerificationTokenProvider,
-    ILogger<RegisterCommandHandler> logger,
-    TimeProvider clock): ICommandHandler<RegisterCommand>
+    ILogger<Handler> logger,
+    TimeProvider clock): ICommandHandler<Command>
 {
-    public async Task<Result> Handle(RegisterCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
     {
         var utcNow = clock.GetUtcNow().UtcDateTime;
 

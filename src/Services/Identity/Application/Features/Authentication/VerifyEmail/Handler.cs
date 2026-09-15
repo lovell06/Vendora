@@ -7,14 +7,14 @@ using Vendora.Services.Identity.Domain.Users;
 
 namespace Vendora.Services.Identity.Application.Features.Authentication.VerifyEmail;
 
-public class VerifyEmailCommandHandler(
+public class Handler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
     IEmailVerificationTokenProvider tokenProvider,
-    ILogger<VerifyEmailCommandHandler> logger,
-    TimeProvider clock) : ICommandHandler<VerifyEmailCommand>
+    ILogger<Handler> logger,
+    TimeProvider clock) : ICommandHandler<Command>
 {
-    public async Task<Result> Handle(VerifyEmailCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
     {
         var now = clock.GetUtcNow().UtcDateTime;
 

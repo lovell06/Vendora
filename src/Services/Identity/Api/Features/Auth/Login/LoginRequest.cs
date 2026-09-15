@@ -6,10 +6,10 @@ public sealed class LoginRequest
 {
     public required string Email { get; init; }
     public required string Password { get; init; }
-    
-    public LoginCommand ToCommand()
+
+    public Command ToCommand()
     {
-        return new LoginCommand
+        return new Command
         {
             Email = Email,
             Password = Password
