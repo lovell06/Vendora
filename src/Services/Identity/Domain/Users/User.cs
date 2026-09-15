@@ -79,6 +79,65 @@ public class User
         });
     }
 
+    public static Result<User> CreateAdmin(
+        string email,
+        string passwordHash,
+        string fullName,
+        string phoneNumber,
+        DateTime createdAt)
+    {
+               email = NormalizeEmail(email);
+
+        if (string.IsNullOrEmpty(email))
+        {
+            return Result<User>.Failure(new Error
+            {
+                Code = "user_create_customer.email_empty",
+                Message = "Email must be not null.",
+                Type = ErrorType.Validation
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(passwordHash))
+        {
+            throw new InvalidOperationException("Data invalid. Password Hash is NULL or EMPTY.");
+        }
+
+        if (string.IsNullOrWhiteSpace(fullName))
+        {
+            return Result<User>.Failure(new Error
+            {
+                Code = "user_create_customer.full_name_empty",
+                Message = "Full name is required.",
+                Type = ErrorType.Validation
+            });
+        }
+
+        if (string.IsNullOrWhiteSpace(phoneNumber))
+        {
+            return Result<User>.Failure(new Error
+            {
+                Code = "user_create_customer.phone_number_empty",
+                Message = "Phone number is required.",
+                Type = ErrorType.Validation
+            });
+        }
+
+        return Result<User>.Success(new User
+        {
+            Id = Guid.NewGuid(),
+            Email = NormalizeEmail(email),
+            PasswordHash = passwordHash,
+            FullName = fullName,
+            PhoneNumber = phoneNumber,
+            Role = UserRole.Admin,
+            Status = UserStatus.Active,
+            CreatedAt = createdAt,
+            UpdatedAt = null,
+            EmailVerifiedAt = createdAt
+        });
+    }
+
     private static string NormalizeEmail(string email)
     {
         var normalizedEmail = email.Trim().ToLowerInvariant();
