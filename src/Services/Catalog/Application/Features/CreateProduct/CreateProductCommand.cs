@@ -9,5 +9,6 @@ public sealed class CreateProductCommand : ICommand
     public required string Brand { get; init; }
     public int CategoryId { get; init; }
     public decimal Price { get; init; }
+    public required string Currency { get; init; }
     public bool IsVisible { get; init; }
 }

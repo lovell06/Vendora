@@ -36,6 +36,7 @@ public class CreateProductCommandHandler(
             brand: command.Brand,
             categoryId: command.CategoryId,
             price: command.Price,
+            currency: command.Currency,
             isVisible: command.IsVisible,
             createdAt: utcNow);
         

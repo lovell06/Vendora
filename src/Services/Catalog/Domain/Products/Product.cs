@@ -12,6 +12,7 @@ public class Product
     public int CategoryId { get; private set; }
     public Category? Category { get; private set; } = null;
     public decimal Price { get; private set; }
+    public string Currency { get; private set; } = null!;
     public ProductStatus Status { get; private set; }
     public bool IsVisible { get; private set; }
     public DateTime CreatedAt { get; init; }
@@ -29,6 +30,7 @@ public class Product
         string brand,
         int categoryId,
         decimal price,
+        string currency,
         bool isVisible,
         DateTime createdAt)
     {
@@ -84,6 +86,7 @@ public class Product
             Brand = brand,
             CategoryId = categoryId,
             Price = price,
+            Currency = currency,
             Status = ProductStatus.Active,
             IsVisible = isVisible,
             CreatedAt = createdAt,
