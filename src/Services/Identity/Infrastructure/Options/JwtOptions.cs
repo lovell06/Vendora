@@ -1,6 +1,6 @@
 namespace Vendora.Services.Identity.Infrastructure.Options;
 
-public class JwtOptions
+public sealed class JwtOptions
 {
     public const string SectionName = "Jwt";
 

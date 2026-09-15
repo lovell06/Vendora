@@ -2,10 +2,17 @@ using Vendora.Services.Identity.Application.Features.Authentication.Logout;
 
 namespace Vendora.Services.Identity.Api.Features.Auth.Logout;
 
-public record LogoutRequest(Guid UserId, string RefreshToken)
+public sealed class LogoutRequest
 {
+    public Guid UserId { get; init; }
+    public required string RefreshToken { get; init; }
+    
     public LogoutCommand ToCommand()
     {
-        return new LogoutCommand(UserId, RefreshToken);
+        return new LogoutCommand
+        {
+            UserId = UserId,
+            RefreshToken = RefreshToken
+        };
     }
 }

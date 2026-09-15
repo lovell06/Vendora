@@ -2,10 +2,15 @@ using Vendora.Services.Catalog.Application.Features.CreateCategory;
 
 namespace Vendora.Services.Catalog.Api.Features.CreateCategory;
 
-public record CreateCategoryRequest(string Name)
+public sealed class CreateCategoryRequest
 {
+    public required string Name { get; init; }
+
     public CreateCategoryCommand ToCommand()
     {
-        return new CreateCategoryCommand(Name);
+        return new CreateCategoryCommand
+        {
+            Name = Name
+        };
     }
 }

@@ -44,9 +44,11 @@ public class LoginCommandHandler(
         var accessToken = accessTokenProvider.Issue(user);
         var refreshToken = await refreshTokenProvider.IssueAsync(user.Id, cancellationToken);
 
-        return Result<LoginResponse>.Success(new LoginResponse(
-            UserId: user.Id,
-            AccessToken: accessToken,
-            RefreshToken: refreshToken));
+        return Result<LoginResponse>.Success(new LoginResponse
+        {
+            UserId = user.Id,
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
+        });
     }
 }

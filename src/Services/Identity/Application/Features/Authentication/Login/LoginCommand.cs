@@ -2,6 +2,8 @@ using Vendora.BuildingBlocks.Cqrs;
 
 namespace Vendora.Services.Identity.Application.Features.Authentication.Login;
 
-public record LoginCommand(
-    string Email,
-    string Password) : ICommand<LoginResponse>;
+public sealed class LoginCommand : ICommand<LoginResponse>
+{
+    public required string Email { get; init; }
+    public required string Password { get; init; }
+}

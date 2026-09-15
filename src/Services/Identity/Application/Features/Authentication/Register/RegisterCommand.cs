@@ -2,8 +2,10 @@ using Vendora.BuildingBlocks.Cqrs;
 
 namespace Vendora.Services.Identity.Application.Features.Authentication.Register;
 
-public record RegisterCommand(
-    string Email,
-    string Password,
-    string FullName,
-    string PhoneNumber) : ICommand;
+public sealed class RegisterCommand : ICommand
+{
+    public required string Email { get; init; }
+    public required string Password { get; init; }
+    public required string FullName { get; init; }
+    public required string PhoneNumber { get; init; }
+}

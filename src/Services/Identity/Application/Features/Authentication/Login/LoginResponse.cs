@@ -1,6 +1,8 @@
 namespace Vendora.Services.Identity.Application.Features.Authentication.Login;
 
-public record LoginResponse(
-    Guid UserId,
-    string AccessToken,
-    string RefreshToken);
+public sealed class LoginResponse
+{
+    public Guid UserId { get; init; }
+    public required string AccessToken { get; init; }
+    public required string RefreshToken { get; init; }
+}

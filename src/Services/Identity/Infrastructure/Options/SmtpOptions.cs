@@ -1,6 +1,6 @@
 namespace Vendora.Services.Identity.Infrastructure.Options;
 
-public class SmtpOptions
+public sealed class SmtpOptions
 {
     public const string SectionName = "Smtp";
 
