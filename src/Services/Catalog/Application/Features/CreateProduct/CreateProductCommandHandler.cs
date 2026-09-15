@@ -24,9 +24,9 @@ public class CreateProductCommandHandler(
 
             return Result.Failure(new Error
             {
-                Code = "product_creation.category_not_found",
-                Message = "Category not found.",
-                Type = ErrorType.NotFound
+                Code = "product_creation.category_is_not_exists",
+                Message = "Category is not exists.",
+                Type = ErrorType.Validation
             });
         }
 
@@ -42,7 +42,7 @@ public class CreateProductCommandHandler(
         if (createdProductResult.IsFailure)
         {
             logger.LogWarning(
-                "Create product rejected because {err}", 
+                "Create product failed: {ErrorCode}", 
                 createdProductResult.Error.Code);
             
             return Result.Failure(createdProductResult.Error);
