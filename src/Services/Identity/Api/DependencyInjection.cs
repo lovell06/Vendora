@@ -1,4 +1,4 @@
-using System.Text;
+using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Vendora.Services.Identity.Infrastructure.Options;
@@ -19,6 +19,13 @@ public static class DependencyInjection
                 .GetSection(JwtOptions.SectionName)
                 .Get<JwtOptions>() ?? throw new InvalidOperationException("Jwt is not configured.");
 
+            RSAParameters parameters;
+            using (var rsa = RSA.Create())
+            {
+                rsa.ImportFromPem(jwtOptions.PrivateKeyPem);
+                parameters = rsa.ExportParameters(includePrivateParameters: false);
+            }
+
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
@@ -30,7 +37,9 @@ public static class DependencyInjection
                 ValidateLifetime = true,
 
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key))
+                IssuerSigningKey = new RsaSecurityKey(parameters),
+
+                ValidAlgorithms = [SecurityAlgorithms.RsaSha256]
             };
 
             options.Events = new JwtBearerEvents

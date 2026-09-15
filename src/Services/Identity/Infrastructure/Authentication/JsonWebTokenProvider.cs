@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -18,8 +19,15 @@ public class JsonWebTokenProvider(
     {
         var utcNow = clock.GetUtcNow().UtcDateTime;
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
-        var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        RSAParameters parameters;
+        using (var rsa = RSA.Create())
+        {
+            rsa.ImportFromPem(_jwt.PrivateKeyPem);
+            parameters = rsa.ExportParameters(includePrivateParameters: true);
+        }
+
+        var key = new RsaSecurityKey(parameters);
+        var credential = new SigningCredentials(key, SecurityAlgorithms.RsaSha256);
         var claims = new List<Claim>
         {
             new (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
