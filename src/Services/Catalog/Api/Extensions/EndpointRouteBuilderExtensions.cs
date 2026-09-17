@@ -1,5 +1,6 @@
-using Vendora.Services.Catalog.Api.Features.CreateCategory;
-using Vendora.Services.Catalog.Api.Features.CreateProduct;
+using Vendora.Services.Catalog.Api.Categories.Create;
+using Vendora.Services.Catalog.Api.Products.Create;
+using Vendora.Services.Catalog.Api.Products.List;
 
 namespace Vendora.Services.Catalog.Api.Extensions;
 
@@ -21,6 +22,7 @@ internal static class EndpointRouteBuilderExtensions
         var group = api.MapGroup("/products").WithTags("Products");
 
         group.MapCreateProductEndpoint();
+        group.MapListProductEndpoint();
     }
 
     private static void MapCategories(this IEndpointRouteBuilder api)

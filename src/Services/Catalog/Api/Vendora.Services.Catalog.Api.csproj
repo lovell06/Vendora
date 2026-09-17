@@ -22,4 +22,8 @@
     <ProjectReference Include="..\Infrastructure\Vendora.Services.Catalog.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Categories\" />
+  </ItemGroup>
+
 </Project>
