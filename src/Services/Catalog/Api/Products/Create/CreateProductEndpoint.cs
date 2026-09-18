@@ -8,7 +8,7 @@ public static class CreateProductEndpoint
 {
     public static void MapCreateProductEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPost("/create", Handle)
+        group.MapPost(CreateProductRequest.Pattern, Handle)
             .RequireAuthorization(AuthorizationPolicies.ManageProducts);
     }
 

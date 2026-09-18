@@ -4,6 +4,7 @@ namespace Vendora.Services.Catalog.Api.Products.Create;
 
 public sealed class CreateProductRequest
 {
+    public const string Pattern = "/create";
     public required string Name { get; init; }
     public string? Description { get; init; }
     public required string Brand { get; init; }
