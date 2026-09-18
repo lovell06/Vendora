@@ -1,18 +1,25 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Vendora.Services.Catalog.Domain.Categories;
 
 namespace Vendora.Services.Catalog.Infrastructure.Persistence.Seeders;
 
 public static class CategoryDataSeeder
 {
-    public static void Seed(DbContext context)
+    public static void Seed(DbContext context, IConfiguration configuration)
     {
+        if (!configuration.GetValue<bool>("InitializeCategoryEnable"))
+            return;
+        
         context.Set<Category>().AddRange(Categories);
         context.SaveChanges();
     }
 
-    public static async Task SeedAsync(DbContext context, CancellationToken cancellationToken)
+    public static async Task SeedAsync(DbContext context, IConfiguration configuration, CancellationToken cancellationToken)
     {
+        if (!configuration.GetValue<bool>("InitializeCategoryEnable"))
+            return;
+        
         context.Set<Category>().AddRange(Categories);
         await context.SaveChangesAsync(cancellationToken);
     }

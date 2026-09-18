@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Vendora.Services.Catalog.Domain.Products;
 
 namespace Vendora.Services.Catalog.Infrastructure.Persistence.Seeders;
@@ -122,14 +123,20 @@ public static class ProductDataSeeder
             CreatedAt).Value
     ];
 
-    public static void Seed(DbContext context)
+    public static void Seed(DbContext context, IConfiguration configuration)
     {
+        if (!configuration.GetValue<bool>("InitializeProductEnable"))
+            return;
+        
         context.Set<Product>().AddRange(Products);
         context.SaveChanges();
     }
 
-    public static async Task SeedAsync(DbContext context, CancellationToken cancellationToken)
+    public static async Task SeedAsync(DbContext context, IConfiguration configuration, CancellationToken cancellationToken)
     {
+        if (!configuration.GetValue<bool>("InitializeProductEnable"))
+            return;
+        
         context.Set<Product>().AddRange(Products);
         await context.SaveChangesAsync(cancellationToken);
     }
