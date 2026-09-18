@@ -7,8 +7,8 @@ public sealed class Handler(IListProductsQueryService queryService) : IQueryHand
 {
     public async Task<Result<Response>> Handle(Query query, CancellationToken cancellationToken)
     {
-        var products = await queryService.GetByPageAsync(query.Page, query.Size, cancellationToken);
+        var response = await queryService.GetByPageAsync(query.Page, query.Size, cancellationToken);
 
-        return Result<Response>.Success(new Response { Products = products });
+        return Result<Response>.Success(response);
     }
 }

@@ -6,9 +6,9 @@ namespace Vendora.Services.Catalog.Infrastructure.Queries.Products;
 
 public sealed class PostgresListProductsQueryService(PostgresDbContext context) : IListProductsQueryService
 {
-    public async Task<IReadOnlyList<ProductDto>> GetByPageAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Response> GetByPageAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
-        return await context.Products
+        var products = await context.Products
             .OrderByDescending(product => product.CreatedAt)
             .ThenByDescending(product => product.Id)
             .Skip((pageNumber-1) * pageSize)
@@ -22,5 +22,7 @@ public sealed class PostgresListProductsQueryService(PostgresDbContext context) 
                 Currency = product.Currency
             })
             .ToListAsync(cancellationToken);
+
+        return new Response { Products = products };
     }
 }
