@@ -20,14 +20,14 @@ internal static class DependencyInjection
 
             options.UseSeeding((context, _) =>
             {
-                CategoryDataSeeder.Seed(context);
-                ProductDataSeeder.Seed(context);
+                CategoryDataSeeder.Seed(context, configuration);
+                ProductDataSeeder.Seed(context, configuration);
             });
 
             options.UseAsyncSeeding(async (context, _, cancellationToken) =>
             {
-                await CategoryDataSeeder.SeedAsync(context, cancellationToken);
-                await ProductDataSeeder.SeedAsync(context, cancellationToken);
+                await CategoryDataSeeder.SeedAsync(context, configuration, cancellationToken);
+                await ProductDataSeeder.SeedAsync(context, configuration, cancellationToken);
             });
         });
 

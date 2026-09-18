@@ -1,4 +1,5 @@
 using Vendora.Services.Catalog.Api.Categories.Create;
+using Vendora.Services.Catalog.Api.Categories.Get;
 using Vendora.Services.Catalog.Api.Categories.List;
 using Vendora.Services.Catalog.Api.Products.Create;
 using Vendora.Services.Catalog.Api.Products.Delete;
@@ -44,5 +45,6 @@ internal static class EndpointRouteBuilderExtensions
 
         group.MapCreateCategoryEndpoint();
         group.MapListCategoriesEndpoint();
+        group.MapGetCategoryEndpoint();
     }
 }
