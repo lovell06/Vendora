@@ -6,9 +6,9 @@ Products
 GET /products
 GET /products/{id}
 
-POST /products Admin
-PUT /products/{id} Admin
-DELETE /products/{id} Admin
+POST /products/create Admin
+PUT /products/update Admin
+DELETE /products/delete/{id} Admin
 ```
 
 Categories
