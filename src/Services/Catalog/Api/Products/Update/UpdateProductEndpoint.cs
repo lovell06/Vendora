@@ -22,6 +22,6 @@ public static class UpdateProductEndpoint
         if (result.IsFailure)
             return result.Error.ToHttpResult();
 
-        return TypedResults.Ok();
+        return TypedResults.NoContent();
     }
 }
