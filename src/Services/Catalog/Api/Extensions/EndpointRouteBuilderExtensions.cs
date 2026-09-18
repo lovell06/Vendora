@@ -1,6 +1,7 @@
 using Vendora.Services.Catalog.Api.Categories.Create;
 using Vendora.Services.Catalog.Api.Products.Create;
 using Vendora.Services.Catalog.Api.Products.Delete;
+using Vendora.Services.Catalog.Api.Products.Discontinue;
 using Vendora.Services.Catalog.Api.Products.Get;
 using Vendora.Services.Catalog.Api.Products.List;
 using Vendora.Services.Catalog.Api.Products.Restore;
@@ -31,6 +32,7 @@ internal static class EndpointRouteBuilderExtensions
         group.MapUpdateProductEndpoint();
         group.MapDeleteProductEndpoint();
         group.MapRestoreProductEndpoint();
+        group.MapDiscontinueProductEndpoint();
     }
 
     private static void MapCategories(this IEndpointRouteBuilder api)
