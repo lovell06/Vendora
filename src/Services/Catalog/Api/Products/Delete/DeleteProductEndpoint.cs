@@ -7,7 +7,7 @@ public static class DeleteProductEndpoint
 {
     public static void MapDeleteProductEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPatch(DeleteProductRequest.Pattern, Handle);
+        group.MapDelete(DeleteProductRequest.Pattern, Handle);
     }
 
     private static async Task<IResult> Handle(
