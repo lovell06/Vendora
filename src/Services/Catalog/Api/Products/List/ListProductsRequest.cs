@@ -4,6 +4,7 @@ namespace Vendora.Services.Catalog.Api.Products.List;
 
 public sealed class ListProductsRequest
 {
+    public const string Pattern = "";
     public int Page { get; init; }
     public int Size { get; init; }
 

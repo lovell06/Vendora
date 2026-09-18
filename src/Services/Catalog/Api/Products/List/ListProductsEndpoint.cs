@@ -7,7 +7,7 @@ public static class ListProductsEndpoint
 {
     public static void MapListProductEndpoint(this RouteGroupBuilder group)
     {
-        group.MapGet("/products", Handle);
+        group.MapGet(ListProductsRequest.Pattern, Handle);
     }
 
     public static async Task<IResult> Handle([AsParameters] ListProductsRequest request, ISender sender, CancellationToken cancellationToken)

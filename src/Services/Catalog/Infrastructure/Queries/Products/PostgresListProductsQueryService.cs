@@ -13,7 +13,7 @@ public sealed class PostgresListProductsQueryService(PostgresDbContext context) 
             .ThenByDescending(product => product.Id)
             .Skip((pageNumber-1) * pageSize)
             .Take(pageSize)
-            .Where(product => product.IsVisible && !product.IsDeleted)
+            .Where(product => product.IsVisible)
             .Select(product => new ProductDto
             {
                 Id = product.Id,

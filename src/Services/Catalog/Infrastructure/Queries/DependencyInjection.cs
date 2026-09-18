@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Vendora.Services.Catalog.Application.Products.Get;
 using Vendora.Services.Catalog.Application.Products.List;
 using Vendora.Services.Catalog.Infrastructure.Queries.Products;
 
@@ -9,6 +10,7 @@ public static class DependencyInjection
     public static IServiceCollection AddQueries(this IServiceCollection services)
     {
         services.AddScoped<IListProductsQueryService, PostgresListProductsQueryService>();
+        services.AddScoped<IGetProductQueryService, PostgresGetProductQueryService>();
         
         return services;
     }
