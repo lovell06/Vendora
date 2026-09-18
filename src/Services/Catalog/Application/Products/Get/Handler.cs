@@ -4,7 +4,7 @@ using Vendora.BuildingBlocks.Results;
 
 namespace Vendora.Services.Catalog.Application.Products.Get;
 
-public class Handler(
+public sealed class Handler(
     IGetProductQueryService getProductQueryService,
     ILogger<Handler> logger) : IQueryHandler<Query, Response>
 {

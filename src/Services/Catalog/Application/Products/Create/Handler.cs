@@ -7,7 +7,7 @@ using Vendora.Services.Catalog.Domain.Products;
 
 namespace Vendora.Services.Catalog.Application.Products.Create;
 
-public class Handler(
+public sealed class Handler(
     IProductRepository productRepository,
     ICategoryRepository categoryRepository,
     IUnitOfWork unitOfWork,

@@ -6,7 +6,7 @@ using Vendora.Services.Catalog.Domain.Products;
 
 namespace Vendora.Services.Catalog.Application.Products.Update;
 
-public class Handler(
+public sealed class Handler(
     IProductRepository productRepository,
     IUnitOfWork unitOfWork,
     ILogger<Handler> logger,
