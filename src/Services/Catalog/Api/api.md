@@ -9,6 +9,9 @@ GET /products/{id}
 POST /products/create Admin
 PUT /products/update Admin
 DELETE /products/delete/{id} Admin
+PATCH /products/restore/{id} Admin
+PATCH /products/discontinue/{id} Admin
+PATCH /products/activate/{id} Admin
 ```
 
 Categories
