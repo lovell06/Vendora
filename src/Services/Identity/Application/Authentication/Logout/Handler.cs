@@ -2,7 +2,7 @@ using Vendora.BuildingBlocks.Cqrs;
 using Vendora.BuildingBlocks.Results;
 using Vendora.Services.Identity.Application.Abstractions.Authentication;
 
-namespace Vendora.Services.Identity.Application.Features.Authentication.Logout;
+namespace Vendora.Services.Identity.Application.Authentication.Logout;
 
 public class Handler(IRefreshTokenProvider refreshTokenProvider) : ICommandHandler<Command>
 {

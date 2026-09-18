@@ -5,7 +5,7 @@ using Vendora.Services.Identity.Application.Abstractions.Email;
 using Vendora.Services.Identity.Application.Abstractions.Persistence;
 using Vendora.Services.Identity.Domain.Users;
 
-namespace Vendora.Services.Identity.Application.Features.Authentication.VerifyEmail;
+namespace Vendora.Services.Identity.Application.Authentication.VerifyEmail;
 
 public class Handler(
     IUserRepository userRepository,

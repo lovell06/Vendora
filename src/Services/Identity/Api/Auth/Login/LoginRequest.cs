@@ -1,6 +1,6 @@
-using Vendora.Services.Identity.Application.Features.Authentication.Login;
+using Vendora.Services.Identity.Application.Authentication.Login;
 
-namespace Vendora.Services.Identity.Api.Features.Auth.Login;
+namespace Vendora.Services.Identity.Api.Auth.Login;
 
 public sealed class LoginRequest
 {

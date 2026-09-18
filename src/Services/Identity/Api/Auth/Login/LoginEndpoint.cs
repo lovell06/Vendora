@@ -1,7 +1,7 @@
 using MediatR;
 using Vendora.Services.Identity.Api.Extensions;
 
-namespace Vendora.Services.Identity.Api.Features.Auth.Login;
+namespace Vendora.Services.Identity.Api.Auth.Login;
 
 public static class LoginEndpoint
 {

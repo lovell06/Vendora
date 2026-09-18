@@ -1,7 +1,7 @@
-using Vendora.Services.Identity.Api.Features.Auth.Login;
-using Vendora.Services.Identity.Api.Features.Auth.Logout;
-using Vendora.Services.Identity.Api.Features.Auth.Register;
-using Vendora.Services.Identity.Api.Features.Auth.VerifyEmail;
+using Vendora.Services.Identity.Api.Auth.Login;
+using Vendora.Services.Identity.Api.Auth.Logout;
+using Vendora.Services.Identity.Api.Auth.Register;
+using Vendora.Services.Identity.Api.Auth.VerifyEmail;
 
 namespace Vendora.Services.Identity.Api.Extensions;
 

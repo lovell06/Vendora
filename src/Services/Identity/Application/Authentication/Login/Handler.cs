@@ -4,7 +4,7 @@ using Vendora.BuildingBlocks.Results;
 using Vendora.Services.Identity.Application.Abstractions.Authentication;
 using Vendora.Services.Identity.Domain.Users;
 
-namespace Vendora.Services.Identity.Application.Features.Authentication.Login;
+namespace Vendora.Services.Identity.Application.Authentication.Login;
 
 public class Handler(
     IUserRepository userRepository,

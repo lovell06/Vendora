@@ -1,6 +1,6 @@
-using Vendora.Services.Identity.Application.Features.Authentication.Register;
+using Vendora.Services.Identity.Application.Authentication.Register;
 
-namespace Vendora.Services.Identity.Api.Features.Auth.Register;
+namespace Vendora.Services.Identity.Api.Auth.Register;
 
 public sealed class RegisterRequest
 {

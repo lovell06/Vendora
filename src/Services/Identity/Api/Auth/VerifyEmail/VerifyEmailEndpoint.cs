@@ -1,7 +1,7 @@
 using MediatR;
 using Vendora.Services.Identity.Api.Extensions;
 
-namespace Vendora.Services.Identity.Api.Features.Auth.VerifyEmail;
+namespace Vendora.Services.Identity.Api.Auth.VerifyEmail;
 
 public static class VerifyEmailEndpoint
 {

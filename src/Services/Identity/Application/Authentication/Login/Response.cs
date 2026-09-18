@@ -1,4 +1,4 @@
-namespace Vendora.Services.Identity.Application.Features.Authentication.Login;
+namespace Vendora.Services.Identity.Application.Authentication.Login;
 
 public sealed class Response
 {

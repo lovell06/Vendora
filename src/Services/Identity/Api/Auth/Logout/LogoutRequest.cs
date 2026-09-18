@@ -1,6 +1,6 @@
-using Vendora.Services.Identity.Application.Features.Authentication.Logout;
+using Vendora.Services.Identity.Application.Authentication.Logout;
 
-namespace Vendora.Services.Identity.Api.Features.Auth.Logout;
+namespace Vendora.Services.Identity.Api.Auth.Logout;
 
 public sealed class LogoutRequest
 {

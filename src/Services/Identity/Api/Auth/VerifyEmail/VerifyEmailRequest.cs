@@ -1,6 +1,6 @@
-using Vendora.Services.Identity.Application.Features.Authentication.VerifyEmail;
+using Vendora.Services.Identity.Application.Authentication.VerifyEmail;
 
-namespace Vendora.Services.Identity.Api.Features.Auth.VerifyEmail;
+namespace Vendora.Services.Identity.Api.Auth.VerifyEmail;
 
 public sealed class VerifyEmailRequest
 {

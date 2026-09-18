@@ -1,6 +1,6 @@
 using Vendora.BuildingBlocks.Cqrs;
 
-namespace Vendora.Services.Identity.Application.Features.Authentication.Register;
+namespace Vendora.Services.Identity.Application.Authentication.Register;
 
 public sealed class Command : ICommand
 {
