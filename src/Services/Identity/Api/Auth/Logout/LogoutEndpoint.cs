@@ -7,7 +7,7 @@ public static class LogoutEndpoint
 {
     public static void MapLogoutEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPost("/logout", Handle);
+        group.MapPost(LogoutRequest.Pattern, Handle);
     }
 
     public static async Task<IResult> Handle(

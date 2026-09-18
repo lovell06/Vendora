@@ -7,7 +7,7 @@ public static class RegisterEndpoint
 {
     public static void MapRegisterEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPost("/register", Handle);
+        group.MapPost(RegisterRequest.Pattern, Handle);
     }
 
     private static async Task<IResult> Handle(

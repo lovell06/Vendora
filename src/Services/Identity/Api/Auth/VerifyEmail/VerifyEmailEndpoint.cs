@@ -7,7 +7,7 @@ public static class VerifyEmailEndpoint
 {
     public static void MapVerifyEmailEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPost("/verify-email", Handle);
+        group.MapPost(VerifyEmailRequest.Pattern, Handle);
     }
 
     public static async Task<IResult> Handle(

@@ -7,7 +7,7 @@ public static class LoginEndpoint
 {
     public static void MapLoginEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPost("/login", Handle);
+        group.MapPost(LoginRequest.Pattern, Handle);
     }
 
     private static async Task<IResult> Handle(
