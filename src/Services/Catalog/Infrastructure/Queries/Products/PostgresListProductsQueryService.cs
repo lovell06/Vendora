@@ -6,23 +6,51 @@ namespace Vendora.Services.Catalog.Infrastructure.Queries.Products;
 
 public sealed class PostgresListProductsQueryService(PostgresDbContext context) : IListProductsQueryService
 {
-    public async Task<Response> GetByPageAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Response?> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {
-        var products = await context.Products
-            .OrderByDescending(product => product.CreatedAt)
-            .ThenByDescending(product => product.Id)
-            .Skip((pageNumber-1) * pageSize)
-            .Take(pageSize)
-            .Where(product => product.IsVisible && product.DeletedAt == null)
-            .Select(product => new ProductDto
+        CategoryDto? category = null;
+
+        if (query.CategoryId is not null)
+        {
+            category = await context.Categories
+                .Select(cat => new CategoryDto
+                {
+                    Id = cat.Id,
+                    Name = cat.Name
+                })
+                .SingleOrDefaultAsync(cat => cat.Id == query.CategoryId, cancellationToken);
+
+            if (category is null)
+                return null;
+        }
+
+        var productQuery = context.Products
+            .OrderByDescending(prod => prod.CreatedAt)
+            .ThenByDescending(prod => prod.Id)
+            .Where(prod => prod.IsVisible && prod.DeletedAt == null);
+
+        if (query.CategoryId is not null)
+        {
+            productQuery = productQuery
+                .Where(prod => prod.CategoryId == query.CategoryId);
+        }
+
+        var products = await productQuery
+            .Select(prod => new ProductDto
             {
-                Id = product.Id,
-                Name = product.Name,
-                Price = product.Price,
-                Currency = product.Currency
+                Id = prod.Id,
+                Name = prod.Name,
+                Currency = prod.Currency,
+                Price = prod.Price
             })
+            .Skip((query.Page-1) * query.Size)
+            .Take(query.Size)
             .ToListAsync(cancellationToken);
 
-        return new Response { Products = products };
+        return new Response
+        {
+            Category = category,
+            Products = products
+        };
     }
 }
