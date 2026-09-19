@@ -9,6 +9,7 @@ public sealed class PostgresGetCategoryQueryService(PostgresDbContext context) :
     public async  Task<Response?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
         return await context.Categories
+            .Where(category => category.DeletedAt == null)
             .Select(category => new Response { Id = category.Id, Name = category.Name })
             .SingleOrDefaultAsync(category => category.Id == id, cancellationToken);
     }

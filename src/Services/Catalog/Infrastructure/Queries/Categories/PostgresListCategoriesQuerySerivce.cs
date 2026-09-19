@@ -9,6 +9,7 @@ public sealed class PostgresListCategoriesQuerySerivce(PostgresDbContext context
     public async Task<Response> GetByPageAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
     {
         var categories = await context.Categories
+            .Where(category => category.DeletedAt == null)
             .Skip((pageNumber-1) * pageSize)
             .Take(pageSize)
             .Select(category => new CategoryDto
