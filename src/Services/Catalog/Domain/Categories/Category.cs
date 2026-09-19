@@ -71,7 +71,7 @@ public class Category
 
     public void Restore(DateTime updatedAt)
     {
-        if (IsDeleted)
+        if (!IsDeleted)
             return;
         
         DeletedAt = null;
