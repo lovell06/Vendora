@@ -7,7 +7,7 @@ public sealed class Handler(IListCategoryQueryService listCategoryQueryService) 
 {
     public async Task<Result<Response>> Handle(Query query, CancellationToken cancellationToken)
     {
-        var response = await listCategoryQueryService.GetByPageAsync(query.Page, query.Size, cancellationToken);
+        var response = await listCategoryQueryService.ExecuteAsync(query, cancellationToken);
         return Result<Response>.Success(response);
     }
 }

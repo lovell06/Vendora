@@ -6,12 +6,12 @@ namespace Vendora.Services.Catalog.Infrastructure.Queries.Categories;
 
 public sealed class PostgresListCategoriesQuerySerivce(PostgresDbContext context) : IListCategoryQueryService
 {
-    public async Task<Response> GetByPageAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+    public async Task<Response> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {
         var categories = await context.Categories
             .Where(category => category.DeletedAt == null)
-            .Skip((pageNumber-1) * pageSize)
-            .Take(pageSize)
+            .Skip((query.Page-1) * query.Size)
+            .Take(query.Size)
             .Select(category => new CategoryDto
             {
                 Id = category.Id,

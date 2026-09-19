@@ -2,8 +2,7 @@ namespace Vendora.Services.Catalog.Application.Categories.List;
 
 public interface IListCategoryQueryService
 {
-    Task<Response> GetByPageAsync(
-        int pageNumber, 
-        int pageSize, 
+    Task<Response> ExecuteAsync(
+        Query query,
         CancellationToken cancellationToken);
 }

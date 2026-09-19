@@ -10,7 +10,7 @@ public sealed class Handler(
 {
     public async Task<Result<Response>> Handle(Query query, CancellationToken cancellationToken)
     {
-        var response = await getProductQueryService.GetProductById(query.Id, cancellationToken);
+        var response = await getProductQueryService.ExecuteAsync(query, cancellationToken);
 
         if (response is null)
         {
