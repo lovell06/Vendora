@@ -10,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+});
+
 builder.Logging.AddSimpleConsole(config =>
 {
     config.SingleLine = true;
@@ -17,10 +22,9 @@ builder.Logging.AddSimpleConsole(config =>
     config.UseUtcTimestamp = true;
 });
 
-builder.Services
-    .AddApplication()
-    .AddInfrastructure(builder.Configuration)
-    .AddApi(builder.Configuration);
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApi(builder.Configuration);
 
 var app = builder.Build();
 
