@@ -1,4 +1,5 @@
 using MediatR;
+using Vendora.Services.Catalog.Api.Constants;
 using Vendora.Services.Catalog.Api.Extensions;
 
 namespace Vendora.Services.Catalog.Api.Categories.Delete;
@@ -7,7 +8,8 @@ public static class DeleteCategoryEndpoint
 {
     public static void MapDeleteCategoryEndpoint(this RouteGroupBuilder group)
     {
-        group.MapDelete(DeleteCategoryRequest.Pattern, Handle);
+        group.MapDelete(DeleteCategoryRequest.Pattern, Handle)
+            .RequireAuthorization(AuthorizationPolicies.ManageCategories);
     }
 
     private static async Task<IResult> Handle(

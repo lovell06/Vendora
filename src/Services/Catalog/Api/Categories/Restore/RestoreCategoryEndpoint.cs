@@ -1,4 +1,5 @@
 using MediatR;
+using Vendora.Services.Catalog.Api.Constants;
 using Vendora.Services.Catalog.Api.Extensions;
 
 namespace Vendora.Services.Catalog.Api.Categories.Restore;
@@ -7,7 +8,8 @@ public static class RestoreCategoryEndpoint
 {
     public static void MapRestoreCategoryEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPatch(RestoreCategoryRequest.Pattern, Handle);
+        group.MapPatch(RestoreCategoryRequest.Pattern, Handle)
+            .RequireAuthorization(AuthorizationPolicies.ManageCategories);
     }
 
     private static async Task<IResult> Handle(

@@ -1,4 +1,5 @@
 using MediatR;
+using Vendora.Services.Catalog.Api.Constants;
 using Vendora.Services.Catalog.Api.Extensions;
 
 namespace Vendora.Services.Catalog.Api.Products.Discontinue;
@@ -7,7 +8,8 @@ public static class DiscontinueProductEndpoint
 {
     public static void MapDiscontinueProductEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPatch(DiscontinueProductRequest.Pattern, Handle);
+        group.MapPatch(DiscontinueProductRequest.Pattern, Handle)
+            .RequireAuthorization(AuthorizationPolicies.ManageProducts);
     }
 
     private static async Task<IResult> Handle(

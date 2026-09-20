@@ -1,4 +1,5 @@
 using MediatR;
+using Vendora.Services.Catalog.Api.Constants;
 using Vendora.Services.Catalog.Api.Extensions;
 
 namespace Vendora.Services.Catalog.Api.Products.Restore;
@@ -7,7 +8,8 @@ public static class RestoreProductEndpoint
 {
     public static void MapRestoreProductEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPatch(RestoreProductRequest.Pattern, Handle);
+        group.MapPatch(RestoreProductRequest.Pattern, Handle)
+            .RequireAuthorization(AuthorizationPolicies.ManageProducts);
     }
 
     private static async Task<IResult> Handle(
