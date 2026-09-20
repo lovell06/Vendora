@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
@@ -22,7 +21,7 @@ public class JsonWebTokenProvider(
         RSAParameters parameters;
         using (var rsa = RSA.Create())
         {
-            rsa.ImportFromPem(_jwt.PrivateKeyPem);
+            rsa.ImportFromPem(File.ReadAllText(_jwt.PrivateKeyPath));
             parameters = rsa.ExportParameters(includePrivateParameters: true);
         }
 

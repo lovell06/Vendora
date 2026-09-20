@@ -22,13 +22,13 @@ public static class DependencyInjection
         {
             var jwt = configuration.GetRequiredSection("Jwt");
 
-            var publicKeyPem = jwt["PublicKeyPem"]
-                               ?? throw new InvalidOperationException("Missing Jwt:PublicKeyPem.");
+            var publicKeyPath = jwt["PublicKeyPath"]
+                               ?? throw new InvalidOperationException("Missing Jwt:PublicKeyPath.");
 
             RSAParameters rsaParameters;
             using (var rsa = RSA.Create())
             {
-                rsa.ImportFromPem(publicKeyPem);
+                rsa.ImportFromPem(File.ReadAllText(publicKeyPath));
                 rsaParameters = rsa.ExportParameters(includePrivateParameters: false);
             }
 

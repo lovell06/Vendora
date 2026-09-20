@@ -13,7 +13,7 @@ public static class DependencyInjection
         {
             options.LowercaseUrls = true;
         });
-        
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -27,7 +27,7 @@ public static class DependencyInjection
             RSAParameters parameters;
             using (var rsa = RSA.Create())
             {
-                rsa.ImportFromPem(jwtOptions.PrivateKeyPem);
+                rsa.ImportFromPem(File.ReadAllText(jwtOptions.PrivateKeyPath));
                 parameters = rsa.ExportParameters(includePrivateParameters: false);
             }
 
