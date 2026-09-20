@@ -10,10 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services
-    .AddInfrastructure(builder.Configuration)
-    .AddApplication()
-    .AddApi(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
+builder.Services.AddApi(builder.Configuration);
 
 builder.Logging.AddSimpleConsole(options =>
 {
