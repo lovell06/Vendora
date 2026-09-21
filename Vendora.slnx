@@ -15,4 +15,10 @@
     <Project Path="src/Services/Identity/Domain/Vendora.Services.Identity.Domain.csproj" />
     <Project Path="src/Services/Identity/Infrastructure/Vendora.Services.Identity.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Services/Inventory/">
+    <Project Path="src/Services/Inventory/Api/Vendora.Services.Inventory.Api.csproj" />
+    <Project Path="src/Services/Inventory/Application/Vendora.Services.Inventory.Application.csproj" />
+    <Project Path="src/Services/Inventory/Domain/Vendora.Services.Inventory.Domain.csproj" />
+    <Project Path="src/Services/Inventory/Infrastructure/Vendora.Services.Inventory.Infrastructure.csproj" />
+  </Folder>
 </Solution>
