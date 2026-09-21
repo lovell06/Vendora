@@ -2,9 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Vendora.Services.Catalog.Application.Abstractions.Persistence;
-using Vendora.Services.Catalog.Domain.Categories;
-using Vendora.Services.Catalog.Domain.Products;
-using Vendora.Services.Catalog.Infrastructure.Persistence.Repositories;
 using Vendora.Services.Catalog.Infrastructure.Persistence.Seeders;
 using Vendora.Services.Catalog.Infrastructure.Persistence.UnitOfWork;
 
@@ -32,8 +29,6 @@ internal static class DependencyInjection
         });
 
         services.AddScoped<IUnitOfWork, PostgresUnitOfWork>();
-        services.AddScoped<IProductRepository, PostgresProductRepository>();
-        services.AddScoped<ICategoryRepository, PostgresCategoryRepository>();
         return services;
     }
 }

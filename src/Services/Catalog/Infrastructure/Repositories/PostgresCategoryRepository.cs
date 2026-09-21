@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Vendora.Services.Catalog.Domain.Categories;
+using Vendora.Services.Catalog.Infrastructure.Persistence;
 
-namespace Vendora.Services.Catalog.Infrastructure.Persistence.Repositories;
+namespace Vendora.Services.Catalog.Infrastructure.Repositories;
 
 public class PostgresCategoryRepository(PostgresDbContext context) : ICategoryRepository
 {

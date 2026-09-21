@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Vendora.Services.Identity.Domain.Users;
+using Vendora.Services.Identity.Infrastructure.Persistence;
 
-namespace Vendora.Services.Identity.Infrastructure.Persistence.Repositories;
+namespace Vendora.Services.Identity.Infrastructure.Repositories;
 
 public class PostgresUserRepository(PostgresDbContext context) : IUserRepository
 {

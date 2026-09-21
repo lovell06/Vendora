@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Vendora.Services.Catalog.Domain.Products;
+using Vendora.Services.Catalog.Infrastructure.Persistence;
 
-namespace Vendora.Services.Catalog.Infrastructure.Persistence.Repositories;
+namespace Vendora.Services.Catalog.Infrastructure.Repositories;
 
 public class PostgresProductRepository(PostgresDbContext context) : IProductRepository
 {
