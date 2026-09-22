@@ -34,18 +34,18 @@ public class InventoryItem
         });
     }
 
-    public Result IncreaseStock(int quantity, DateTimeOffset updatedAt)
+    public Result IncreaseStock(int quantity, DateTimeOffset occurredAt)
     {
         if (quantity <= 0)
             return Result.Failure(InventoryItemErrors.InvalidQuantity);
         
         OnHandQuantity += quantity;
-        UpdatedAt = updatedAt;
+        UpdatedAt = occurredAt;
 
         return Result.Success();
     }
 
-    public Result DecreaseStock(int quantity, DateTimeOffset updatedAt)
+    public Result DecreaseStock(int quantity, DateTimeOffset occurredAt)
     {
         if (quantity <= 0)
             return Result.Failure(InventoryItemErrors.InvalidQuantity);
@@ -54,12 +54,12 @@ public class InventoryItem
             return Result.Failure(InventoryItemErrors.InsufficientAvailableStock);
 
         OnHandQuantity -= quantity;
-        UpdatedAt = updatedAt;
+        UpdatedAt = occurredAt;
 
         return Result.Success();
     }
 
-    public Result Reserve(int quantity, DateTimeOffset updatedAt)
+    public Result Reserve(int quantity, DateTimeOffset occurredAt)
     {
         if (quantity <= 0)
             return Result.Failure(InventoryItemErrors.InvalidQuantity);
@@ -68,12 +68,12 @@ public class InventoryItem
             return Result.Failure(InventoryItemErrors.InsufficientAvailableStock);
 
         ReservedQuantity += quantity;
-        UpdatedAt = updatedAt;
+        UpdatedAt = occurredAt;
 
         return Result.Success();
     }
 
-    public Result Release(int quantity, DateTimeOffset updatedAt)
+    public Result Release(int quantity, DateTimeOffset occurredAt)
     {
         if (quantity <= 0)
             return Result.Failure(InventoryItemErrors.InvalidQuantity);
@@ -82,12 +82,12 @@ public class InventoryItem
             return Result.Failure(InventoryItemErrors.InsufficientReservedStock);
 
         ReservedQuantity -= quantity;
-        UpdatedAt = updatedAt;
+        UpdatedAt = occurredAt;
 
         return Result.Success();
     }
 
-    public Result Commit(int quantity, DateTimeOffset updatedAt)
+    public Result Commit(int quantity, DateTimeOffset occurredAt)
     {
         if (quantity <= 0)
             return Result.Failure(InventoryItemErrors.InvalidQuantity);
@@ -97,6 +97,7 @@ public class InventoryItem
 
         OnHandQuantity -= quantity;
         ReservedQuantity -= quantity;
+        UpdatedAt = occurredAt;
         
         return Result.Success();
     }
