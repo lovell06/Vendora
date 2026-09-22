@@ -4,7 +4,7 @@ using Vendora.BuildingBlocks.Results;
 using Vendora.Services.Inventory.Application.Abstractions.Persistence;
 using Vendora.Services.Inventory.Domain.InventoryItems;
 
-namespace Vendora.Services.Inventory.Application.InventoryItems.Create;
+namespace Vendora.Services.Inventory.Application.InventoryItems.Initialize;
 
 public sealed class Handler(
     IInventoryItemRepository inventoryItemRepository,
@@ -30,7 +30,6 @@ public sealed class Handler(
 
         var result = InventoryItem.Create(
             cmd.ProductId,
-            cmd.OnHandQuantity,
             utcNow);
 
         if (result.IsFailure)

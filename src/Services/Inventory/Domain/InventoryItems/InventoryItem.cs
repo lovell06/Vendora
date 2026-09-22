@@ -18,18 +18,16 @@ public class InventoryItem
 
     public static Result<InventoryItem> Create(
         long productId,
-        int onHandQuantity,
         DateTimeOffset createdAt)
     {
         if (productId < 0)
             return Result<InventoryItem>.Failure(InventoryItemErrors.InvalidProductId);
-        if (onHandQuantity <= 0)
-            return Result<InventoryItem>.Failure(InventoryItemErrors.InvalidInitialQuantity);
         
         return Result<InventoryItem>.Success(new InventoryItem
         {
             ProductId = productId,
-            OnHandQuantity = onHandQuantity,
+            OnHandQuantity = 0,
+            ReservedQuantity = 0,
             CreatedAt = createdAt
         });
     }

@@ -2,18 +2,18 @@ using MediatR;
 using Vendora.Services.Inventory.Api.Constants;
 using Vendora.Services.Inventory.Api.Extensions;
 
-namespace Vendora.Services.Inventory.Api.InventoryItems.Create;
+namespace Vendora.Services.Inventory.Api.InventoryItems.Initialize;
 
-public static class CreateInventoryItemEndpoint
+public static class InitializeInventoryItemEndpoint
 {
     public static void MapCreateInventoryItemEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPost(CreateInventoryItemRequest.Pattern, Handle)
+        group.MapPost(InitializeInventoryItemRequest.Pattern, Handle)
             .RequireAuthorization(AuthorizationPolicies.ManageStock);
     }
 
     private static async Task<IResult> Handle(
-        CreateInventoryItemRequest request,
+        InitializeInventoryItemRequest request,
         ISender sender,
         CancellationToken cancellationToken)
     {
