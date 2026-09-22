@@ -13,7 +13,9 @@ public sealed class PostgresGetInventoryItemQueryService(PostgresDbContext conte
             {
                 ProductId = item.ProductId,
                 OnHandQuantity = item.OnHandQuantity,
-                ReservedQuantity = item.ReservedQuantity
+                ReservedQuantity = item.ReservedQuantity,
+                CreatedAt = item.CreatedAt,
+                UpdatedAt = item.UpdatedAt
             })
             .SingleOrDefaultAsync(item => item.ProductId == query.ProductId, cancellationToken);
     }
