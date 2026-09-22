@@ -34,29 +34,39 @@ public class InventoryItem
         });
     }
 
-    public Result IncreaseStock(int quantity, DateTimeOffset occurredAt)
+    private Result IncreaseStock(int increasedQuantity, DateTimeOffset occurredAt)
     {
-        if (quantity <= 0)
+        if (increasedQuantity <= 0)
             return Result.Failure(InventoryItemErrors.InvalidQuantity);
         
-        OnHandQuantity += quantity;
+        OnHandQuantity += increasedQuantity;
         UpdatedAt = occurredAt;
 
         return Result.Success();
     }
 
-    public Result DecreaseStock(int quantity, DateTimeOffset occurredAt)
+    private Result DecreaseStock(int decreasedQuantity, DateTimeOffset occurredAt)
     {
-        if (quantity <= 0)
+        if (decreasedQuantity <= 0)
             return Result.Failure(InventoryItemErrors.InvalidQuantity);
 
-        if (quantity > AvailableQuantity)
+        if (decreasedQuantity > AvailableQuantity)
             return Result.Failure(InventoryItemErrors.InsufficientAvailableStock);
 
-        OnHandQuantity -= quantity;
+        OnHandQuantity -= decreasedQuantity;
         UpdatedAt = occurredAt;
 
         return Result.Success();
+    }
+
+    public Result AdjustStock(int quantityChange, DateTimeOffset occurredAt)
+    {
+        return quantityChange switch
+        {
+            > 0 => IncreaseStock(quantityChange, occurredAt),
+            < 0 => DecreaseStock(Math.Abs(quantityChange), occurredAt),
+            _ => Result.Failure(InventoryItemErrors.QuantityChangeCannotBeZero)
+        };
     }
 
     public Result Reserve(int quantity, DateTimeOffset occurredAt)

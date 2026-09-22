@@ -4,6 +4,13 @@ namespace Vendora.Services.Inventory.Domain.InventoryItems;
 
 public static class InventoryItemErrors
 {
+    public static Error QuantityChangeCannotBeZero => new()
+    {
+        Code = "inventory_item.quantity_change_cannot_be_zero",
+        Message = "Quantity Change must be differ zero.",
+        Type = ErrorType.Validation
+    };
+    
     public static Error InvalidProductId => new()
     {
         Code = "inventory_item.invalid_product_id",
