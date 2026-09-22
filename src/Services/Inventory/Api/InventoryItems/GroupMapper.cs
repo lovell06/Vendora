@@ -7,7 +7,7 @@ public static class GroupMapper
     public static void MapInventoryItems(this RouteGroupBuilder api)
     {
         var inventoryItems = api
-            .MapGroup("/inventory/items")
+            .MapGroup("/inventory-items")
             .WithTags("Inventory Items");
 
         inventoryItems.MapCreateInventoryItemEndpoint();
