@@ -19,7 +19,7 @@ public class Handler(
 {
     public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
     {
-        var utcNow = clock.GetUtcNow().UtcDateTime;
+        var utcNow = clock.GetUtcNow();
 
         if (string.IsNullOrWhiteSpace(command.Email))
         {

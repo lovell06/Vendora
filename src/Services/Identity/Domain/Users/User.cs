@@ -11,9 +11,9 @@ public class User
     public string PhoneNumber { get; private set; } = string.Empty;
     public UserRole Role { get; private set; }
     public UserStatus Status { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public DateTime? UpdatedAt { get; private set; }
-    public DateTime? EmailVerifiedAt { get; private set; }
+    public DateTimeOffset CreatedAt { get; private set; }
+    public DateTimeOffset? UpdatedAt { get; private set; }
+    public DateTimeOffset? EmailVerifiedAt { get; private set; }
     public bool IsEmailVerified => EmailVerifiedAt is not null;
 
     private User()
@@ -25,7 +25,7 @@ public class User
         string passwordHash,
         string fullName,
         string phoneNumber,
-        DateTime createdAt)
+        DateTimeOffset createdAt)
     {
         email = NormalizeEmail(email);
 
@@ -84,7 +84,7 @@ public class User
         string passwordHash,
         string fullName,
         string phoneNumber,
-        DateTime createdAt)
+        DateTimeOffset createdAt)
     {
                email = NormalizeEmail(email);
 
@@ -144,25 +144,25 @@ public class User
         return normalizedEmail;
     }
 
-    public void Rename(string fullName, DateTime updatedAt)
+    public void Rename(string fullName, DateTimeOffset updatedAt)
     {
         FullName = fullName;
         UpdatedAt = updatedAt;
     }
 
-    public void ChangePhoneNumber(string phoneNumber, DateTime updatedAt)
+    public void ChangePhoneNumber(string phoneNumber, DateTimeOffset updatedAt)
     {
         PhoneNumber = phoneNumber;
         UpdatedAt = updatedAt;
     }
 
-    public void ChangePasswordHash(string passwordHash, DateTime updatedAt)
+    public void ChangePasswordHash(string passwordHash, DateTimeOffset updatedAt)
     {
         PasswordHash = passwordHash;
         UpdatedAt = updatedAt;
     }
 
-    public void VerifyEmail(DateTime verifiedAt)
+    public void VerifyEmail(DateTimeOffset verifiedAt)
     {
         if (EmailVerifiedAt.HasValue)
             return;
@@ -171,7 +171,7 @@ public class User
         UpdatedAt = verifiedAt;
     }
 
-    public void Delete(DateTime updatedAt)
+    public void Delete(DateTimeOffset updatedAt)
     {
         if (Status is UserStatus.Deleted)
             return;
@@ -180,7 +180,7 @@ public class User
         UpdatedAt = updatedAt;
     }
 
-    public Result Suspend(DateTime updatedAt)
+    public Result Suspend(DateTimeOffset updatedAt)
     {
         switch (Status)
         {
@@ -208,7 +208,7 @@ public class User
         }
     }
 
-    public Result Restore(DateTime updatedAt)
+    public Result Restore(DateTimeOffset updatedAt)
     {
         switch (Status)
         {
@@ -235,7 +235,7 @@ public class User
         }
     }
 
-    public Result Reactivate(DateTime updatedAt)
+    public Result Reactivate(DateTimeOffset updatedAt)
     {
         switch (Status)
         {

@@ -16,7 +16,7 @@ public class Handler(
 {
     public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
     {
-        var now = clock.GetUtcNow().UtcDateTime;
+        var now = clock.GetUtcNow();
 
         if (command.UserId == Guid.Empty)
         {
