@@ -16,7 +16,7 @@ public sealed class Handler(
 {
     public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
     {
-        var utcNow = clock.GetUtcNow().UtcDateTime;
+        var utcNow = clock.GetUtcNow();
 
         if (!await categoryRepository.ExistsByIdAsync(command.CategoryId, cancellationToken))
         {

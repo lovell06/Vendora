@@ -14,7 +14,7 @@ public sealed class Handler(
 {
     public async Task<Result> Handle(Command cmd, CancellationToken cancellationToken)
     {
-        var utcNow = clock.GetUtcNow().UtcDateTime;
+        var utcNow = clock.GetUtcNow();
 
         var product = await productRepository.GetByIdAsync(cmd.Id, cancellationToken);
 

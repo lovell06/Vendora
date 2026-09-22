@@ -7,9 +7,9 @@ public class Category
 {
     public int Id { get; init; }
     public string Name { get; private set; } = null!;
-    public DateTime CreatedAt { get; init; }
-    public DateTime? UpdatedAt { get; private set; }
-    public DateTime? DeletedAt { get; private set; }
+    public DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset? UpdatedAt { get; private set; }
+    public DateTimeOffset? DeletedAt { get; private set; }
     public ICollection<Product> Products { get; init; } = [];
 
     public bool IsDeleted => DeletedAt is not null;
@@ -18,7 +18,7 @@ public class Category
     {
     }
 
-    public static Result<Category> Create(string name, DateTime createdAt)
+    public static Result<Category> Create(string name, DateTimeOffset createdAt)
     {
         name = name.Trim();
 
@@ -42,7 +42,7 @@ public class Category
         });
     }
 
-    public Result Rename(string name, DateTime updatedAt)
+    public Result Rename(string name, DateTimeOffset updatedAt)
     {
         if (IsDeleted)
         {
@@ -60,7 +60,7 @@ public class Category
         return Result.Success();
     }
 
-    public void Delete(DateTime deletedAt)
+    public void Delete(DateTimeOffset deletedAt)
     {
         if (IsDeleted)
             return;
@@ -69,7 +69,7 @@ public class Category
         UpdatedAt = deletedAt;
     }
 
-    public void Restore(DateTime updatedAt)
+    public void Restore(DateTimeOffset updatedAt)
     {
         if (!IsDeleted)
             return;

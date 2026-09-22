@@ -14,7 +14,7 @@ namespace Vendora.Services.Catalog.Application.Categories.Create
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
-            var utcNow = clock.GetUtcNow().UtcDateTime;
+            var utcNow = clock.GetUtcNow();
 
             var createdCategoryResult = Category.Create(command.Name, utcNow);
 

@@ -15,9 +15,9 @@ public class Product
     public string Currency { get; private set; } = null!;
     public ProductStatus Status { get; private set; }
     public bool IsVisible { get; private set; }
-    public DateTime CreatedAt { get; init; }
-    public DateTime? UpdatedAt { get; private set; }
-    public DateTime? DeletedAt { get; private set; }
+    public DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset? UpdatedAt { get; private set; }
+    public DateTimeOffset? DeletedAt { get; private set; }
     public bool IsDeleted => DeletedAt is not null;
 
     private Product()
@@ -32,7 +32,7 @@ public class Product
         decimal price,
         string currency,
         bool isVisible,
-        DateTime createdAt)
+        DateTimeOffset createdAt)
     {
         name = name.Trim();
         description = description?.Trim();
@@ -95,7 +95,7 @@ public class Product
         });
     }
 
-    public Result Rename(string name, DateTime updatedAt)
+    public Result Rename(string name, DateTimeOffset updatedAt)
     {
         if (IsDeleted)
         {
@@ -113,7 +113,7 @@ public class Product
         return Result.Success();
     }
 
-    public Result ChangeDescription(string description, DateTime updatedAt)
+    public Result ChangeDescription(string description, DateTimeOffset updatedAt)
     {
         if (IsDeleted)
         {
@@ -131,7 +131,7 @@ public class Product
         return Result.Success();
     }
 
-    public Result ChangeBrand(string brandName, DateTime updatedAt)
+    public Result ChangeBrand(string brandName, DateTimeOffset updatedAt)
     {
         if (IsDeleted)
         {
@@ -149,7 +149,7 @@ public class Product
         return Result.Success();
     }
 
-    public Result ChangeCategory(int categoryId, DateTime updatedAt)
+    public Result ChangeCategory(int categoryId, DateTimeOffset updatedAt)
     {
         if (IsDeleted)
         {
@@ -167,7 +167,7 @@ public class Product
         return Result.Success();
     }
 
-    public Result ChangePrice(decimal price, DateTime updatedAt)
+    public Result ChangePrice(decimal price, DateTimeOffset updatedAt)
     {
         if (IsDeleted)
         {
@@ -185,7 +185,7 @@ public class Product
         return Result.Success();
     }
 
-    public Result Discontinue(DateTime discontinuedAt)
+    public Result Discontinue(DateTimeOffset discontinuedAt)
     {
         if (IsDeleted)
         {
@@ -206,7 +206,7 @@ public class Product
         return Result.Success();
     }
 
-    public Result Reactivate(DateTime reactivedAt)
+    public Result Reactivate(DateTimeOffset reactivedAt)
     {
         if (IsDeleted)
         {
@@ -227,7 +227,7 @@ public class Product
         return Result.Success();
     }
 
-    public void Hide(DateTime updatedAt)
+    public void Hide(DateTimeOffset updatedAt)
     {
         if (!IsVisible)
             return;
@@ -236,7 +236,7 @@ public class Product
         UpdatedAt = updatedAt;
     }
 
-    public void Show(DateTime updatedAt)
+    public void Show(DateTimeOffset updatedAt)
     {
         if (IsVisible)
             return;
@@ -245,7 +245,7 @@ public class Product
         UpdatedAt = updatedAt;
     }
 
-    public void Delete(DateTime deletedAt)
+    public void Delete(DateTimeOffset deletedAt)
     {
         if (IsDeleted)
             return;
@@ -254,7 +254,7 @@ public class Product
         UpdatedAt = deletedAt;
     }
 
-    public void Restore(DateTime restoredAt)
+    public void Restore(DateTimeOffset restoredAt)
     {
         if (!IsDeleted)
             return;
