@@ -1,4 +1,5 @@
 using MediatR;
+using Vendora.Services.Inventory.Api.Constants;
 using Vendora.Services.Inventory.Api.Extensions;
 
 namespace Vendora.Services.Inventory.Api.InventoryItems.Create;
@@ -7,7 +8,8 @@ public static class CreateInventoryItemEndpoint
 {
     public static void MapCreateInventoryItemEndpoint(this RouteGroupBuilder group)
     {
-        group.MapPost(CreateInventoryItemRequest.Pattern, Handle);
+        group.MapPost(CreateInventoryItemRequest.Pattern, Handle)
+            .RequireAuthorization(AuthorizationPolicies.ManageStock);
     }
 
     private static async Task<IResult> Handle(

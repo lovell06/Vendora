@@ -12,7 +12,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddApplication();
 builder.Services.AddInfastructure(builder.Configuration);
-builder.Services.AddApi();
+builder.Services.AddApi(builder.Configuration);
 
 var app = builder.Build();
 
@@ -24,6 +24,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.MapEndpoints();
 
