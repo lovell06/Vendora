@@ -36,11 +36,6 @@ public sealed class InventoryAdjustmentConfiguration : IEntityTypeConfiguration<
             .HasColumnName("created_at")
             .IsRequired();
 
-        builder.HasOne<InventoryItem>()
-            .WithMany()
-            .HasForeignKey(adjustment => adjustment.ProductId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasIndex(adjustment => new
             {
                 adjustment.ProductId, 

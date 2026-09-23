@@ -30,5 +30,10 @@ public sealed class InventoryItemConfiguration : IEntityTypeConfiguration<Invent
         builder.Property(item => item.UpdatedAt)
             .HasColumnName("updated_at")
             .IsRequired(false);
+
+        builder.HasMany(item => item.Adjustments)
+            .WithOne()
+            .HasForeignKey(adjustment => adjustment.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

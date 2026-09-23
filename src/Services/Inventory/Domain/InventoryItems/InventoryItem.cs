@@ -11,6 +11,8 @@ public class InventoryItem
     public bool IsAvailable => AvailableQuantity > 0;
     public DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? UpdatedAt { get; private set; }
+    private readonly List<InventoryAdjustment> _adjustments = [];
+    public IReadOnlyList<InventoryAdjustment> Adjustments => _adjustments;
 
     private InventoryItem()
     {
@@ -57,8 +59,11 @@ public class InventoryItem
         return Result.Success();
     }
 
-    public Result AdjustStock(int quantityChange, DateTimeOffset occurredAt)
+    public Result AdjustStock(InventoryAdjustment inventoryAdjustment, DateTimeOffset occurredAt)
     {
+        _adjustments.Add(inventoryAdjustment);
+
+        var quantityChange = inventoryAdjustment.QuantityChange;
         return quantityChange switch
         {
             > 0 => IncreaseStock(quantityChange, occurredAt),
