@@ -1,5 +1,6 @@
 using Vendora.Services.Inventory.Api.InventoryItems.Get;
 using Vendora.Services.Inventory.Api.InventoryItems.Initialize;
+using Vendora.Services.Inventory.Api.InventoryItems.List;
 
 namespace Vendora.Services.Inventory.Api.InventoryItems;
 
@@ -13,5 +14,6 @@ public static class GroupMapper
 
         inventoryItems.MapCreateInventoryItemEndpoint();
         inventoryItems.MapGetInventoryItemEndpoint();
+        inventoryItems.MapListInventoryItemsEndpoint();
     }
 }
