@@ -9,6 +9,7 @@ public sealed class PostgresListCategoriesQuerySerivce(PostgresDbContext context
     public async Task<Response> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {
         var categoryQuery = context.Categories
+            .AsNoTracking()
             .Where(category => category.DeletedAt == null);
 
         var totalCount = await categoryQuery.CountAsync(cancellationToken);

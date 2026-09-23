@@ -9,6 +9,7 @@ public sealed class PostgresGetProductQueryService(PostgresDbContext context) : 
     public async Task<Response?> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {
         return await context.Products
+            .AsNoTracking()
             .Include(product => product.Category)
             .Select(product => new Response
             {

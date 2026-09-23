@@ -25,6 +25,7 @@ public sealed class PostgresListProductsQueryService(PostgresDbContext context) 
         }
 
         var productQuery = context.Products
+            .AsNoTracking()
             .OrderByDescending(prod => prod.CreatedAt)
             .ThenByDescending(prod => prod.Id)
             .Where(prod => prod.IsVisible && prod.DeletedAt == null);
