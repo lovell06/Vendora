@@ -35,6 +35,8 @@ public sealed class PostgresListProductsQueryService(PostgresDbContext context) 
                 .Where(prod => prod.CategoryId == query.CategoryId);
         }
 
+        var count = await productQuery.CountAsync(cancellationToken);
+
         var products = await productQuery
             .Select(prod => new ProductDto
             {
@@ -50,6 +52,8 @@ public sealed class PostgresListProductsQueryService(PostgresDbContext context) 
         return new Response
         {
             Category = category,
+            Page = query.Page,
+            TotalCount = count,
             Products = products
         };
     }

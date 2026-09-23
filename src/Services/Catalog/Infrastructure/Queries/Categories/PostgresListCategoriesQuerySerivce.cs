@@ -8,8 +8,12 @@ public sealed class PostgresListCategoriesQuerySerivce(PostgresDbContext context
 {
     public async Task<Response> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {
-        var categories = await context.Categories
-            .Where(category => category.DeletedAt == null)
+        var categoryQuery = context.Categories
+            .Where(category => category.DeletedAt == null);
+
+        var totalCount = await categoryQuery.CountAsync(cancellationToken);
+
+        var categories = await categoryQuery
             .Skip((query.Page-1) * query.Size)
             .Take(query.Size)
             .Select(category => new CategoryDto
@@ -19,6 +23,11 @@ public sealed class PostgresListCategoriesQuerySerivce(PostgresDbContext context
             })
             .ToListAsync(cancellationToken);
 
-        return new Response { Categories = categories };
+        return new Response
+        {
+            Page = query.Page,
+            TotalCount = totalCount,
+            Categories = categories
+        };
     }
 }
