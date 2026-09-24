@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using Vendora.Services.Inventory.Api.Constants;
 
@@ -31,6 +32,8 @@ public static class DependencyInjection
                 parameters = rsa.ExportParameters(includePrivateParameters: false);
             }
 
+            options.MapInboundClaims = false;
+
             options.TokenValidationParameters = new TokenValidationParameters()
             {
                 ValidateIssuer = true,
@@ -44,7 +47,10 @@ public static class DependencyInjection
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new RsaSecurityKey(parameters),
 
-                ValidAlgorithms = [ SecurityAlgorithms.RsaSha256 ]
+                ValidAlgorithms = [ SecurityAlgorithms.RsaSha256 ],
+
+                NameClaimType = JwtRegisteredClaimNames.Sub,
+                RoleClaimType = "role",
             };
         });
 
