@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Vendora.Services.Inventory.Application.InventoryItems.CheckAvailability;
 using Vendora.Services.Inventory.Application.InventoryItems.Get;
 using Vendora.Services.Inventory.Application.InventoryItems.List;
 
@@ -10,6 +11,7 @@ public static class DependencyInjection
     {
         services.AddScoped<IGetInventoryItemQueryService, PostgresGetInventoryItemQueryService>();
         services.AddScoped<IListInventoryItemsQueryService, PostgresListInventoryItemsQueryService>();
+        services.AddScoped<ICheckAvailabilityQueryService, PostgresCheckAvailabilityQueryService>();
         
         return services;
     }

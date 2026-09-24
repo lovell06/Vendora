@@ -1,4 +1,5 @@
 using Vendora.Services.Inventory.Api.InventoryItems.Adjust;
+using Vendora.Services.Inventory.Api.InventoryItems.CheckAvailability;
 using Vendora.Services.Inventory.Api.InventoryItems.Get;
 using Vendora.Services.Inventory.Api.InventoryItems.Initialize;
 using Vendora.Services.Inventory.Api.InventoryItems.List;
@@ -17,5 +18,6 @@ public static class GroupMapper
         inventoryItems.MapGetInventoryItemEndpoint();
         inventoryItems.MapListInventoryItemsEndpoint();
         inventoryItems.MapAdjustInventoryItemEndpoint();
+        inventoryItems.MapCheckAvailabilityEndpoint();
     }
 }
