@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging;
 using Vendora.BuildingBlocks.Cqrs;
 using Vendora.BuildingBlocks.Results;
+using Vendora.Services.Catalog.Application.Abstractions.Authentication;
+using Vendora.Services.Catalog.Application.Abstractions.Clients.Inventory;
 using Vendora.Services.Catalog.Application.Abstractions.Persistence;
 using Vendora.Services.Catalog.Domain.Categories;
 using Vendora.Services.Catalog.Domain.Products;
@@ -10,7 +12,9 @@ namespace Vendora.Services.Catalog.Application.Products.Create;
 public sealed class Handler(
     IProductRepository productRepository,
     ICategoryRepository categoryRepository,
+    IInventoryClient inventoryClient,
     IUnitOfWork unitOfWork,
+    ICurrentUser currentUser,
     ILogger<Handler> logger,
     TimeProvider clock) : ICommandHandler<Command>
 {
@@ -54,6 +58,8 @@ public sealed class Handler(
         productRepository.Add(product);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await inventoryClient.InitializeStockAsync(product.Id, currentUser, cancellationToken);
 
         return Result.Success();
     }

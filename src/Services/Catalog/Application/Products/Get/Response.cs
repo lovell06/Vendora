@@ -8,6 +8,8 @@ public sealed class Response
     public required string Brand { get; init; }
     public required CategoryDto Category { get; init; }
     public decimal Price { get; init; }
+    public bool IsAvailable { get; init; }
+    public int AvailableQuantity { get; init; }
     public required string Currency { get; init; }
     public required string Status { get; init; }
 }
