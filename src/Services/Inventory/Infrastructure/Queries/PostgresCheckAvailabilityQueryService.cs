@@ -12,7 +12,7 @@ public sealed class PostgresCheckAvailabilityQueryService(PostgresDbContext cont
             .Select(item => new Response()
             {
                 ProductId = item.ProductId,
-                Available = item.IsAvailable,
+                IsAvailable = item.IsAvailable,
                 AvailableQuantity = item.AvailableQuantity
             })
             .SingleOrDefaultAsync(
