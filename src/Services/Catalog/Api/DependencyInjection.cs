@@ -9,6 +9,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddHttpContextAccessor();
+        
         services.Configure<RouteOptions>(options =>
         {
             options.LowercaseUrls = true;
@@ -20,6 +22,8 @@ public static class DependencyInjection
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(options =>
         {
+            options.SaveToken = true;
+            
             var jwt = configuration.GetRequiredSection("Jwt");
 
             var publicKeyPath = jwt["PublicKeyPath"]
