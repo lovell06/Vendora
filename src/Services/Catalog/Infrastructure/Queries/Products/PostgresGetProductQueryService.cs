@@ -1,13 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+using Vendora.Services.Catalog.Application.Abstractions.Clients.Inventory;
 using Vendora.Services.Catalog.Application.Products.Get;
 using Vendora.Services.Catalog.Infrastructure.Persistence;
 
 namespace Vendora.Services.Catalog.Infrastructure.Queries.Products;
 
-public sealed class PostgresGetProductQueryService(PostgresDbContext context) : IGetProductQueryService
+public sealed class PostgresGetProductQueryService(
+    PostgresDbContext context,
+    IInventoryClient inventoryClient) : IGetProductQueryService
 {
     public async Task<Response?> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {
+        var availability = await inventoryClient.CheckAvailabilityAsync(query.Id, cancellationToken);
+
         return await context.Products
             .AsNoTracking()
             .Include(product => product.Category)
@@ -23,6 +28,8 @@ public sealed class PostgresGetProductQueryService(PostgresDbContext context) : 
                     Name = product.Category.Name
                 },
                 Price = product.Price,
+                IsAvailable = availability.IsAvailable,
+                AvailableQuantity = availability.AvailableQuantity,
                 Currency = product.Currency,
                 Status = product.Status.ToString()
             })
