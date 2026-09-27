@@ -1,6 +1,12 @@
 **/[Bb]in/
 **/[Oo]bj/
 
+# .env files
+configs/
+
+# secret files
+secrets/
+
 .git/
 .gitignore
 
