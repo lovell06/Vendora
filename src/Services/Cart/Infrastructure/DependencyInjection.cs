@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Vendora.Services.Cart.Infrastructure.Persistence;
+using Vendora.Services.Cart.Infrastructure.Repositories;
 
 namespace Vendora.Services.Cart.Infrastructure;
 
@@ -7,6 +9,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddPersistence(configuration);
+        services.AddRepositories();
+        
         return services;
     }
 }
