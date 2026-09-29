@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Vendora.Services.Cart.Application.Abstractions.Persistence;
 
 namespace Vendora.Services.Cart.Infrastructure.Persistence;
 
@@ -16,6 +17,8 @@ public static class DependencyInjection
         {
             builder.UseNpgsql(connectionString);
         });
+
+        services.AddScoped<IUnitOfWork, PostgresUnitOfWork>();
         return services;
     }
 }
