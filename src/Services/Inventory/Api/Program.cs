@@ -13,6 +13,13 @@ builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.SingleLine = true;
+    options.UseUtcTimestamp = true;
+    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+});
+
 builder.Services.AddApplication();
 builder.Services.AddInfastructure(builder.Configuration);
 builder.Services.AddApi(builder.Configuration);
