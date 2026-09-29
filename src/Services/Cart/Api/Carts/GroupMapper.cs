@@ -1,5 +1,6 @@
 using Vendora.Services.Cart.Api.Carts.AddItem;
 using Vendora.Services.Cart.Api.Carts.Initialize;
+using Vendora.Services.Cart.Api.Carts.ListItems;
 using Vendora.Services.Cart.Api.Carts.RemoveItem;
 using Vendora.Services.Cart.Api.Carts.SetQuantity;
 
@@ -15,5 +16,6 @@ public static class GroupMapper
         carts.MapAddItemEndpoint();
         carts.MapRemoveItemEndpoint();
         carts.MapSetQuantityEndpoint();
+        carts.MapListItemsEndpoint();
     }
 }

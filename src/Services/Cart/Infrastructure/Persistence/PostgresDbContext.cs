@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Vendora.Services.Cart.Domain.Carts;
 using CartAggregate = Vendora.Services.Cart.Domain.Carts.Cart;
 
 namespace Vendora.Services.Cart.Infrastructure.Persistence;
@@ -7,6 +8,7 @@ public sealed class PostgresDbContext(
     DbContextOptions<PostgresDbContext> options) : DbContext(options)
 {
     public DbSet<CartAggregate> Carts => Set<CartAggregate>();
+    public DbSet<CartItem> CartItems => Set<CartItem>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
