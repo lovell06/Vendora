@@ -1,0 +1,16 @@
+using Microsoft.Extensions.DependencyInjection;
+using Vendora.Services.Cart.Application.Abstractions.Authentication;
+
+namespace Vendora.Services.Cart.Infrastructure.Authentication;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddAuthenticationServices(this IServiceCollection services)
+    {
+        services.AddHttpContextAccessor();
+        
+        services.AddScoped<ICurrentUser, CurrentUser>();
+
+        return services;
+    }
+}

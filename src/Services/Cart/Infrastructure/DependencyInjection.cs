@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Vendora.Services.Cart.Infrastructure.Authentication;
 using Vendora.Services.Cart.Infrastructure.Persistence;
 using Vendora.Services.Cart.Infrastructure.Repositories;
 
@@ -9,6 +10,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddAuthenticationServices();
         services.AddPersistence(configuration);
         services.AddRepositories();
         
