@@ -1,8 +1,6 @@
-using System.Security.Claims;
-using System.Text;
 using MediatR;
-using Microsoft.IdentityModel.JsonWebTokens;
 using Vendora.Services.Cart.Api.Extensions;
+using Vendora.Services.Cart.Application.Abstractions.Authentication;
 using Vendora.Services.Cart.Application.Carts.Initialize;
 
 namespace Vendora.Services.Cart.Api.Carts.Initialize;
@@ -17,25 +15,10 @@ public static class InitializeCartEndpoint
 
     private static async Task<IResult> Handle(
         ISender sender,
-        ClaimsPrincipal user,
+        ICurrentUser user,
         CancellationToken cancellationToken)
     {
-        var sub = user.FindFirstValue(JwtRegisteredClaimNames.Sub);
-
-        if (sub is null)
-        {
-            var error = new StringBuilder();
-            error.AppendLine($"Not found: {JwtRegisteredClaimNames.Sub}");
-            error.AppendLine("System only contains: ");
-            foreach (var claim in user.Claims)
-            {
-                error.AppendLine($"{nameof(claim.Type)}: {claim.Value};");
-            }
-
-            throw new InvalidOperationException(error.ToString());
-        }
-
-        var cmd = new Command { UserId = Guid.Parse(sub) };
+        var cmd = new Command { UserId = user.UserId };
 
         var result = await sender.Send(cmd, cancellationToken);
 
