@@ -22,4 +22,8 @@
     <ProjectReference Include="..\Infrastructure\Vendora.Services.Cart.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Carts\SetQuantity\" />
+  </ItemGroup>
+
 </Project>
