@@ -53,6 +53,24 @@ services:
     depends_on:
       - postgres
       - redis
+
+  cart:
+    build: 
+      context: .
+      dockerfile: src/Services/Cart/Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    env_file:
+      - ./configs/cart.env
+    ports:
+      - 8084:8080
+    secrets:
+      - jwt_public_key
+      - source: cart_connection_string
+        target: ConnectionStrings__Postgres
+    depends_on:
+      - postgres
+      - redis
     
   postgres:
     image: postgres:18
@@ -77,6 +95,8 @@ secrets:
     file: ./secrets/identity-connection-string.txt
   inventory_connection_string:
     file: ./secrets/inventory-connection-string.txt
+  cart_connection_string:
+    file: ./secrets/cart-connection-string.txt
   jwt_private_key: 
     file: ./secrets/jwt-private-key.pem
   jwt_public_key: 
