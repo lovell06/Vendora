@@ -29,7 +29,7 @@ public static class DependencyInjection
 
                 using (var rsa = RSA.Create())
                 {
-                    rsa.ImportFromPem(publicKeyPath);
+                    rsa.ImportFromPem(File.ReadAllText(publicKeyPath));
                     parameters = rsa.ExportParameters(includePrivateParameters: false);
                 }
 

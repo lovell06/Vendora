@@ -27,7 +27,7 @@ public static class AdjustInventoryItemEndpoint
         {
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine($"Not found: \"{JwtRegisteredClaimNames.Sub}\";");
-            stringBuilder.AppendLine("System onsly contains:");
+            stringBuilder.AppendLine("System only contains:");
             foreach(var claim in user.Claims)
             {
                 stringBuilder.AppendLine($"{nameof(claim.Type)}: \"{claim.Type}\";");
