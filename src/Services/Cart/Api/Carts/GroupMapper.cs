@@ -1,3 +1,4 @@
+using Vendora.Services.Cart.Api.Carts.AddItem;
 using Vendora.Services.Cart.Api.Carts.Initialize;
 
 namespace Vendora.Services.Cart.Api.Carts;
@@ -9,5 +10,6 @@ public static class GroupMapper
         var carts = api.MapGroup("/carts").WithTags("Carts");
 
         carts.MapInitializeCartEndpoint();
+        carts.MapAddItemEndpoint();
     }
 }
