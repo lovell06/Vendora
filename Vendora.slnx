@@ -27,4 +27,10 @@
     <Project Path="src/Services/Inventory/Domain/Vendora.Services.Inventory.Domain.csproj" />
     <Project Path="src/Services/Inventory/Infrastructure/Vendora.Services.Inventory.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Services/Order/">
+    <Project Path="src/Services/Order/Api/Vendora.Services.Order.Api.csproj" />
+    <Project Path="src/Services/Order/Application/Vendora.Services.Order.Application.csproj" />
+    <Project Path="src/Services/Order/Domain/Vendora.Services.Order.Domain.csproj" />
+    <Project Path="src/Services/Order/Infrastructure/Vendora.Services.Order.Infrastructure.csproj" />
+  </Folder>
 </Solution>
