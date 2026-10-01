@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Vendora.BuildingBlocks.Cqrs;
 using Vendora.BuildingBlocks.Results;
 using Vendora.Services.Identity.Application.Abstractions.Authentication;
+using Vendora.Services.Identity.Application.Abstractions.Clients.Cart;
 using Vendora.Services.Identity.Application.Abstractions.Email;
 using Vendora.Services.Identity.Application.Abstractions.Persistence;
 using Vendora.Services.Identity.Domain.Users;
@@ -12,6 +13,7 @@ public class Handler(
     IUserRepository userRepository,
     IUnitOfWork unitOfWork,
     IPasswordHashProvider passwordHashProvider,
+    ICartClient cartClient,
     IEmailSender emailSender,
     IEmailVerificationTokenProvider emailVerificationTokenProvider,
     ILogger<Handler> logger,
@@ -100,6 +102,8 @@ public class Handler(
         userRepository.Add(user);
 
         var affectedRows = await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await cartClient.InitializeCartAsync(user.Id, cancellationToken);
 
         logger.LogInformation("{affectedRows} rows affected.", affectedRows);
 
