@@ -1,11 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
-using Vendora.Services.Cart.Api;
-using Vendora.Services.Cart.Api.Extensions;
-using Vendora.Services.Cart.Application;
-using Vendora.Services.Cart.Infrastructure;
-using Vendora.Services.Cart.Infrastructure.Persistence;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
@@ -33,7 +25,7 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 
     using var scope = app.Services.CreateAsyncScope();
-    var context = scope.ServiceProvider.GetRequiredService<PostgresDbContext>();
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     context.Database.Migrate();
 }
 

@@ -1,9 +1,3 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Vendora.Services.Catalog.Application.Abstractions.Authentication;
-
 namespace Vendora.Services.Catalog.Infrastructure.Authentication;
 
 public sealed class CurrentUser(IHttpContextAccessor accessor) : ICurrentUser

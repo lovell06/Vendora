@@ -1,9 +1,3 @@
-using System.Net;
-using System.Net.Mail;
-using Microsoft.Extensions.Options;
-using Vendora.Services.Identity.Application.Abstractions.Email;
-using Vendora.Services.Identity.Infrastructure.Options;
-
 namespace Vendora.Services.Identity.Infrastructure.Email;
 
 public class SmtpEmailSender(IOptions<SmtpOptions> options) : IEmailSender

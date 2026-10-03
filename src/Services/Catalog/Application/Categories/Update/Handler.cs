@@ -1,9 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Vendora.BuildingBlocks.Cqrs;
-using Vendora.BuildingBlocks.Results;
-using Vendora.Services.Catalog.Application.Abstractions.Persistence;
-using Vendora.Services.Catalog.Domain.Categories;
-
 namespace Vendora.Services.Catalog.Application.Categories.Update;
 
 public sealed class Handler(

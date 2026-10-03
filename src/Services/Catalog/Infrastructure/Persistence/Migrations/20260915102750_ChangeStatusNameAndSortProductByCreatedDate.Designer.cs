@@ -11,7 +11,7 @@ using Vendora.Services.Catalog.Infrastructure.Persistence;
 
 namespace Vendora.Services.Catalog.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(PostgresDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260915102750_ChangeStatusNameAndSortProductByCreatedDate")]
     partial class ChangeStatusNameAndSortProductByCreatedDate
     {

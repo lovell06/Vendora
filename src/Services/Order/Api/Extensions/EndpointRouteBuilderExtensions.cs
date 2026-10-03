@@ -4,7 +4,7 @@ public static class EndpointRouteBuilderExtensions
 {
     public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder app)
     {
-        var api = app.MapGroup("api");
+        // var api = app.MapGroup("api");
         
         return app;
     }

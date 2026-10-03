@@ -1,0 +1,18 @@
+global using System.Security.Claims;
+global using System.Text;
+global using Microsoft.AspNetCore.Authentication;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.IdentityModel.JsonWebTokens;
+global using Vendora.Services.Cart.Application.Abstractions.Authentication;
+global using Vendora.Services.Cart.Application.Abstractions.Persistence;
+global using Vendora.Services.Cart.Application.Carts.ListItems;
+global using Vendora.Services.Cart.Domain.Carts;
+global using Vendora.Services.Cart.Infrastructure.Authentication;
+global using Vendora.Services.Cart.Infrastructure.Persistence;
+global using Vendora.Services.Cart.Infrastructure.Queries;
+global using Vendora.Services.Cart.Infrastructure.Repositories;
+global using CartAggregate = Vendora.Services.Cart.Domain.Carts.Cart;

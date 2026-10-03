@@ -1,10 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-using Vendora.Services.Cart.Application.Carts.ListItems;
-using Vendora.Services.Cart.Infrastructure.Persistence;
-
 namespace Vendora.Services.Cart.Infrastructure.Queries;
 
-public sealed class EfCoreListItemQueryService(PostgresDbContext context) : IListItemsQueryService
+public sealed class EfCoreListItemQueryService(ApplicationDbContext context) : IListItemsQueryService
 {
     public async Task<Response?> ExecuteAsync(Query query, CancellationToken ct)
     {

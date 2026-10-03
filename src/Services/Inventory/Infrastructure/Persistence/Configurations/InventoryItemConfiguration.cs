@@ -1,7 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Vendora.Services.Inventory.Domain.InventoryItems;
-
 namespace Vendora.Services.Inventory.Infrastructure.Persistence.Configurations;
 
 public sealed class InventoryItemConfiguration : IEntityTypeConfiguration<InventoryItem>

@@ -1,6 +1,3 @@
-using Vendora.BuildingBlocks.Cqrs;
-using Vendora.BuildingBlocks.Results;
-
 namespace Vendora.Services.Cart.Application.Carts.ListItems;
 
 public sealed class Handler(IListItemsQueryService queryService) : IQueryHandler<Query, Response>

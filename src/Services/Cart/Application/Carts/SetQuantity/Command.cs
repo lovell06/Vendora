@@ -1,5 +1,3 @@
-using Vendora.BuildingBlocks.Cqrs;
-
 namespace Vendora.Services.Cart.Application.Carts.SetQuantity;
 
 public sealed class Command : ICommand

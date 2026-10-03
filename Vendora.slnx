@@ -1,7 +1,4 @@
 <Solution>
-  <Folder Name="/BuildingBlocks/">
-    <Project Path="src/BuildingBlocks/Vendora.BuildingBlocks.csproj" />
-  </Folder>
   <Folder Name="/Services/" />
   <Folder Name="/Services/Cart/">
     <Project Path="src/Services/Cart/Api/Vendora.Services.Cart.Api.csproj" />
@@ -33,4 +30,9 @@
     <Project Path="src/Services/Order/Domain/Vendora.Services.Order.Domain.csproj" />
     <Project Path="src/Services/Order/Infrastructure/Vendora.Services.Order.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/Cqrs/Vendora.BuildingBlocks.Cqrs.csproj" />
+    <Project Path="src/BuildingBlocks/Results/Vendora.BuildingBlocks.Results.csproj" />
+    <Project Path="src/BuildingBlocks/Messaging/Vendora.BuildingBlocks.Messaging.csproj" />
+    </Folder>
 </Solution>

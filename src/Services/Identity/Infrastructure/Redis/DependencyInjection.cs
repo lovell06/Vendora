@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using StackExchange.Redis;
-
 namespace Vendora.Services.Identity.Infrastructure.Redis;
 
 public static class DependencyInjection

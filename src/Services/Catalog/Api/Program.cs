@@ -1,11 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
-using Vendora.Services.Catalog.Api;
-using Vendora.Services.Catalog.Api.Extensions;
-using Vendora.Services.Catalog.Application;
-using Vendora.Services.Catalog.Infrastructure;
-using Vendora.Services.Catalog.Infrastructure.Persistence;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
@@ -34,7 +26,7 @@ if (app.Environment.IsDevelopment())
 
     await using var scope = app.Services.CreateAsyncScope();
 
-    var db = scope.ServiceProvider.GetRequiredService<PostgresDbContext>();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
     await db.Database.MigrateAsync();
 }

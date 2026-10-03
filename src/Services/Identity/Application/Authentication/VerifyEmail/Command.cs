@@ -1,6 +1,3 @@
-
-using Vendora.BuildingBlocks.Cqrs;
-
 namespace Vendora.Services.Identity.Application.Authentication.VerifyEmail;
 
 public sealed class Command : ICommand

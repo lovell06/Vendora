@@ -1,5 +1,3 @@
-using Vendora.BuildingBlocks.Cqrs;
-
 namespace Vendora.Services.Inventory.Application.InventoryItems.Adjust;
 
 public sealed class Command : ICommand

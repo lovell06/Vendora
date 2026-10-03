@@ -1,9 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
-using StackExchange.Redis;
-using Vendora.Services.Identity.Application.Abstractions.Email;
-using Vendora.Services.Identity.Infrastructure.Redis;
-
 namespace Vendora.Services.Identity.Infrastructure.Email;
 
 public sealed class RedisEmailVerificationTokenProvider(IConnectionMultiplexer connection) : IEmailVerificationTokenProvider

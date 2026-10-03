@@ -1,9 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Vendora.BuildingBlocks.Cqrs;
-using Vendora.BuildingBlocks.Results;
-using Vendora.Services.Catalog.Application.Abstractions.Persistence;
-using Vendora.Services.Catalog.Domain.Products;
-
 namespace Vendora.Services.Catalog.Application.Products.Delete;
 
 public sealed class Handler(

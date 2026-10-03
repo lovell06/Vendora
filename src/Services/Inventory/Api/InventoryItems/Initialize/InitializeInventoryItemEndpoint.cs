@@ -1,7 +1,3 @@
-using MediatR;
-using Vendora.Services.Inventory.Api.Constants;
-using Vendora.Services.Inventory.Api.Extensions;
-
 namespace Vendora.Services.Inventory.Api.InventoryItems.Initialize;
 
 public static class InitializeInventoryItemEndpoint

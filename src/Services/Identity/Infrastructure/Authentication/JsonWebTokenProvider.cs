@@ -1,12 +1,3 @@
-using System.Security.Claims;
-using System.Security.Cryptography;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
-using Vendora.Services.Identity.Application.Abstractions.Authentication;
-using Vendora.Services.Identity.Domain.Users;
-using Vendora.Services.Identity.Infrastructure.Options;
-
 namespace Vendora.Services.Identity.Infrastructure.Authentication;
 
 public class JsonWebTokenProvider(

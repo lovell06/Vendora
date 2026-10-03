@@ -1,7 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using CartAggregate = Vendora.Services.Cart.Domain.Carts.Cart;
-
 namespace Vendora.Services.Cart.Infrastructure.Persistence.Configurations;
 
 public sealed class CartConfiguration : IEntityTypeConfiguration<CartAggregate>

@@ -1,8 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Vendora.Services.Inventory.Application.Abstractions.Persistence;
-
 namespace Vendora.Services.Inventory.Infrastructure.Persistence;
 
 public static class DependencyInjection
@@ -11,12 +6,12 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("Postgres")
                                ?? throw new InvalidOperationException("Postgres connection string is not configured.");
-        services.AddDbContext<PostgresDbContext>(options =>
+        services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseNpgsql(connectionString);
         });
 
-        services.AddScoped<IUnitOfWork, PostgresUnitOfWork>();
+        services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
         return services;
     }
 }

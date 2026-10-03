@@ -1,6 +1,3 @@
-using MediatR;
-using Vendora.Services.Identity.Api.Extensions;
-
 namespace Vendora.Services.Identity.Api.Auth.Logout;
 
 public static class LogoutEndpoint

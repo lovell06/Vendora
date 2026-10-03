@@ -1,11 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Vendora.Services.Cart.Infrastructure.Authentication;
-using Vendora.Services.Cart.Infrastructure.Persistence;
-using Vendora.Services.Cart.Infrastructure.Queries;
-using Vendora.Services.Cart.Infrastructure.Repositories;
-
-namespace Vendora.Services.Cart.Infrastructure;
+﻿namespace Vendora.Services.Cart.Infrastructure;
 
 public static class DependencyInjection
 {

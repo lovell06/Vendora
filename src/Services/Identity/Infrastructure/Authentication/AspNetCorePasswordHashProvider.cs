@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-using Vendora.Services.Identity.Application.Abstractions.Authentication;
-
 namespace Vendora.Services.Identity.Infrastructure.Authentication;
 
 public class AspNetCorePasswordHashProvider : IPasswordHashProvider

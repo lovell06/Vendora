@@ -1,6 +1,3 @@
-using MediatR;
-using Vendora.Services.Cart.Api.Extensions;
-
 namespace Vendora.Services.Cart.Api.Carts.Initialize;
 
 public static class InitializeCartEndpoint

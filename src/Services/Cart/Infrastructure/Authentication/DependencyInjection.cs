@@ -1,6 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Vendora.Services.Cart.Application.Abstractions.Authentication;
-
 namespace Vendora.Services.Cart.Infrastructure.Authentication;
 
 public static class DependencyInjection

@@ -1,5 +1,3 @@
-using Vendora.BuildingBlocks.Cqrs;
-
 namespace Vendora.Services.Catalog.Application.Categories.Update;
 
 public sealed class Command : ICommand

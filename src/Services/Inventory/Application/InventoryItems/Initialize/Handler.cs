@@ -1,9 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Vendora.BuildingBlocks.Cqrs;
-using Vendora.BuildingBlocks.Results;
-using Vendora.Services.Inventory.Application.Abstractions.Persistence;
-using Vendora.Services.Inventory.Domain.InventoryItems;
-
 namespace Vendora.Services.Inventory.Application.InventoryItems.Initialize;
 
 public sealed class Handler(

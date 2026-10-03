@@ -1,6 +1,3 @@
-using MediatR;
-using Vendora.Services.Catalog.Api.Extensions;
-
 namespace Vendora.Services.Catalog.Api.Categories.List;
 
 public static class ListCategoriesEndpoint

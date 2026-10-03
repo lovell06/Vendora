@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Vendora.Services.Identity.Application;
 
 public static class DependencyInjection

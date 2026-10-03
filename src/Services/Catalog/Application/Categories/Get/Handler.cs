@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Vendora.BuildingBlocks.Cqrs;
-using Vendora.BuildingBlocks.Results;
-
 namespace Vendora.Services.Catalog.Application.Categories.Get;
 
 public sealed class Handler(

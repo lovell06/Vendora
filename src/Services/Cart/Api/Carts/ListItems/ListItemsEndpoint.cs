@@ -1,6 +1,3 @@
-using MediatR;
-using Vendora.Services.Cart.Api.Extensions;
-using Vendora.Services.Cart.Application.Abstractions.Authentication;
 using Vendora.Services.Cart.Application.Carts.ListItems;
 
 namespace Vendora.Services.Cart.Api.Carts.ListItems;

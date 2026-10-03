@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Vendora.Services.Cart.Application;
 
 public static class DependencyInjection

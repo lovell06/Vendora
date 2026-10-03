@@ -1,8 +1,3 @@
-using Scalar.AspNetCore;
-using Vendora.Services.Order.Api;
-using Vendora.Services.Order.Application;
-using Vendora.Services.Order.Infrastructure;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

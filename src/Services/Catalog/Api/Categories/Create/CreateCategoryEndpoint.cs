@@ -1,7 +1,3 @@
-using MediatR;
-using Vendora.Services.Catalog.Api.Constants;
-using Vendora.Services.Catalog.Api.Extensions;
-
 namespace Vendora.Services.Catalog.Api.Categories.Create;
 
 public static class CreateCategoryEndpoint

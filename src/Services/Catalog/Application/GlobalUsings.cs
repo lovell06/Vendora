@@ -1,0 +1,9 @@
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
+global using Vendora.BuildingBlocks.Cqrs;
+global using Vendora.BuildingBlocks.Results;
+global using Vendora.Services.Catalog.Application.Abstractions.Authentication;
+global using Vendora.Services.Catalog.Application.Abstractions.Clients.Inventory;
+global using Vendora.Services.Catalog.Application.Abstractions.Persistence;
+global using Vendora.Services.Catalog.Domain.Categories;
+global using Vendora.Services.Catalog.Domain.Products;

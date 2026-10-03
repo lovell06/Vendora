@@ -11,7 +11,7 @@ using Vendora.Services.Cart.Infrastructure.Persistence;
 
 namespace Vendora.Services.Cart.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(PostgresDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260928101627_Initialize")]
     partial class Initialize
     {

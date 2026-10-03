@@ -1,6 +1,3 @@
-using MediatR;
-using Vendora.Services.Inventory.Api.Extensions;
-
 namespace Vendora.Services.Inventory.Api.InventoryItems.CheckAvailability;
 
 public static class CheckAvailabilityEndpoint

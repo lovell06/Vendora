@@ -1,10 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Vendora.Services.Identity.Application.Abstractions.Authentication;
-using Vendora.Services.Identity.Domain.Users;
-
 namespace Vendora.Services.Identity.Infrastructure.Persistence.Seeders;
 
 public static class AdminAccountSeeder
@@ -21,7 +14,7 @@ public static class AdminAccountSeeder
         var email = adminAccount["Email"]
                     ?? throw new InvalidOperationException("Missing AdminAccount:Email");
 
-        var logger = provider.GetRequiredService<ILogger<PostgresDbContext>>();
+        var logger = provider.GetRequiredService<ILogger<ApplicationDbContext>>();
 
         var existingUser = context.Set<User>()
             .Select(u => new { u.Email, u.Role })
@@ -70,7 +63,7 @@ public static class AdminAccountSeeder
         var email = adminAccount["Email"]
                     ?? throw new InvalidOperationException("Missing AdminAccount:Email");
 
-        var logger = provider.GetRequiredService<ILogger<PostgresDbContext>>();
+        var logger = provider.GetRequiredService<ILogger<ApplicationDbContext>>();
 
         var existingUser = context.Set<User>()
             .Select(u => new { u.Email, u.Role })

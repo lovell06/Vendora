@@ -1,5 +1,3 @@
-using Vendora.BuildingBlocks.Cqrs;
-
 namespace Vendora.Services.Identity.Application.Authentication.Login;
 
 public sealed class Command : ICommand<Response>

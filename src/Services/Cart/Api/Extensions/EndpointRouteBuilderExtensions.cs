@@ -1,5 +1,3 @@
-using Vendora.Services.Cart.Api.Carts;
-
 namespace Vendora.Services.Cart.Api.Extensions;
 
 public static class EndpointRouteBuilderExtensions

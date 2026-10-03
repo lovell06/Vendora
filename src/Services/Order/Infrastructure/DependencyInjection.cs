@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Vendora.Services.Order.Infrastructure.Persistence;
-
-namespace Vendora.Services.Order.Infrastructure;
+﻿namespace Vendora.Services.Order.Infrastructure;
 
 public static class DependencyInjection
 {

@@ -1,9 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Vendora.BuildingBlocks.Cqrs;
-using Vendora.BuildingBlocks.Results;
-using Vendora.Services.Cart.Application.Abstractions.Persistence;
-using Vendora.Services.Cart.Domain.Carts;
-
 namespace Vendora.Services.Cart.Application.Carts.Initialize;
 
 using CartAggregate = Domain.Carts.Cart;

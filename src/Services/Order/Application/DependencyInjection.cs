@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace Vendora.Services.Order.Application;
+﻿namespace Vendora.Services.Order.Application;
 
 public static class DependencyInjection
 {

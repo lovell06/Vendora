@@ -11,7 +11,7 @@ using Vendora.Services.Identity.Infrastructure.Persistence;
 
 namespace Vendora.Services.Identity.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(PostgresDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260831124122_Initialize")]
     partial class Initialize
     {

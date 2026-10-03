@@ -1,8 +1,3 @@
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using Vendora.Services.Catalog.Application.Abstractions.Authentication;
-using Vendora.Services.Catalog.Application.Abstractions.Clients.Inventory;
-
 namespace Vendora.Services.Catalog.Infrastructure.Clients;
 
 public sealed class HttpInventoryClient(HttpClient client) : IInventoryClient

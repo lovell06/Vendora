@@ -1,6 +1,3 @@
-using Vendora.Services.Catalog.Api.Categories;
-using Vendora.Services.Catalog.Api.Products;
-
 namespace Vendora.Services.Catalog.Api.Extensions;
 
 public static class EndpointRouteBuilderExtensions

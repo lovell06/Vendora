@@ -1,10 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Vendora.Services.Identity.Application.Abstractions.Persistence;
-using Vendora.Services.Identity.Infrastructure.Persistence.Seeders;
-using Vendora.Services.Identity.Infrastructure.Persistence.UnitOfWork;
-
 namespace Vendora.Services.Identity.Infrastructure.Persistence;
 
 public static class DependencyInjection
@@ -14,7 +7,7 @@ public static class DependencyInjection
         var connectionString = configuration.GetConnectionString("Postgres")
                                ?? throw new InvalidOperationException("Postgres connection is not configured.");
 
-        services.AddDbContext<PostgresDbContext>((provider, builder) =>
+        services.AddDbContext<ApplicationDbContext>((provider, builder) =>
         {
             builder.UseNpgsql(connectionString);
             builder.UseSeeding((context, _) =>
@@ -28,7 +21,7 @@ public static class DependencyInjection
             });
         });
 
-        services.AddScoped<IUnitOfWork, PostgresUnitOfWork>();
+        services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
         
         return services;
     }

@@ -1,7 +1,3 @@
-using MediatR;
-using Vendora.Services.Cart.Api.Extensions;
-using Vendora.Services.Cart.Application.Abstractions.Authentication;
-
 namespace Vendora.Services.Cart.Api.Carts.RemoveItem;
 
 public static class RemoveItemEndpoint

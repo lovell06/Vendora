@@ -1,6 +1,3 @@
-using MediatR;
-using Vendora.BuildingBlocks.Results;
-
 namespace Vendora.BuildingBlocks.Cqrs;
 
 public interface ICommandBase;

@@ -1,13 +1,3 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Vendora.Services.Identity.Infrastructure.Authentication;
-using Vendora.Services.Identity.Infrastructure.Clients;
-using Vendora.Services.Identity.Infrastructure.Email;
-using Vendora.Services.Identity.Infrastructure.Options;
-using Vendora.Services.Identity.Infrastructure.Persistence;
-using Vendora.Services.Identity.Infrastructure.Redis;
-using Vendora.Services.Identity.Infrastructure.Repositories;
-
 namespace Vendora.Services.Identity.Infrastructure;
 
 public static class DependencyInjection
@@ -21,7 +11,7 @@ public static class DependencyInjection
         services.AddInfrastructureAuthentication();
         services.AddInfrastructureEmail();
         services.AddInfrastructureOptions();
-        services.AddRepositories();
+        services.AddRepositoryServices();
         services.AddClients(configuration);
 
         return services;

@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Vendora.BuildingBlocks.Cqrs;
-using Vendora.BuildingBlocks.Results;
-
 namespace Vendora.Services.Inventory.Application.InventoryItems.CheckAvailability;
 
 public sealed class Handler(

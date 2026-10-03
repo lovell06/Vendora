@@ -1,7 +1,3 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Vendora.Services.Catalog.Application.Abstractions.Clients.Inventory;
-
 namespace Vendora.Services.Catalog.Infrastructure.Clients;
 
 public static class DependencyInjection

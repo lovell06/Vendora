@@ -10,7 +10,7 @@ using Vendora.Services.Catalog.Infrastructure.Persistence;
 
 namespace Vendora.Services.Catalog.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(PostgresDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     partial class PostgresDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

@@ -1,7 +1,4 @@
-﻿using System.Net.Http.Json;
-using Vendora.Services.Identity.Application.Abstractions.Clients.Cart;
-
-namespace Vendora.Services.Identity.Infrastructure.Clients;
+﻿namespace Vendora.Services.Identity.Infrastructure.Clients;
 
 public sealed class HttpCartClient(HttpClient client) : ICartClient
 {

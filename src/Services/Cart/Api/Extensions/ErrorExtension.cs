@@ -1,5 +1,3 @@
-using Vendora.BuildingBlocks.Results;
-
 namespace Vendora.Services.Cart.Api.Extensions;
 
 public static class ErrorExtension

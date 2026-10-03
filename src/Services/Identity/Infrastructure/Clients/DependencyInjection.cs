@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Vendora.Services.Identity.Application.Abstractions.Clients.Cart;
-
-namespace Vendora.Services.Identity.Infrastructure.Clients;
+﻿namespace Vendora.Services.Identity.Infrastructure.Clients;
 
 public static class DependencyInjection
 {

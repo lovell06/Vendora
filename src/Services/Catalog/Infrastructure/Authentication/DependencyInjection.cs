@@ -1,6 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Vendora.Services.Catalog.Application.Abstractions.Authentication;
-
 namespace Vendora.Services.Catalog.Infrastructure.Authentication;
 
 public static class DependencyInjection

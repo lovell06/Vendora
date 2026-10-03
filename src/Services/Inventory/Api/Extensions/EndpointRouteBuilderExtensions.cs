@@ -1,5 +1,3 @@
-using Vendora.Services.Inventory.Api.InventoryItems;
-
 namespace Vendora.Services.Inventory.Api.Extensions;
 
 public static class EndpointRouteBuilderExtensions

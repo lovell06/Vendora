@@ -1,8 +1,3 @@
-using System.Security.Cryptography;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
-
 namespace Vendora.Services.Cart.Api;
 
 public static class DependencyInjection

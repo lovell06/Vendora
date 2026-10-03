@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace Vendora.Services.Order.Infrastructure.Persistence;
 
 public sealed class PostgresDbContext(DbContextOptions<PostgresDbContext> options) : DbContext(options)

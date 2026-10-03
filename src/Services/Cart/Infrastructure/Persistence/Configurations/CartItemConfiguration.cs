@@ -1,7 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Vendora.Services.Cart.Domain.Carts;
-
 namespace Vendora.Services.Cart.Infrastructure.Persistence.Configurations;
 
 public sealed class CartItemConfiguration : IEntityTypeConfiguration<CartItem>

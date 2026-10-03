@@ -1,7 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Vendora.Services.Catalog.Domain.Categories;
-
 namespace Vendora.Services.Catalog.Infrastructure.Persistence.Seeders;
 
 public static class CategoryDataSeeder

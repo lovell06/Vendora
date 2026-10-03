@@ -1,5 +1,3 @@
-using Vendora.Services.Catalog.Application.Abstractions.Authentication;
-
 namespace Vendora.Services.Catalog.Application.Abstractions.Clients.Inventory;
 
 public interface IInventoryClient
