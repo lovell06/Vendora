@@ -1,10 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\Domain\Vendora.Services.Cart.Domain.csproj" />
-    <ProjectReference Include="..\..\..\BuildingBlocks\Cqrs\Vendora.BuildingBlocks.Cqrs.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>

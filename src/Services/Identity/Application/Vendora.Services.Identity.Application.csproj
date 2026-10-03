@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\Vendora.Services.Identity.Domain.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Cqrs\Vendora.BuildingBlocks.Cqrs.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
