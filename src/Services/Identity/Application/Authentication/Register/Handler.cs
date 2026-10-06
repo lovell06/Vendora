@@ -2,11 +2,9 @@ namespace Vendora.Services.Identity.Application.Authentication.Register;
 
 public class Handler(
     IUserRepository userRepository,
+    IOutboxRepository outboxRepository,
     IUnitOfWork unitOfWork,
     IPasswordHashProvider passwordHashProvider,
-    ICartClient cartClient,
-    IEmailSender emailSender,
-    IEmailVerificationTokenProvider emailVerificationTokenProvider,
     ILogger<Handler> logger,
     TimeProvider clock): ICommandHandler<Command>
 {
@@ -92,21 +90,15 @@ public class Handler(
 
         userRepository.Add(user);
 
+        outboxRepository.Add(new UserRegisteredEvent(
+            Id: Guid.CreateVersion7(),
+            OccurredAt: utcNow,
+            UserId: user.Id,
+            UserEmail: user.Email), utcNow);
+
         var affectedRows = await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await cartClient.InitializeCartAsync(user.Id, cancellationToken);
-
         logger.LogInformation("{affectedRows} rows affected.", affectedRows);
-
-        var verificationToken = await emailVerificationTokenProvider.IssueAsync(
-            user.Id,
-            cancellationToken);
-
-        await emailSender.SendAsync(
-            recepient: user.Email,
-            subject: "Verify email",
-            body: $"https://default.com?userId={user.Id}&token={verificationToken}",
-            cancellationToken: cancellationToken);
 
         return Result.Success();
     }

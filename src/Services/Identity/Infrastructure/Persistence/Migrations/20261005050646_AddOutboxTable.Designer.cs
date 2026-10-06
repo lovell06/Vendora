@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Vendora.Services.Identity.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using Vendora.Services.Identity.Infrastructure.Persistence;
 namespace Vendora.Services.Identity.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class PostgresDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261005050646_AddOutboxTable")]
+    partial class AddOutboxTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,14 +31,6 @@ namespace Vendora.Services.Identity.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<string>("Error")
-                        .HasColumnType("text")
-                        .HasColumnName("error");
 
                     b.Property<string>("Payload")
                         .IsRequired()
@@ -57,8 +52,6 @@ namespace Vendora.Services.Identity.Infrastructure.Persistence.Migrations
                         .HasColumnName("type");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedAt", "Id");
 
                     b.ToTable("outbox_messages", (string)null);
                 });

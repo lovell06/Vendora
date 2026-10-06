@@ -1,9 +1,10 @@
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
 global using Vendora.BuildingBlocks.Cqrs;
+global using Vendora.BuildingBlocks.Messaging.Abstractions;
 global using Vendora.BuildingBlocks.Results;
 global using Vendora.Services.Identity.Application.Abstractions.Authentication;
-global using Vendora.Services.Identity.Application.Abstractions.Clients.Cart;
 global using Vendora.Services.Identity.Application.Abstractions.Email;
 global using Vendora.Services.Identity.Application.Abstractions.Persistence;
 global using Vendora.Services.Identity.Domain.Users;
+global using Vendora.Services.Identity.Application.Authentication.Register.Events;

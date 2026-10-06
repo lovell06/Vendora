@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-Vendora.Services.Identity.Worker-bc938b2a-9957-4f38-8efe-0175479baabb</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\Vendora.BuildingBlocks.Messaging.csproj" />
+    <ProjectReference Include="..\Infrastructure\Vendora.Services.Identity.Infrastructure.csproj" />
+    <ProjectReference Include="..\Application\Vendora.Services.Identity.Application.csproj" />
+  </ItemGroup>
+</Project>

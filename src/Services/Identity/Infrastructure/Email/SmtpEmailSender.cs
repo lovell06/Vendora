@@ -13,6 +13,11 @@ public class SmtpEmailSender(IOptions<SmtpOptions> options) : IEmailSender
             password: _smtpOptions.Password);
         smtpClient.EnableSsl = true;
 
+        Console.WriteLine(recipient);
+        Console.WriteLine(subject);
+        Console.WriteLine(body);
+
+
         using var message = new MailMessage();
         message.From = new MailAddress(
             address: _smtpOptions.UserName,

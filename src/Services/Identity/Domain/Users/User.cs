@@ -66,7 +66,7 @@ public class User
 
         return Result<User>.Success(new User
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             Email = NormalizeEmail(email),
             PasswordHash = passwordHash,
             FullName = fullName,

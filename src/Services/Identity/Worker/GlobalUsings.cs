@@ -1,0 +1,10 @@
+// global using Vendora.BuildingBlocks.Messaging.RabbitMq;
+global using Vendora.BuildingBlocks.Messaging.Abstractions;
+global using Vendora.BuildingBlocks.Messaging.RabbitMq;
+global using Vendora.BuildingBlocks.Messaging.TypeRegistry;
+global using Vendora.Services.Identity.Application.Abstractions.Persistence;
+global using Vendora.Services.Identity.Application.Authentication.Register.Events;
+global using Vendora.Services.Identity.Infrastructure.Email;
+global using Vendora.Services.Identity.Infrastructure.Persistence;
+global using Vendora.Services.Identity.Infrastructure.Repositories;
+global using Vendora.Services.Identity.Worker;

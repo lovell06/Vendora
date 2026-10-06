@@ -1,3 +1,6 @@
+using Vendora.BuildingBlocks.Messaging.TypeRegistry;
+using Vendora.Services.Identity.Application.Authentication.Register.Events;
+
 namespace Vendora.Services.Identity.Infrastructure;
 
 public static class DependencyInjection
@@ -6,6 +9,13 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        services.AddSingleton<IEventTypeRegistry>(_ =>
+        {
+            var mapper = new EventTypeRegistry();
+            mapper.Add("identity.user-registered", typeof(UserRegisteredEvent));
+            return mapper;
+        });
+
         services.AddRedisConnection(configuration);
         services.AddPersistence(configuration);
         services.AddInfrastructureAuthentication();

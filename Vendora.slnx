@@ -17,6 +17,7 @@
     <Project Path="src/Services/Identity/Application/Vendora.Services.Identity.Application.csproj" />
     <Project Path="src/Services/Identity/Domain/Vendora.Services.Identity.Domain.csproj" />
     <Project Path="src/Services/Identity/Infrastructure/Vendora.Services.Identity.Infrastructure.csproj" />
+    <Project Path="src/Services/Identity/Worker/Vendora.Services.Identity.Worker.csproj" />
   </Folder>
   <Folder Name="/Services/Inventory/">
     <Project Path="src/Services/Inventory/Api/Vendora.Services.Inventory.Api.csproj" />
