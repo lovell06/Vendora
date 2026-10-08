@@ -1,4 +1,4 @@
-namespace Vendora.Services.Identity.Application.Authentication.Register.Events;
+namespace Vendora.Services.Identity.Application.IntegrationEvents;
 
 public sealed record UserRegisteredEvent(
     Guid Id,

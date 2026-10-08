@@ -1,3 +1,9 @@
-global using Vendora.BuildingBlocks.Messaging.Messages;
-global using Vendora.BuildingBlocks.Messaging.Abstractions;
 global using Microsoft.Extensions.Hosting;
+global using Vendora.BuildingBlocks.Messaging.Abstractions;
+global using Vendora.BuildingBlocks.Messaging.Messages;
+global using System.Text.Json;
+global using Microsoft.Extensions.Options;
+global using RabbitMQ.Client;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
+global using RabbitMQ.Client.Events;

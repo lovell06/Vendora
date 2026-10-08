@@ -1,7 +1,3 @@
-using System.Text.Json;
-using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
-
 namespace Vendora.BuildingBlocks.Messaging.RabbitMq;
 
 public sealed class RabbitMqEventBus : IEventBus, IAsyncDisposable
@@ -112,16 +108,6 @@ public sealed class RabbitMqEventBus : IEventBus, IAsyncDisposable
             await channel.DisposeAsync();
             throw;
         }
-    }
-
-    public Task SubscribeAsync<TEvent, THandler>(CancellationToken ct) where TEvent : IIntegrationEvent where THandler : IIntegrationEventHandler<TEvent>
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UnsubscribeAsync<TEvent, THandler>(CancellationToken ct) where TEvent : IIntegrationEvent where THandler : IIntegrationEventHandler<TEvent>
-    {
-        throw new NotImplementedException();
     }
 
     public async ValueTask DisposeAsync()

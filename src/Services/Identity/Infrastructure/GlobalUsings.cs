@@ -29,3 +29,5 @@ global using Vendora.Services.Identity.Infrastructure.Persistence;
 global using Vendora.Services.Identity.Infrastructure.Persistence.Seeders;
 global using Vendora.Services.Identity.Infrastructure.Redis;
 global using Vendora.Services.Identity.Infrastructure.Repositories;
+global using Vendora.BuildingBlocks.Messaging.TypeRegistry;
+global using Vendora.Services.Identity.Application.IntegrationEvents;

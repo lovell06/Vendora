@@ -18,12 +18,7 @@ public sealed class Handler(
                 "Cart initialization rejected because cart for user: {CmdUserId} already.",
                 cmd.UserId);
 
-            return Result.Failure(new Error
-            {
-                Code = "cart_initialize.exists",
-                Message = "Cart already exists.",
-                Type = ErrorType.Conflict
-            });
+            return Result.Success();
         }
 
         var cart = CartAggregate.Create(cmd.UserId, utcNow);

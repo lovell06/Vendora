@@ -1,6 +1,3 @@
-using Vendora.BuildingBlocks.Messaging.TypeRegistry;
-using Vendora.Services.Identity.Application.Authentication.Register.Events;
-
 namespace Vendora.Services.Identity.Infrastructure;
 
 public static class DependencyInjection

@@ -1,6 +1,6 @@
-namespace Vendora.Services.Identity.Application.Authentication.Register.Events;
+namespace Vendora.Services.Identity.Application.Authentication.SendVerificationEmail;
 
-public sealed class SendVerificationEmailHandler(
+public sealed class Handler(
     IEmailVerificationTokenProvider emailVerificationTokenProvider,
     IEmailSender sender) : IIntegrationEventHandler<UserRegisteredEvent>
 {
@@ -13,7 +13,7 @@ public sealed class SendVerificationEmailHandler(
         await sender.SendAsync(
             recepient: @event.UserEmail,
             subject: "Vendora Account Verification",
-            body: $"UserID={@event.UserId}.\nToken={verificationToken}",
+            body: $"UserID=\'{@event.UserId}\'\nToken=\'{verificationToken}\'",
             cancellationToken: ct);
     }
 }

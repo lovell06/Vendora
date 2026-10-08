@@ -5,12 +5,14 @@
     <Project Path="src/Services/Cart/Application/Vendora.Services.Cart.Application.csproj" />
     <Project Path="src/Services/Cart/Domain/Vendora.Services.Cart.Domain.csproj" />
     <Project Path="src/Services/Cart/Infrastructure/Vendora.Services.Cart.Infrastructure.csproj" />
+    <Project Path="src/Services/Cart/Worker/Vendora.Services.Cart.Worker.csproj" />
   </Folder>
   <Folder Name="/Services/Catalog/">
     <Project Path="src/Services/Catalog/Api/Vendora.Services.Catalog.Api.csproj" />
     <Project Path="src/Services/Catalog/Application/Vendora.Services.Catalog.Application.csproj" />
     <Project Path="src/Services/Catalog/Domain/Vendora.Services.Catalog.Domain.csproj" />
     <Project Path="src/Services/Catalog/Infrastructure/Vendora.Services.Catalog.Infrastructure.csproj" />
+    <Project Path="src/Services/Catalog/Worker/Vendora.Services.Catalog.Worker.csproj" />
   </Folder>
   <Folder Name="/Services/Identity/">
     <Project Path="src/Services/Identity/Api/Vendora.Services.Identity.Api.csproj" />
@@ -35,5 +37,5 @@
     <Project Path="src/BuildingBlocks/Cqrs/Vendora.BuildingBlocks.Cqrs.csproj" />
     <Project Path="src/BuildingBlocks/Results/Vendora.BuildingBlocks.Results.csproj" />
     <Project Path="src/BuildingBlocks/Messaging/Vendora.BuildingBlocks.Messaging.csproj" />
-    </Folder>
+  </Folder>
 </Solution>

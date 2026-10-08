@@ -17,23 +17,14 @@ builder.Services.AddOptions<SmtpOptions>()
     .ValidateOnStart();
 
 builder.Services.AddEventTypeRegistry();
-
 builder.Services.AddPersistence(builder.Configuration);
-
 builder.Services.AddRepositoryServices();
-
 builder.Services.AddRedisConnection(builder.Configuration);
-
 builder.Services.AddInfrastructureEmail();
-
 builder.Services.AddIntegrationEventHandlers();
-
 builder.Services.AddEventBus(builder.Configuration);
-
 builder.Services.AddHostedService<OutboxWorker>();
-
 builder.Services.AddEventConsumer();
-
 builder.Services.AddIntegrationEventDispatcher();
 
 var host = builder.Build();

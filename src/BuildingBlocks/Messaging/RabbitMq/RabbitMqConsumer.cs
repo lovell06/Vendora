@@ -1,9 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-
 namespace Vendora.BuildingBlocks.Messaging.RabbitMq;
 
 public sealed class RabbitMqConsumer(

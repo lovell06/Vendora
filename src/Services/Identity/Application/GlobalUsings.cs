@@ -7,4 +7,4 @@ global using Vendora.Services.Identity.Application.Abstractions.Authentication;
 global using Vendora.Services.Identity.Application.Abstractions.Email;
 global using Vendora.Services.Identity.Application.Abstractions.Persistence;
 global using Vendora.Services.Identity.Domain.Users;
-global using Vendora.Services.Identity.Application.Authentication.Register.Events;
+global using Vendora.Services.Identity.Application.IntegrationEvents;

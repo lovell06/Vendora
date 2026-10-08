@@ -1,4 +1,5 @@
 using Vendora.BuildingBlocks.Messaging.Dispatching;
+using Vendora.Services.Identity.Application.IntegrationEvents;
 
 namespace Vendora.Services.Identity.Worker;
 
