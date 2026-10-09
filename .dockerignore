@@ -7,6 +7,8 @@ configs/
 # secret files
 secrets/
 
+composes/
+
 .git/
 .gitignore
 

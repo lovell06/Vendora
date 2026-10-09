@@ -2,7 +2,9 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 WORKDIR /code
 
-COPY src/BuildingBlocks/Vendora.BuildingBlocks.csproj /code/src/BuildingBlocks/
+COPY src/BuildingBlocks/Results/Vendora.BuildingBlocks.Results.csproj src/BuildingBlocks/Results/
+COPY src/BuildingBlocks/Cqrs/Vendora.BuildingBlocks.Cqrs.csproj src/BuildingBlocks/Cqrs/
+COPY src/BuildingBlocks/Messaging/Vendora.BuildingBlocks.Messaging.csproj src/BuildingBlocks/Messaging/
 COPY src/Services/Catalog/Api/Vendora.Services.Catalog.Api.csproj /code/src/Services/Catalog/Api/
 COPY src/Services/Catalog/Infrastructure/Vendora.Services.Catalog.Infrastructure.csproj /code/src/Services/Catalog/Infrastructure/
 COPY src/Services/Catalog/Application/Vendora.Services.Catalog.Application.csproj /code/src/Services/Catalog/Application/

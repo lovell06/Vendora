@@ -1,0 +1,24 @@
+services:
+  identity-api: 
+    build: 
+      context: .
+      dockerfile: src/Services/Identity/Api/Dockerfile 
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    env_file:
+      - ./configs/identity/admin.account.env
+      - ./configs/identity/caching.env
+      - ./configs/identity/jwt.env
+    ports:
+      - 8081:8080
+    secrets:
+      - jwt_private_key
+      - source: identity_connection_string
+        target: ConnectionStrings__Postgres
+    depends_on:
+      - postgres
+      - redis
+
+secrets:
+  identity_connection_string:
+    file: ./secrets/identity-connection-string.txt
