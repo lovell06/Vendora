@@ -20,4 +20,14 @@ public sealed class EventTypeRegistry : IEventTypeRegistry
         _nameToType.Add(name, type);
         _typeToName.Add(type, name);
     }
+
+    public List<string> EventNames()
+    {
+        return [.. _nameToType.Select(pair => pair.Key)];
+    }
+
+    public List<Type> EventTypes()
+    {
+        return [.. _nameToType.Select(pair => pair.Value)];
+    }
 }
