@@ -24,6 +24,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 
 WORKDIR /app
 
+RUN command
+
 COPY --from=build /app/publish/ .
 
 ENTRYPOINT [ "./Vendora.Services.Cart.Api" ]

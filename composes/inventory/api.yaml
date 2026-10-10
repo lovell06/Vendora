@@ -14,8 +14,12 @@ services:
       - source: inventory_connection_string
         target: ConnectionStrings__Postgres
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
 secrets:
   inventory_connection_string:

@@ -1,6 +1,12 @@
 services:
   postgres:
     image: postgres:18
+    healthcheck:
+      test: pg_isready -h 127.0.0.1 -U "$${POSTGRES_USER:-postgres}" -d "$${POSTGRES_DB:-postgres}"
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
     env_file:
       - composes/infra/environments/postgres.env
     volumes:  

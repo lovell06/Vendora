@@ -1,6 +1,12 @@
 services:
   rabbitmq:
     image: rabbitmq:management
+    healthcheck:
+      test: rabbitmq-diagnostics -q check_running
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
     env_file:
       - composes/infra/environments/rabbitmq.env
     hostname: rabbitmq

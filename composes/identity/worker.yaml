@@ -15,5 +15,9 @@ services:
       - source: identity_connection_string
         target: ConnectionStrings__Postgres
     depends_on:
-      - postgres
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
