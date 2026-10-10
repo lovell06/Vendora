@@ -3,9 +3,8 @@ namespace Vendora.Services.Catalog.Application.Products.Create;
 public sealed class Handler(
     IProductRepository productRepository,
     ICategoryRepository categoryRepository,
-    IInventoryClient inventoryClient,
+    IOutboxRepository outboxRepository,
     IUnitOfWork unitOfWork,
-    ICurrentUser currentUser,
     ILogger<Handler> logger,
     TimeProvider clock) : ICommandHandler<Command>
 {
@@ -46,11 +45,30 @@ public sealed class Handler(
 
         var product = createdProductResult.Value;
 
+        await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+
         productRepository.Add(product);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+            
+            outboxRepository.Add(new ProductCreatedEvent
+            {
+                Id = Guid.CreateVersion7(),
+                OccurredAt = utcNow,
+                ProductId = product.Id
+            }, utcNow);
 
-        await inventoryClient.InitializeStockAsync(product.Id, currentUser, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+
+        await transaction.CommitAsync(cancellationToken);
 
         return Result.Success();
     }

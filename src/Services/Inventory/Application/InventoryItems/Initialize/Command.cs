@@ -2,5 +2,5 @@ namespace Vendora.Services.Inventory.Application.InventoryItems.Initialize;
 
 public sealed class Command : ICommand
 {
-    public int ProductId { get; init; }
+    public long ProductId { get; init; }
 }

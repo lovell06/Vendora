@@ -2,16 +2,32 @@ namespace Vendora.Services.Inventory.Infrastructure.Persistence;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        var connectionString = configuration.GetConnectionString("Postgres")
-                               ?? throw new InvalidOperationException("Postgres connection string is not configured.");
-        services.AddDbContext<ApplicationDbContext>(options =>
+        public IServiceCollection AddPersistenceServices(IConfiguration configuration)
         {
-            options.UseNpgsql(connectionString);
-        });
+            services.AddDbContextConnection(configuration);
+            services.AddUnitOfWorkServices();
+            
+            return services;
+        }
 
-        services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
-        return services;
+        public IServiceCollection AddDbContextConnection(IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("Postgres")
+                                   ?? throw new InvalidOperationException("Postgres connection string is not configured.");
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseNpgsql(connectionString);
+            });
+
+            return services;
+        }
+
+        public IServiceCollection AddUnitOfWorkServices()
+        {
+            services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
+            return services;
+        }
     }
 }

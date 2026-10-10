@@ -2,17 +2,27 @@ namespace Vendora.Services.Catalog.Infrastructure.Clients;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddClients(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddHttpClient<IInventoryClient, HttpInventoryClient>(client =>
+        public IServiceCollection AddServiceClients(IConfiguration configuration)
         {
-            client.BaseAddress = new Uri(
-                configuration["Services:Inventory:BaseUrl"]
-                ?? throw new InvalidOperationException(
-                    "Missing Services:Inventory:BaseUrl configuration."));
+            services.AddInventoryServiceClient(configuration);
+            return services;
+        }
 
-            client.Timeout = TimeSpan.FromSeconds(5);
-        });
-        return services;
+        public IServiceCollection AddInventoryServiceClient(IConfiguration configuration)
+        {
+            services.AddHttpClient<IInventoryClient, HttpInventoryClient>(client =>
+            {
+                client.BaseAddress = new Uri(
+                    configuration["Services:Inventory:BaseUrl"]
+                    ?? throw new InvalidOperationException(
+                        "Missing Services:Inventory:BaseUrl configuration."));
+
+                client.Timeout = TimeSpan.FromSeconds(5);
+            });
+
+            return services;
+        }
     }
 }

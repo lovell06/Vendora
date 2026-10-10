@@ -2,15 +2,21 @@ namespace Vendora.Services.Inventory.Application;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddMediatR(configuration =>
+        public IServiceCollection AddApplicationHandlers()
         {
-            configuration.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
-        });
+            services.AddMediatR(configuration =>
+            {
+                configuration.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+            });
 
-        services.AddSingleton(TimeProvider.System);
+            return services;
+        }
 
-        return services;
+        public IServiceCollection AddTimeProvider()
+        {
+            return services.AddSingleton(TimeProvider.System);
+        }
     }
 }

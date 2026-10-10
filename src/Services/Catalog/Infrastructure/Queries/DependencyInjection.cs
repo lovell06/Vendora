@@ -7,13 +7,16 @@ namespace Vendora.Services.Catalog.Infrastructure.Queries;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddQueries(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddScoped<IListProductsQueryService, EfCoreListProductsQueryService>();
-        services.AddScoped<IGetProductQueryService, EfCoreGetProductQueryService>();
-        services.AddScoped<IListCategoryQueryService, EfCoreListCategoriesQuerySerivce>();
-        services.AddScoped<IGetCategoryQueryService, EfCoreGetCategoryQueryService>();
+        public IServiceCollection AddQueryServices()
+        {
+            services.AddScoped<IListProductsQueryService, EfCoreListProductsQueryService>();
+            services.AddScoped<IGetProductQueryService, EfCoreGetProductQueryService>();
+            services.AddScoped<IListCategoryQueryService, EfCoreListCategoriesQuerySerivce>();
+            services.AddScoped<IGetCategoryQueryService, EfCoreGetCategoryQueryService>();
         
-        return services;
+            return services;
+        }
     }
 }

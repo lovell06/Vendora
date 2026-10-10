@@ -1,27 +1,41 @@
 namespace Vendora.Services.Catalog.Infrastructure.Persistence;
 
-internal static class DependencyInjection
+public static class DependencyInjection
 {
-    internal static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddDbContext<ApplicationDbContext>(options =>
+        public IServiceCollection AddPersistenceServices(IConfiguration configuration)
         {
-            options.UseNpgsql(configuration.GetConnectionString("Postgres"));
+            services.AddDbContextConnection(configuration);
+            services.AddUnitOfWorkServices();
+            return services;
+        }
 
-            options.UseSeeding((context, _) =>
+        public IServiceCollection AddDbContextConnection(IConfiguration configuration)
+        {
+            services.AddDbContext<ApplicationDbContext>(options =>
             {
-                CategoryDataSeeder.Seed(context, configuration);
-                ProductDataSeeder.Seed(context, configuration);
+                options.UseNpgsql(configuration.GetConnectionString("Postgres"));
+
+                options.UseSeeding((context, _) =>
+                {
+                    CategoryDataSeeder.Seed(context, configuration);
+                    ProductDataSeeder.Seed(context, configuration);
+                });
+
+                options.UseAsyncSeeding(async (context, _, cancellationToken) =>
+                {
+                    await CategoryDataSeeder.SeedAsync(context, configuration, cancellationToken);
+                    await ProductDataSeeder.SeedAsync(context, configuration, cancellationToken);
+                });
             });
 
-            options.UseAsyncSeeding(async (context, _, cancellationToken) =>
-            {
-                await CategoryDataSeeder.SeedAsync(context, configuration, cancellationToken);
-                await ProductDataSeeder.SeedAsync(context, configuration, cancellationToken);
-            });
-        });
+            return services;
+        }
 
-        services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
-        return services;
+        public IServiceCollection AddUnitOfWorkServices()
+        {
+            return services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
+        }
     }
 }

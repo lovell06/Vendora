@@ -1,0 +1,9 @@
+global using Vendora.BuildingBlocks.Messaging;
+global using Vendora.BuildingBlocks.Messaging.Abstractions;
+global using Vendora.BuildingBlocks.Messaging.TypeRegistry;
+global using Vendora.Services.Inventory.Application;
+global using Vendora.Services.Inventory.Application.IntegrationEvents;
+global using Vendora.Services.Inventory.Infrastructure.Persistence;
+global using Vendora.Services.Inventory.Infrastructure.Repositories;
+global using Vendora.Services.Inventory.Worker;
+global using InitializeInventoryHandler = Vendora.Services.Inventory.Application.InventoryItems.Initialize.EventHandler;

@@ -2,61 +2,64 @@ namespace Vendora.Services.Inventory.Api;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddAuthentication(options =>
+        public IServiceCollection AddJwtBearerAuthentication(IConfiguration configuration)
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            var issuer = configuration.GetValue<string>("Jwt:Issuer")
-                         ?? throw new InvalidOperationException("Missing Jwt:Issuer Configuration.");
-
-            var audience = configuration.GetValue<string>("Jwt:Audience")
-                           ?? throw new InvalidOperationException("Missing Jwt:Audience Configuration.");
-
-            var publicKeyPath = configuration.GetValue<string>("Jwt:PublicKeyPath")
-                                ?? throw new InvalidOperationException("Missing Jwt:PublicKeyPath Configuration.");
-
-            RSAParameters parameters;
-            using (var rsa = RSA.Create())
+            services.AddAuthentication(options =>
             {
-                rsa.ImportFromPem(File.ReadAllText(publicKeyPath));
-                parameters = rsa.ExportParameters(includePrivateParameters: false);
-            }
-
-            options.MapInboundClaims = false;
-
-            options.TokenValidationParameters = new TokenValidationParameters()
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
             {
-                ValidateIssuer = true,
-                ValidIssuer = issuer,
+                var issuer = configuration.GetValue<string>("Jwt:Issuer")
+                             ?? throw new InvalidOperationException("Missing Jwt:Issuer Configuration.");
 
-                ValidateAudience = true,
-                ValidAudience = audience,
+                var audience = configuration.GetValue<string>("Jwt:Audience")
+                               ?? throw new InvalidOperationException("Missing Jwt:Audience Configuration.");
 
-                ValidateLifetime = true,
+                var publicKeyPath = configuration.GetValue<string>("Jwt:PublicKeyPath")
+                                    ?? throw new InvalidOperationException("Missing Jwt:PublicKeyPath Configuration.");
 
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new RsaSecurityKey(parameters),
+                RSAParameters parameters;
+                using (var rsa = RSA.Create())
+                {
+                    rsa.ImportFromPem(File.ReadAllText(publicKeyPath));
+                    parameters = rsa.ExportParameters(includePrivateParameters: false);
+                }
 
-                ValidAlgorithms = [ SecurityAlgorithms.RsaSha256 ],
+                options.MapInboundClaims = false;
 
-                NameClaimType = JwtRegisteredClaimNames.Sub,
-                RoleClaimType = "role",
-            };
-        });
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer,
 
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy(AuthorizationPolicies.ManageStock, policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireRole(RoleNames.Admin);
+                    ValidateAudience = true,
+                    ValidAudience = audience,
+
+                    ValidateLifetime = true,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new RsaSecurityKey(parameters),
+
+                    ValidAlgorithms = [ SecurityAlgorithms.RsaSha256 ],
+
+                    NameClaimType = JwtRegisteredClaimNames.Sub,
+                    RoleClaimType = "role",
+                };
             });
-        });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(AuthorizationPolicies.ManageStock, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(RoleNames.Admin);
+                });
+            });
         
-        return services;
+            return services;
+        }
     }
 }

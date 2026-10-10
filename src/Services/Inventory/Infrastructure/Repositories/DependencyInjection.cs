@@ -2,10 +2,13 @@ namespace Vendora.Services.Inventory.Infrastructure.Repositories;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddScoped<IInventoryItemRepository, EfCoreInventoryItemRepository>();
+        public IServiceCollection AddRepositoryServices()
+        {
+            services.AddScoped<IInventoryItemRepository, EfCoreInventoryItemRepository>();
         
-        return services;
+            return services;
+        }
     }
 }

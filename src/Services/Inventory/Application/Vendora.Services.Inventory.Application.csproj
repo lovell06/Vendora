@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Domain\Vendora.Services.Inventory.Domain.csproj" />
     <ProjectReference Include="..\..\..\BuildingBlocks\Cqrs\Vendora.BuildingBlocks.Cqrs.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Messaging\Vendora.BuildingBlocks.Messaging.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

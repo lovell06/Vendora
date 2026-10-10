@@ -6,12 +6,15 @@ namespace Vendora.Services.Inventory.Infrastructure.Queries;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddQueryServices(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddScoped<IGetInventoryItemQueryService, EfCoreGetInventoryItemQueryService>();
-        services.AddScoped<IListInventoryItemsQueryService, EfCoreListInventoryItemsQueryService>();
-        services.AddScoped<ICheckAvailabilityQueryService, EfCoreCheckAvailabilityQueryService>();
+        public IServiceCollection AddQueryServices()
+        {
+            services.AddScoped<IGetInventoryItemQueryService, EfCoreGetInventoryItemQueryService>();
+            services.AddScoped<IListInventoryItemsQueryService, EfCoreListInventoryItemsQueryService>();
+            services.AddScoped<ICheckAvailabilityQueryService, EfCoreCheckAvailabilityQueryService>();
         
-        return services;
+            return services;
+        }
     }
 }

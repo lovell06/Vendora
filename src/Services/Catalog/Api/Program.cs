@@ -5,9 +5,14 @@ builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddApi(builder.Configuration);
+builder.Services
+    .AddApplicationHandlers()
+    .AddCurrentUserService()
+    .AddServiceClients(builder.Configuration)
+    .AddPersistenceServices(builder.Configuration)
+    .AddQueryServices()
+    .AddRepositoryServices()
+    .AddJwtBearerAuthentication(builder.Configuration);
 
 builder.Logging.AddSimpleConsole(config =>
 {

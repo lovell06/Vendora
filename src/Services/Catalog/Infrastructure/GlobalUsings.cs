@@ -21,3 +21,5 @@ global using Vendora.Services.Catalog.Infrastructure.Queries;
 global using Vendora.Services.Catalog.Infrastructure.Queries.Categories;
 global using Vendora.Services.Catalog.Infrastructure.Queries.Products;
 global using Vendora.Services.Catalog.Infrastructure.Repositories;
+global using Vendora.BuildingBlocks.Messaging.Abstractions;
+global using System.Text.Json;

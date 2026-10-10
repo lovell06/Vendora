@@ -2,11 +2,15 @@ namespace Vendora.Services.Catalog.Infrastructure.Repositories;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddScoped<ICategoryRepository, EfCoreCategoryRepository>();
-        services.AddScoped<IProductRepository, EfCoreProductRepository>();
+        public IServiceCollection AddRepositoryServices()
+        {
+            services.AddScoped<ICategoryRepository, EfCoreCategoryRepository>();
+            services.AddScoped<IProductRepository, EfCoreProductRepository>();
+            services.AddScoped<IOutboxRepository, EfCoreOutboxRepository>();
         
-        return services;
+            return services;
+        }
     }
 }
