@@ -2,27 +2,42 @@ namespace Vendora.Services.Identity.Infrastructure.Persistence;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPersistence(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        var connectionString = configuration.GetConnectionString("Postgres")
-                               ?? throw new InvalidOperationException("Postgres connection is not configured.");
-
-        services.AddDbContext<ApplicationDbContext>((provider, builder) =>
+        public IServiceCollection AddPersistenceServices(IConfiguration configuration)
         {
-            builder.UseNpgsql(connectionString);
-            builder.UseSeeding((context, _) =>
-            {
-                AdminAccountSeeder.Seed(context, provider, configuration);
-            });
+            services.AddDbContextConnection(configuration);
 
-            builder.UseAsyncSeeding(async (context, _, cancellationToken) =>
-            {
-                await AdminAccountSeeder.SeedAsync(context, provider, configuration, cancellationToken);
-            });
-        });
-
-        services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
+            services.AddUnitOfWorkServices();
         
-        return services;
+            return services;
+        }
+
+        public IServiceCollection AddDbContextConnection(IConfiguration configuration)
+        {
+            var connectionString = configuration.GetConnectionString("Postgres")
+                                   ?? throw new InvalidOperationException("Postgres connection is not configured.");
+
+            services.AddDbContext<ApplicationDbContext>((provider, builder) =>
+            {
+                builder.UseNpgsql(connectionString);
+                builder.UseSeeding((context, _) =>
+                {
+                    AdminAccountSeeder.Seed(context, provider, configuration);
+                });
+
+                builder.UseAsyncSeeding(async (context, _, cancellationToken) =>
+                {
+                    await AdminAccountSeeder.SeedAsync(context, provider, configuration, cancellationToken);
+                });
+            });
+
+            return services;
+        }
+
+        public IServiceCollection AddUnitOfWorkServices()
+        {
+            return services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
+        }
     }
 }

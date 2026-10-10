@@ -2,8 +2,8 @@ using Vendora.BuildingBlocks.Messaging.Messages;
 
 namespace Vendora.Services.Identity.Worker;
 
-public class OutboxWorker(
-    ILogger<OutboxWorker> logger,
+public class EventPublisher(
+    ILogger<EventPublisher> logger,
     IServiceScopeFactory scopeFactory,
     IEventBus eventBus,
     TimeProvider clock) : BackgroundService

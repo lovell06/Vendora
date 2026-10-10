@@ -2,12 +2,24 @@ namespace Vendora.Services.Identity.Infrastructure.Email;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructureEmail(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddScoped<IEmailSender, SmtpEmailSender>();
-
-        services.AddScoped<IEmailVerificationTokenProvider, RedisEmailVerificationTokenProvider>();
+        public IServiceCollection AddEmailServices()
+        {
+            services.AddEmailSender();
+            services.AddEmailVerificationTokenProvider();
         
-        return services;
+            return services;
+        }
+
+        public IServiceCollection AddEmailSender()
+        {
+            return services.AddScoped<IEmailSender, SmtpEmailSender>();
+        }
+
+        public IServiceCollection AddEmailVerificationTokenProvider()
+        {
+            return services.AddScoped<IEmailVerificationTokenProvider, RedisEmailVerificationTokenProvider>();
+        }
     }
 }

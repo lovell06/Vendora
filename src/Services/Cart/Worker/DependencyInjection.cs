@@ -2,48 +2,51 @@ namespace Vendora.Services.Cart.Worker;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddIntegrationEventHandlers(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddTransient<
-            IIntegrationEventHandler<UserRegisteredEvent>,
-            InitializeCartIntegrationEventHandler>();
-        return services;
-    }
-
-    public static IServiceCollection AddEventTypeRegistry(this IServiceCollection services)
-    {
-        services.AddSingleton<IEventTypeRegistry>(_ =>
+        public IServiceCollection AddIntegrationEventHandlers()
         {
-            var registry = new EventTypeRegistry();
-            registry.Add("identity.user-registered", typeof(UserRegisteredEvent));
+            services.AddTransient<
+                IIntegrationEventHandler<UserRegisteredEvent>,
+                InitializeCartIntegrationEventHandler>();
+            return services;
+        }
 
-            return registry;
-        });
-        return services;
-    }
+        public IServiceCollection AddEventTypeRegistry()
+        {
+            services.AddSingleton<IEventTypeRegistry>(_ =>
+            {
+                var registry = new EventTypeRegistry();
+                registry.Add("identity.user-registered", typeof(UserRegisteredEvent));
 
-    public static IServiceCollection AddRabbitMqOptions(this IServiceCollection services)
-    {
-        services.AddOptions<RabbitMqOptions>()
-            .BindConfiguration(RabbitMqOptions.SectionName)
-            .ValidateOnStart();
+                return registry;
+            });
+            return services;
+        }
 
-        services.AddOptions<RabbitMqConsumerOptions>()
-            .BindConfiguration(RabbitMqConsumerOptions.SectionName)
-            .ValidateOnStart();
+        public IServiceCollection AddRabbitMqOptions()
+        {
+            services.AddOptions<RabbitMqOptions>()
+                .BindConfiguration(RabbitMqOptions.SectionName)
+                .ValidateOnStart();
+
+            services.AddOptions<RabbitMqConsumerOptions>()
+                .BindConfiguration(RabbitMqConsumerOptions.SectionName)
+                .ValidateOnStart();
         
-        return services;
-    }
+            return services;
+        }
 
-    public static IServiceCollection AddIntegrationEventDispatcher(this IServiceCollection services)
-    {
-        services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
-        return services;
-    }
+        public IServiceCollection AddIntegrationEventDispatcher()
+        {
+            services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
+            return services;
+        }
 
-    public static IServiceCollection AddRabbitMqConsumers(this IServiceCollection services)
-    {
-        services.AddHostedService<RabbitMqConsumer>();
-        return services;
+        public IServiceCollection AddRabbitMqConsumers()
+        {
+            services.AddHostedService<RabbitMqConsumer>();
+            return services;
+        }
     }
 }

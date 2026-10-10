@@ -2,16 +2,32 @@ namespace Vendora.Services.Identity.Infrastructure.Options;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructureOptions(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddOptions<SmtpOptions>()
-            .BindConfiguration(SmtpOptions.SectionName)
-            .ValidateOnStart();
+        public IServiceCollection AddInfrastructureOptions()
+        {
+            services.AddSmtpOptions();
+            services.AddJwtOptions();
 
-        services.AddOptions<JwtOptions>()
-            .BindConfiguration(JwtOptions.SectionName)
-            .ValidateOnStart();
+            return services;
+        }
 
-        return services;
+        public IServiceCollection AddSmtpOptions()
+        {
+            services.AddOptions<SmtpOptions>()
+                .BindConfiguration(SmtpOptions.SectionName)
+                .ValidateOnStart();
+
+            return services;
+        }
+
+        public IServiceCollection AddJwtOptions()
+        {
+            services.AddOptions<JwtOptions>()
+                .BindConfiguration(JwtOptions.SectionName)
+                .ValidateOnStart();
+
+            return services;
+        }
     }
 }

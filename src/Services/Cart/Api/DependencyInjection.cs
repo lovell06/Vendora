@@ -2,7 +2,7 @@ namespace Vendora.Services.Cart.Api;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddJwtBearerAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddAuthentication(options =>
             {

@@ -2,15 +2,25 @@
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddClients(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddHttpClient<ICartClient, HttpCartClient>(client =>
+        public IServiceCollection AddServiceClients(IConfiguration configuration)
         {
-            client.BaseAddress = new Uri(configuration["Services:Cart:BaseUrl"]
-                                         ?? throw new InvalidOperationException("Missing Services:Cart:BaseUrl"));
+            services.AddCartServiceClient(configuration);
 
-            client.Timeout = TimeSpan.FromSeconds(5);
-        });
-        return services;
+            return services;
+        }
+
+        public IServiceCollection AddCartServiceClient(IConfiguration configuration)
+        {
+            services.AddHttpClient<ICartClient, HttpCartClient>(client =>
+            {
+                client.BaseAddress = new Uri(configuration["Services:Cart:BaseUrl"]
+                                             ?? throw new InvalidOperationException("Missing Services:Cart:BaseUrl"));
+
+                client.Timeout = TimeSpan.FromSeconds(5);
+            });
+            return services;
+        }
     }
 }

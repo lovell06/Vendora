@@ -1,7 +1,7 @@
-using Vendora.Services.Identity.Infrastructure.Options;
-using Vendora.Services.Identity.Infrastructure.Redis;
+using Vendora.BuildingBlocks.Messaging;
 
 var builder = Host.CreateApplicationBuilder(args);
+builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
 builder.Logging.AddSimpleConsole(options =>
 {
@@ -10,22 +10,29 @@ builder.Logging.AddSimpleConsole(options =>
     options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
 });
 
-builder.Services.AddSingleton(TimeProvider.System);
+builder.Services
+    .AddTimeProvider()
+    .AddPersistenceServices(builder.Configuration)
+    .AddRepositoryServices()
+    .AddRedisConnection(builder.Configuration);
 
-builder.Services.AddOptions<SmtpOptions>()
-    .BindConfiguration(SmtpOptions.SectionName)
-    .ValidateOnStart();
+builder.Services
+    .AddSmtpOptions()
+    .AddEmailSender()
+    .AddEmailVerificationTokenProvider();
 
-builder.Services.AddEventTypeRegistry();
-builder.Services.AddPersistence(builder.Configuration);
-builder.Services.AddRepositoryServices();
-builder.Services.AddRedisConnection(builder.Configuration);
-builder.Services.AddInfrastructureEmail();
-builder.Services.AddIntegrationEventHandlers();
-builder.Services.AddEventBus(builder.Configuration);
-builder.Services.AddHostedService<OutboxWorker>();
-builder.Services.AddEventConsumer();
-builder.Services.AddIntegrationEventDispatcher();
+builder.Services
+    .AddIntegrationEventHandlers()
+    .AddIntegrationEventDispatcher();
+
+builder.Services
+    .AddEventTypeRegistry()
+    .AddRabbitMqOptions()
+    .AddRabbitMqConsumerOptions()
+    .AddRabbitMqEventBus()
+    .AddRabbitMqConsumer();
+
+builder.Services.AddEventPublisher();
 
 var host = builder.Build();
 host.Run();

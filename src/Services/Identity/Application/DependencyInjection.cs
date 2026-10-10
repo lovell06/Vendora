@@ -2,14 +2,20 @@ namespace Vendora.Services.Identity.Application;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddSingleton(TimeProvider.System);
-
-        services.AddMediatR(cfg =>
+        public IServiceCollection AddTimeProvider()
         {
-            cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
-        });
-        return services;
+            return services.AddSingleton(TimeProvider.System);
+        }
+
+        public IServiceCollection AddApplicationHandlers()
+        {
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+            });
+            return services;
+        }
     }
 }

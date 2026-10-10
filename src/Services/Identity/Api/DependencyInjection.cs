@@ -2,7 +2,7 @@ namespace Vendora.Services.Identity.Api;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddJwtBearerAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<RouteOptions>(options =>
         {
@@ -53,7 +53,6 @@ public static class DependencyInjection
             };
         });
 
-        services.AddAuthorization();
         return services;
     }
 }

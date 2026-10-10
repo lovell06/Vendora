@@ -2,10 +2,13 @@ namespace Vendora.Services.Cart.Infrastructure.Queries;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddQueryServices(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddScoped<IListItemsQueryService, EfCoreListItemQueryService>();
+        public IServiceCollection AddQueryServices()
+        {
+            services.AddScoped<IListItemsQueryService, EfCoreListItemQueryService>();
         
-        return services;
+            return services;
+        }
     }
 }

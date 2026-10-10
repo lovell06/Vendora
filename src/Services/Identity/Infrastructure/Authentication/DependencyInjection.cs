@@ -2,14 +2,30 @@ namespace Vendora.Services.Identity.Infrastructure.Authentication;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructureAuthentication(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddScoped<IPasswordHashProvider, AspNetCorePasswordHashProvider>();
-
-        services.AddScoped<IAccessTokenProvider, JsonWebTokenProvider>();
-
-        services.AddScoped<IRefreshTokenProvider, RandomNumberTokenProvider>();
+        public IServiceCollection AddAuthenticationServices()
+        {
+            services.AddPasswordHashProvider();
+            services.AddAccessTokenProvider();
+            services.AddRefreshTokenProvider();
         
-        return services;
+            return services;
+        }
+
+        public IServiceCollection AddPasswordHashProvider()
+        {
+            return services.AddScoped<IPasswordHashProvider, AspNetCorePasswordHashProvider>();
+        }
+
+        public IServiceCollection AddAccessTokenProvider()
+        {
+            return services.AddScoped<IAccessTokenProvider, JsonWebTokenProvider>();
+        }
+
+        public IServiceCollection AddRefreshTokenProvider()
+        {
+            return services.AddScoped<IRefreshTokenProvider, RandomNumberTokenProvider>();
+        }
     }
 }

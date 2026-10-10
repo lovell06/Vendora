@@ -1,3 +1,6 @@
+using Vendora.Services.Cart.Infrastructure.Queries;
+using Vendora.Services.Cart.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
@@ -12,9 +15,13 @@ builder.Logging.AddSimpleConsole(options =>
     options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
 });
 
-builder.Services.AddApplication();
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddApi(builder.Configuration);
+builder.Services
+    .AddApplicationHandlers()
+    .AddCurrentUserService()
+    .AddPersistenceServices(builder.Configuration)
+    .AddRepositoryServices()
+    .AddQueryServices()
+    .AddJwtBearerAuthentication(builder.Configuration);
 
 var app = builder.Build();
 

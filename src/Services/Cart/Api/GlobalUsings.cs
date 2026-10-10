@@ -16,5 +16,5 @@ global using Vendora.Services.Cart.Api.Carts.SetQuantity;
 global using Vendora.Services.Cart.Api.Extensions;
 global using Vendora.Services.Cart.Application;
 global using Vendora.Services.Cart.Application.Abstractions.Authentication;
-global using Vendora.Services.Cart.Infrastructure;
+global using Vendora.Services.Cart.Infrastructure.Authentication;
 global using Vendora.Services.Cart.Infrastructure.Persistence;

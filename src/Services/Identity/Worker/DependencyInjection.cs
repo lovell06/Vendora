@@ -1,63 +1,32 @@
-using Vendora.BuildingBlocks.Messaging.Dispatching;
-using Vendora.Services.Identity.Application.IntegrationEvents;
-
 namespace Vendora.Services.Identity.Worker;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddIntegrationEventHandlers(this IServiceCollection services)
+    extension(IServiceCollection services)
     {
-        services.AddTransient<IIntegrationEventHandler<UserRegisteredEvent>, SendVerificationEmailHandler>();
-        
-        return services;
-    }
-
-    public static IServiceCollection AddEventTypeRegistry(this IServiceCollection services)
-    {
-        services.AddSingleton<IEventTypeRegistry>(_ =>
+        public IServiceCollection AddIntegrationEventHandlers()
         {
-            var eventTypeRegistry = new EventTypeRegistry();
+            services.AddTransient<IIntegrationEventHandler<UserRegisteredEvent>, SendVerificationEmailHandler>();
 
-            eventTypeRegistry.Add("identity.user-registered", typeof(UserRegisteredEvent));
+            return services;
+        }
 
-            return eventTypeRegistry;
-        });
-        return services;
-    }
+        public IServiceCollection AddEventTypeRegistry()
+        {
+            services.AddSingleton<IEventTypeRegistry>(_ =>
+            {
+                var eventTypeRegistry = new EventTypeRegistry();
 
-    public static IServiceCollection AddEventBus(
-        this IServiceCollection services,
-        IConfiguration configuration)
-    {
-        services.AddOptions<RabbitMqOptions>()
-            .BindConfiguration(RabbitMqOptions.SectionName)
-            .Validate(
-                options => options.PublishTimeoutSeconds > 0,
-                "PublishTimeoutSeconds must be more than or equal zero.")
-            .ValidateOnStart();
+                eventTypeRegistry.Add("identity.user-registered", typeof(UserRegisteredEvent));
 
-        services.AddSingleton<IEventBus, RabbitMqEventBus>();
+                return eventTypeRegistry;
+            });
+            return services;
+        }
 
-        return services;
-    }
-
-    public static IServiceCollection AddEventConsumer(
-        this IServiceCollection services)
-    {
-        services.AddOptions<RabbitMqConsumerOptions>()
-            .BindConfiguration(RabbitMqConsumerOptions.SectionName)
-            .Validate(
-                options => options.PrefetchCount > 0,
-                "Prefetch count must be positive number.")
-            .ValidateOnStart();
-
-        services.AddHostedService<RabbitMqConsumer>();
-        return services;
-    }
-
-    public static IServiceCollection AddIntegrationEventDispatcher(this IServiceCollection services)
-    {
-        services.AddScoped<IIntegrationEventDispatcher, IntegrationEventDispatcher>();
-        return services;
+        public IServiceCollection AddEventPublisher()
+        {
+            return services.AddHostedService<EventPublisher>();
+        }
     }
 }

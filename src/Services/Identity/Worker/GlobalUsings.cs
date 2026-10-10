@@ -1,10 +1,13 @@
 // global using Vendora.BuildingBlocks.Messaging.RabbitMq;
 global using Vendora.BuildingBlocks.Messaging.Abstractions;
-global using Vendora.BuildingBlocks.Messaging.RabbitMq;
 global using Vendora.BuildingBlocks.Messaging.TypeRegistry;
+global using Vendora.Services.Identity.Application;
 global using Vendora.Services.Identity.Application.Abstractions.Persistence;
+global using Vendora.Services.Identity.Application.IntegrationEvents;
 global using Vendora.Services.Identity.Infrastructure.Email;
+global using Vendora.Services.Identity.Infrastructure.Options;
 global using Vendora.Services.Identity.Infrastructure.Persistence;
+global using Vendora.Services.Identity.Infrastructure.Redis;
 global using Vendora.Services.Identity.Infrastructure.Repositories;
 global using Vendora.Services.Identity.Worker;
 global using SendVerificationEmailHandler = Vendora.Services.Identity.Application.Authentication.SendVerificationEmail.Handler;
