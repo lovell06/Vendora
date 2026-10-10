@@ -1,0 +1,17 @@
+services:
+  inventory-worker:
+    build:
+      context: .
+      dockerfile: src/Services/Inventory/Worker/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+    env_file:
+      - composes/shared/environments/rabbitmq.broker.env
+      - composes/inventory/environments/rabbitmq.consumer.env
+      - composes/inventory/environments/rabbitmq.consumer.keys.env
+    secrets:
+      - source: inventory_connection_string
+        target: ConnectionStrings__Postgres
+    depends_on:
+      - postgres
+      - rabbitmq

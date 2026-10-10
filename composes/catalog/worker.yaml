@@ -1,0 +1,16 @@
+services:
+  catalog-worker:
+    build:
+      context: .
+      dockerfile: src/Services/Catalog/Worker/Dockerfile
+    env_file:
+      - composes/shared/environments/rabbitmq.broker.env
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+    secrets:
+      - source: catalog_connection_string
+        target: ConnectionStrings__Postgres
+    depends_on:
+      - postgres
+      - redis 
+      - rabbitmq

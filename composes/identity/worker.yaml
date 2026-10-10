@@ -1,0 +1,19 @@
+services:
+  identity-worker:
+    build: 
+      context: .
+      dockerfile: src/Services/Identity/Worker/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+    env_file:
+      - composes/shared/environments/rabbitmq.broker.env
+      - composes/identity/environments/rabbitmq.consumer.env
+      - composes/identity/environments/rabbitmq.consumer.keys.env
+      - composes/identity/environments/smtp.env
+      - composes/identity/environments/caching.env
+    secrets:
+      - source: identity_connection_string
+        target: ConnectionStrings__Postgres
+    depends_on:
+      - postgres
+      - rabbitmq

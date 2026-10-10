@@ -1,21 +1,25 @@
 include:
-  - path: ./composes/compose.postgres.yaml
+  - path: composes/infra/postgres.yaml
     project_directory: .
-  - path: ./composes/compose.rabbitmq.yaml
+  - path: composes/infra/rabbitmq.yaml
     project_directory: .
-  - path: ./composes/compose.redis.yaml
+  - path: composes/infra/redis.yaml
     project_directory: .
-  - path: ./composes/compose.secrets.yaml
+  - path: composes/shared/secrets.yaml
     project_directory: .
-  - path: ./composes/compose.cart.api.yaml
+  - path: composes/cart/api.yaml
     project_directory: .
-  - path: ./composes/compose.cart.worker.yaml
+  - path: composes/cart/worker.yaml
     project_directory: .
-  - path: ./composes/compose.catalog.api.yaml
+  - path: composes/catalog/api.yaml
     project_directory: .
-  - path: ./composes/compose.identity.api.yaml
+  - path: composes/catalog/worker.yaml
     project_directory: .
-  - path: ./composes/compose.identity.worker.yaml
+  - path: composes/identity/api.yaml
     project_directory: .
-  - path: ./composes/compose.inventory.api.yaml
+  - path: composes/identity/worker.yaml
+    project_directory: .
+  - path: composes/inventory/api.yaml
+    project_directory: .
+  - path: composes/inventory/worker.yaml
     project_directory: .

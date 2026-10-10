@@ -9,7 +9,6 @@ global using Vendora.BuildingBlocks.Results;
 global using Vendora.Services.Cart.Api;
 global using Vendora.Services.Cart.Api.Carts;
 global using Vendora.Services.Cart.Api.Carts.AddItem;
-global using Vendora.Services.Cart.Api.Carts.Initialize;
 global using Vendora.Services.Cart.Api.Carts.ListItems;
 global using Vendora.Services.Cart.Api.Carts.RemoveItem;
 global using Vendora.Services.Cart.Api.Carts.SetQuantity;

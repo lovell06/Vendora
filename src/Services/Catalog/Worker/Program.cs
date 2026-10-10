@@ -1,4 +1,5 @@
 var builder = Host.CreateApplicationBuilder(args);
+builder.Configuration.AddKeyPerFile("/run/secrets/", optional: true);
 
 builder.Services
     .AddTimeProvider()

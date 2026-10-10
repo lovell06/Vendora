@@ -6,9 +6,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     env_file:
-      - ./configs/identity/admin.account.env
-      - ./configs/identity/caching.env
-      - ./configs/identity/jwt.env
+      - composes/identity/environments/admin.account.env
+      - composes/identity/environments/caching.env
+      - composes/identity/environments/jwt.env
     ports:
       - 8081:8080
     secrets:
@@ -21,4 +21,4 @@ services:
 
 secrets:
   identity_connection_string:
-    file: ./secrets/identity-connection-string.txt
+    file: composes/identity/secrets/connection-string.txt

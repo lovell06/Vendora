@@ -6,12 +6,14 @@ builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 builder.Services.AddOpenApi();
 
 builder.Services
+    .AddTimeProvider()
     .AddApplicationHandlers()
     .AddCurrentUserService()
     .AddServiceClients(builder.Configuration)
     .AddPersistenceServices(builder.Configuration)
     .AddQueryServices()
     .AddRepositoryServices()
+    .AddEventTypeRegistry()
     .AddJwtBearerAuthentication(builder.Configuration);
 
 builder.Logging.AddSimpleConsole(config =>

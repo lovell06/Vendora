@@ -14,6 +14,7 @@ builder.Services
     .AddPersistenceServices(builder.Configuration)
     .AddRedisConnection(builder.Configuration)
     .AddRepositoryServices()
+    .AddEventTypeRegistry()
     .AddJwtBearerAuthentication(builder.Configuration)
     .AddAuthorization();
 

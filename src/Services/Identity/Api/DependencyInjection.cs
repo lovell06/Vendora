@@ -1,58 +1,78 @@
+using Vendora.BuildingBlocks.Messaging.Abstractions;
+using Vendora.BuildingBlocks.Messaging.TypeRegistry;
+using Vendora.Services.Identity.Application.IntegrationEvents;
+
 namespace Vendora.Services.Identity.Api;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddJwtBearerAuthentication(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.Configure<RouteOptions>(options =>
+        public IServiceCollection AddJwtBearerAuthentication(IConfiguration configuration)
         {
-            options.LowercaseUrls = true;
-        });
-
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            var jwtOptions = configuration
-                .GetSection(JwtOptions.SectionName)
-                .Get<JwtOptions>() ?? throw new InvalidOperationException("Jwt is not configured.");
-
-            RSAParameters parameters;
-            using (var rsa = RSA.Create())
+            services.Configure<RouteOptions>(options =>
             {
-                rsa.ImportFromPem(File.ReadAllText(jwtOptions.PrivateKeyPath));
-                parameters = rsa.ExportParameters(includePrivateParameters: false);
-            }
+                options.LowercaseUrls = true;
+            });
 
-            options.TokenValidationParameters = new TokenValidationParameters
+            services.AddAuthentication(options =>
             {
-                ValidateIssuer = true,
-                ValidIssuer = jwtOptions.Issuer,
-
-                ValidateAudience = true,
-                ValidAudience = jwtOptions.Audience,
-
-                ValidateLifetime = true,
-
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new RsaSecurityKey(parameters),
-
-                ValidAlgorithms = [SecurityAlgorithms.RsaSha256]
-            };
-
-            options.Events = new JwtBearerEvents
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
             {
-                OnAuthenticationFailed = context =>
+                var jwtOptions = configuration
+                    .GetSection(JwtOptions.SectionName)
+                    .Get<JwtOptions>() ?? throw new InvalidOperationException("Jwt is not configured.");
+
+                RSAParameters parameters;
+                using (var rsa = RSA.Create())
                 {
-                    var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerHandler>>();
-                    logger.LogWarning(context.Exception, "JWT validation failed.");
-                    return Task.CompletedTask;
+                    rsa.ImportFromPem(File.ReadAllText(jwtOptions.PrivateKeyPath));
+                    parameters = rsa.ExportParameters(includePrivateParameters: false);
                 }
-            };
-        });
 
-        return services;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtOptions.Issuer,
+
+                    ValidateAudience = true,
+                    ValidAudience = jwtOptions.Audience,
+
+                    ValidateLifetime = true,
+
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new RsaSecurityKey(parameters),
+
+                    ValidAlgorithms = [SecurityAlgorithms.RsaSha256]
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<JwtBearerHandler>>();
+                        logger.LogWarning(context.Exception, "JWT validation failed.");
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+            return services;
+        }
+
+        public IServiceCollection AddEventTypeRegistry()
+        {
+            services.AddSingleton<IEventTypeRegistry>(_ =>
+            {
+                var registry = new EventTypeRegistry();
+                registry.Add("identity.user-registered", typeof(UserRegisteredEvent));
+
+                return registry;
+            });
+            
+            return services;
+        }
     }
 }

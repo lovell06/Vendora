@@ -3,14 +3,12 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-# config folder
-[Cc]onfigs/
-
 # secrets
 [Ss]ecrets/
 
 # dotenv files
 .env
+[Ee]nvironments/
 
 # User-specific files
 *.rsuser

@@ -1,6 +1,12 @@
-using Vendora.Services.Inventory.Infrastructure.Queries;
-
 var builder = Host.CreateApplicationBuilder(args);
+builder.Configuration.AddKeyPerFile("/run/secrets/", optional: true);
+
+builder.Logging.AddSimpleConsole(options =>
+{
+    options.SingleLine = true;
+    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+    options.UseUtcTimestamp = true;
+});
 
 builder.Services
     .AddTimeProvider()

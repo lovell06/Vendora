@@ -6,7 +6,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     env_file:
-      - ./configs/inventory/jwt.env
+      - composes/inventory/environments/jwt.env
     ports:
       - 8083:8080
     secrets:
@@ -19,4 +19,4 @@ services:
 
 secrets:
   inventory_connection_string:
-    file: ./secrets/inventory-connection-string.txt
+    file: composes/inventory/secrets/connection-string.txt

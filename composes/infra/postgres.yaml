@@ -2,7 +2,7 @@ services:
   postgres:
     image: postgres:18
     env_file:
-      - ./configs/infra/postgres.env
+      - composes/infra/environments/postgres.env
     volumes:  
       - pgdata:/var/lib/postgresql
     ports:
@@ -12,3 +12,7 @@ services:
 
 volumes:
   pgdata:
+
+secrets:
+  postgres_password: 
+    file: composes/infra/secrets/postgres-password.txt

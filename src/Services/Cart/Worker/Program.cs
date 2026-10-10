@@ -25,6 +25,7 @@ builder.Services
 builder.Services.AddEventTypeRegistry();
 
 builder.Services
+    .AddTimeProvider()
     .AddApplicationHandlers()
     .AddIntegrationEventHandlers()
     .AddIntegrationEventDispatcher();
