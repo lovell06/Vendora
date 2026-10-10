@@ -8,7 +8,6 @@ public static class GroupMapper
             .MapGroup("/inventory-items")
             .WithTags("Inventory Items");
 
-        inventoryItems.MapCreateInventoryItemEndpoint();
         inventoryItems.MapGetInventoryItemEndpoint();
         inventoryItems.MapListInventoryItemsEndpoint();
         inventoryItems.MapAdjustInventoryItemEndpoint();
