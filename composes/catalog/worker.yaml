@@ -4,7 +4,7 @@ services:
       context: .
       dockerfile: src/Services/Catalog/Worker/Dockerfile
     env_file:
-      - composes/shared/environments/rabbitmq.broker.env
+      - composes/shared/environments/rabbitmq.env
     environment:
       - DOTNET_ENVIRONMENT=Development
     secrets:
