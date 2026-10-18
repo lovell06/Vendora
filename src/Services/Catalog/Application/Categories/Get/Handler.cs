@@ -1,7 +1,7 @@
 namespace Vendora.Services.Catalog.Application.Categories.Get;
 
 public sealed class Handler(
-    IGetCategoryQueryService getCategoryQueryService,
+    IQueryService getCategoryQueryService,
     ILogger<Handler> logger) : IQueryHandler<Query, Response>
 {
     public async Task<Result<Response>> Handle(Query query, CancellationToken cancellationToken)

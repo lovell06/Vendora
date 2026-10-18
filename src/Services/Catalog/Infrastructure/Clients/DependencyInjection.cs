@@ -15,9 +15,9 @@ public static class DependencyInjection
             services.AddHttpClient<IInventoryClient, HttpInventoryClient>(client =>
             {
                 client.BaseAddress = new Uri(
-                    configuration["Services:Inventory:BaseUrl"]
+                    configuration["Services:Inventory:BaseAddress"]
                     ?? throw new InvalidOperationException(
-                        "Missing Services:Inventory:BaseUrl configuration."));
+                        "Missing Services:Inventory:BaseAddress configuration."));
 
                 client.Timeout = TimeSpan.FromSeconds(5);
             });

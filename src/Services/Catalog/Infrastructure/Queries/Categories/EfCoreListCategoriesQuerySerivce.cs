@@ -2,7 +2,7 @@ using Vendora.Services.Catalog.Application.Categories.List;
 
 namespace Vendora.Services.Catalog.Infrastructure.Queries.Categories;
 
-public sealed class EfCoreListCategoriesQuerySerivce(ApplicationDbContext context) : IListCategoryQueryService
+public sealed class EfCoreListCategoriesQuerySerivce(ApplicationDbContext context) : IQueryService
 {
     public async Task<Response> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {

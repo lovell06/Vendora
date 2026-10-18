@@ -1,6 +1,6 @@
 namespace Vendora.Services.Catalog.Application.Categories.Get;
 
-public interface IGetCategoryQueryService
+public interface IQueryService
 {
     Task<Response?> ExecuteAsync(Query query, CancellationToken cancellationToken);
 }

@@ -1,3 +1,5 @@
+using Microsoft.IdentityModel.JsonWebTokens;
+
 namespace Vendora.Services.Catalog.Api;
 
 public static class DependencyInjection
@@ -6,13 +8,6 @@ public static class DependencyInjection
     {
         public IServiceCollection AddJwtBearerAuthentication(IConfiguration configuration)
         {
-            services.AddHttpContextAccessor();
-        
-            services.Configure<RouteOptions>(options =>
-            {
-                options.LowercaseUrls = true;
-            });
-
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -33,6 +28,7 @@ public static class DependencyInjection
                     rsaParameters = rsa.ExportParameters(includePrivateParameters: false);
                 }
 
+                options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -46,7 +42,10 @@ public static class DependencyInjection
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new RsaSecurityKey(rsaParameters),
 
-                    ValidAlgorithms = [SecurityAlgorithms.RsaSha256]
+                    ValidAlgorithms = [SecurityAlgorithms.RsaSha256],
+
+                    NameClaimType = JwtRegisteredClaimNames.Sub,
+                    RoleClaimType = "role"
                 };
 
                 options.Events = new JwtBearerEvents
@@ -66,6 +65,11 @@ public static class DependencyInjection
                 };
             });
 
+            return services;
+        }
+
+        public IServiceCollection AddApplicationAuthorization()
+        {
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(AuthorizationPolicies.ManageProducts, poilcy =>

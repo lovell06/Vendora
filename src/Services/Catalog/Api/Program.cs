@@ -1,20 +1,28 @@
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.Configure<RouteOptions>(options =>
+{
+    options.LowercaseUrls = true;
+});
 
 builder.Services
     .AddTimeProvider()
-    .AddApplicationHandlers()
+    .AddApplicationHandlers();
+
+builder.Services
     .AddCurrentUserService()
     .AddServiceClients(builder.Configuration)
     .AddPersistenceServices(builder.Configuration)
     .AddQueryServices()
     .AddRepositoryServices()
-    .AddEventTypeRegistry()
-    .AddJwtBearerAuthentication(builder.Configuration);
+    .AddEventTypeRegistry();
+
+builder.Services
+    .AddJwtBearerAuthentication(builder.Configuration)
+    .AddApplicationAuthorization();
 
 builder.Logging.AddSimpleConsole(config =>
 {
@@ -25,7 +33,6 @@ builder.Logging.AddSimpleConsole(config =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

@@ -6,6 +6,7 @@ public static class DependencyInjection
     {
         public IServiceCollection AddCurrentUserService()
         {
+            services.AddHttpContextAccessor();
             services.AddScoped<ICurrentUser, CurrentUser>();
             return services;
         }

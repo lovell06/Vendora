@@ -1,44 +1,24 @@
 namespace Vendora.Services.Catalog.Api.Extensions;
 
-internal static class ErrorExtension
+public static class ErrorExtension
 {
-    internal static IResult ToHttpResult(this Error error)
+    public static IResult ToHttpResult(this Error error)
     {
         return error.Type switch
         {
-            ErrorType.Conflict => TypedResults.Conflict(new
-            {
-                error.Code,
-                error.Message,
-                Type = error.Type.ToString()
-            }),
-            
-            ErrorType.Failure => TypedResults.InternalServerError(new
-            {
-                error.Code,
-                error.Message,
-                Type = error.Type.ToString()
-            }),
-            
-            ErrorType.Forbidden => TypedResults.Forbid(),
+            ErrorType.Validation => TypedResults.BadRequest(error.ToResponse()),
 
-            ErrorType.NotFound => TypedResults.NotFound(new
-            {
-                error.Code,
-                error.Message,
-                Type = error.Type.ToString()
-            }),
-            
+            ErrorType.Conflict => TypedResults.Conflict(error.ToResponse()),
+
+            ErrorType.NotFound => TypedResults.NotFound(error.ToResponse()),
+
+            ErrorType.Failure => TypedResults.InternalServerError(error.ToResponse()),
+
             ErrorType.Unauthorized => TypedResults.Unauthorized(),
 
-            ErrorType.Validation => TypedResults.BadRequest(new
-            {
-                error.Code,
-                error.Message,
-                Type = error.Type.ToString()
-            }),
+            ErrorType.Forbidden => TypedResults.Forbid(),
             
-            _ => throw new ArgumentOutOfRangeException(nameof(Error.Type))
+            _ => throw new InvalidOperationException(nameof(error.Type))
         };
     }
 }

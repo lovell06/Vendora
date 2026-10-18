@@ -1,6 +1,6 @@
 namespace Vendora.Services.Catalog.Application.Products.List;
 
-public interface IListProductsQueryService
+public interface IQueryService
 {
     Task<Response?> ExecuteAsync(
         Query query,

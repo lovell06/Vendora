@@ -1,7 +1,7 @@
 namespace Vendora.Services.Catalog.Application.Products.List;
 
 public sealed class Handler(
-    IListProductsQueryService queryService,
+    IQueryService queryService,
     ILogger<Handler> logger) : IQueryHandler<Query, Response>
 {
     public async Task<Result<Response>> Handle(Query query, CancellationToken cancellationToken)
