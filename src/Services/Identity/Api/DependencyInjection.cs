@@ -1,3 +1,4 @@
+using Microsoft.IdentityModel.JsonWebTokens;
 using Vendora.BuildingBlocks.Messaging.Abstractions;
 using Vendora.BuildingBlocks.Messaging.TypeRegistry;
 using Vendora.Services.Identity.Application.IntegrationEvents;
@@ -32,6 +33,7 @@ public static class DependencyInjection
                     parameters = rsa.ExportParameters(includePrivateParameters: false);
                 }
 
+                options.MapInboundClaims = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -45,7 +47,10 @@ public static class DependencyInjection
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new RsaSecurityKey(parameters),
 
-                    ValidAlgorithms = [SecurityAlgorithms.RsaSha256]
+                    ValidAlgorithms = [SecurityAlgorithms.RsaSha256],
+
+                    NameClaimType = JwtRegisteredClaimNames.Sub,
+                    RoleClaimType = "role"
                 };
 
                 options.Events = new JwtBearerEvents
@@ -59,6 +64,12 @@ public static class DependencyInjection
                 };
             });
 
+            return services;
+        }
+
+        public IServiceCollection AddApplicationAuthorization()
+        {
+            services.AddAuthorization();
             return services;
         }
 

@@ -6,7 +6,10 @@ builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 builder.Services.AddOpenApi();
 
 builder.Services
-    .AddApplicationHandlers()
+    .AddTimeProvider()
+    .AddApplicationHandlers();
+
+builder.Services
     .AddAuthenticationServices()
     .AddServiceClients(builder.Configuration)
     .AddEmailServices()
@@ -14,10 +17,11 @@ builder.Services
     .AddPersistenceServices(builder.Configuration)
     .AddRedisConnection(builder.Configuration)
     .AddRepositoryServices()
-    .AddEventTypeRegistry()
-    .AddJwtBearerAuthentication(builder.Configuration)
-    .AddAuthorization();
+    .AddEventTypeRegistry();
 
+builder.Services
+    .AddJwtBearerAuthentication(builder.Configuration)
+    .AddApplicationAuthorization();
 
 builder.Logging.AddSimpleConsole(options =>
 {
