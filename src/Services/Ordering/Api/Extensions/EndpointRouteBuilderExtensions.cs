@@ -1,0 +1,13 @@
+namespace Vendora.Services.Ordering.Api.Extensions;
+
+public static class EndpointRouteBuilderExtensions
+{
+    public static IEndpointRouteBuilder MapEndpoints(this IEndpointRouteBuilder app)
+    {
+        var api = app.MapGroup("api");
+
+        api.MapOrderingEndpoints();
+        
+        return app;
+    }
+}

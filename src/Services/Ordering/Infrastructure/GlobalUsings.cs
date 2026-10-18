@@ -1,0 +1,13 @@
+global using System.Security.Claims;
+global using Microsoft.AspNetCore.Authentication;
+global using Microsoft.AspNetCore.Http;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.Extensions.Configuration;
+global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.IdentityModel.JsonWebTokens;
+global using Vendora.Services.Ordering.Application.Abstractions.Authentication;
+global using Vendora.Services.Ordering.Application.Abstractions.Clients;
+global using Vendora.Services.Ordering.Application.Abstractions.Persistence;
+global using Vendora.Services.Ordering.Domain.Orders;
+global using Vendora.Services.Ordering.Infrastructure.Persistence;

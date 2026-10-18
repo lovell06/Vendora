@@ -1,0 +1,33 @@
+services:
+  ordering-api:
+    build:
+      context: .
+      dockerfile: src/Services/Ordering/Api/Dockerfile
+    env_file:
+      - composes/ordering/environments/jwt.env
+      - composes/ordering/environments/services.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    secrets:
+      - source: ordering_connection_string
+        target: ConnectionStrings__Postgres
+      - jwt_public_key
+    healthcheck:
+      test: curl -sSL http://localhost:8080/health 
+      interval: 5s 
+      timeout: 5s 
+      retries: 10
+      start_period: 5s 
+    ports:
+      - 8085:8080
+    depends_on:
+      postgres: 
+        condition: service_healthy
+      redis: 
+        condition: service_healthy
+      rabbitmq: 
+        condition: service_healthy
+
+secrets:
+  ordering_connection_string: 
+    file: composes/ordering/secrets/connection-string.txt

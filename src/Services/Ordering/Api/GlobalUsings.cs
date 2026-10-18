@@ -1,0 +1,14 @@
+global using System.Security.Cryptography;
+global using MediatR;
+global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.IdentityModel.JsonWebTokens;
+global using Microsoft.IdentityModel.Tokens;
+global using Scalar.AspNetCore;
+global using Vendora.BuildingBlocks.Results;
+global using Vendora.Services.Ordering.Api;
+global using Vendora.Services.Ordering.Api.Extensions;
+global using Vendora.Services.Ordering.Api.Orders;
+global using Vendora.Services.Ordering.Application;
+global using Vendora.Services.Ordering.Application.Abstractions.Authentication;
+global using Vendora.Services.Ordering.Infrastructure.Authentication;
+global using Vendora.Services.Ordering.Infrastructure.Persistence;
