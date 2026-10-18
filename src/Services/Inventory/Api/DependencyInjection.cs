@@ -49,7 +49,12 @@ public static class DependencyInjection
                     RoleClaimType = "role",
                 };
             });
+        
+            return services;
+        }
 
+        public IServiceCollection AddApplicationAuthorization()
+        {
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(AuthorizationPolicies.ManageStock, policy =>
@@ -58,7 +63,7 @@ public static class DependencyInjection
                     policy.RequireRole(RoleNames.Admin);
                 });
             });
-        
+
             return services;
         }
     }
