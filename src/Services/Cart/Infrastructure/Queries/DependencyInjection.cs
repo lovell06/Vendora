@@ -7,6 +7,7 @@ public static class DependencyInjection
         public IServiceCollection AddQueryServices()
         {
             services.AddScoped<IListItemsQueryService, EfCoreListItemQueryService>();
+            services.AddScoped<IGetSelectedItemsQueryService, EfCoreGetSelectedItemsQueryService>();
         
             return services;
         }

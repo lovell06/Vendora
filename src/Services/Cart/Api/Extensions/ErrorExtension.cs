@@ -6,33 +6,13 @@ public static class ErrorExtension
     {
         return error.Type switch
         {
-            ErrorType.Validation => TypedResults.BadRequest(new
-            {
-                error.Code,
-                error.Message,
-                Type = error.Type.ToString()
-            }),
+            ErrorType.Validation => TypedResults.BadRequest(error.ToResponse()),
 
-            ErrorType.Conflict => TypedResults.Conflict(new
-            {
-                error.Code,
-                error.Message,
-                Type = error.Type.ToString()
-            }),
+            ErrorType.Conflict => TypedResults.Conflict(error.ToResponse()),
 
-            ErrorType.NotFound => TypedResults.NotFound(new
-            {
-                error.Code,
-                error.Message,
-                Type = error.Type.ToString()
-            }),
+            ErrorType.NotFound => TypedResults.NotFound(error.ToResponse()),
 
-            ErrorType.Failure => TypedResults.InternalServerError(new
-            {
-                error.Code,
-                error.Message,
-                Type = error.Type.ToString()
-            }),
+            ErrorType.Failure => TypedResults.InternalServerError(error.ToResponse()),
 
             ErrorType.Unauthorized => TypedResults.Unauthorized(),
 

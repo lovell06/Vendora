@@ -1,3 +1,5 @@
+using Vendora.Services.Cart.Api.Carts.GetSelectedItems;
+
 namespace Vendora.Services.Cart.Api.Carts;
 
 public static class GroupMapper
@@ -10,5 +12,6 @@ public static class GroupMapper
         carts.MapRemoveItemEndpoint();
         carts.MapSetQuantityEndpoint();
         carts.MapListItemsEndpoint();
+        carts.MapGetSelectedItemsEndpoint();
     }
 }

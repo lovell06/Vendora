@@ -5,9 +5,9 @@ public sealed class CurrentUser(IHttpContextAccessor accessor) : ICurrentUser
     private readonly HttpContext _context = accessor.HttpContext
                                             ?? throw new InvalidOperationException("No current HTTP request.");
 
-    public Guid UserId => Guid.Parse(GetUserIdRaw());
+    public Guid UserId => GetUserId();
     
-    private string GetUserIdRaw()
+    private Guid GetUserId()
     {
         var sub = _context.User.FindFirstValue(JwtRegisteredClaimNames.Sub);
 
@@ -24,7 +24,11 @@ public sealed class CurrentUser(IHttpContextAccessor accessor) : ICurrentUser
             throw new InvalidOperationException(error.ToString());
         }
 
-        return sub;
+        var userId = Guid.Parse(sub);
+        
+        return userId == Guid.Empty
+            ? throw new InvalidOperationException("Cannot parse UserID from Access Token.")
+            : userId;
     }
     
     public async Task<string> GetAccessTokenAsync()

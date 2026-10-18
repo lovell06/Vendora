@@ -1,3 +1,6 @@
+using Query = Vendora.Services.Cart.Application.Carts.ListItems.Query;
+using Response = Vendora.Services.Cart.Application.Carts.ListItems.Response;
+
 namespace Vendora.Services.Cart.Infrastructure.Queries;
 
 public sealed class EfCoreListItemQueryService(ApplicationDbContext context) : IListItemsQueryService

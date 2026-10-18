@@ -16,12 +16,18 @@ builder.Logging.AddSimpleConsole(options =>
 });
 
 builder.Services
-    .AddApplicationHandlers()
+    .AddTimeProvider()
+    .AddApplicationHandlers();
+
+builder.Services
     .AddCurrentUserService()
     .AddPersistenceServices(builder.Configuration)
     .AddRepositoryServices()
-    .AddQueryServices()
-    .AddJwtBearerAuthentication(builder.Configuration);
+    .AddQueryServices();
+
+builder.Services
+    .AddJwtBearerAuthentication(builder.Configuration)
+    .AddApplicationAuthorization();
 
 var app = builder.Build();
 
