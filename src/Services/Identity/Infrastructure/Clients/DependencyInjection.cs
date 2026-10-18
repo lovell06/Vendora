@@ -15,8 +15,8 @@ public static class DependencyInjection
         {
             services.AddHttpClient<ICartClient, HttpCartClient>(client =>
             {
-                client.BaseAddress = new Uri(configuration["Services:Cart:BaseUrl"]
-                                             ?? throw new InvalidOperationException("Missing Services:Cart:BaseUrl"));
+                client.BaseAddress = new Uri(configuration["Services:Cart:BaseAddress"]
+                                             ?? throw new InvalidOperationException("Missing Services:Cart:BaseAddress"));
 
                 client.Timeout = TimeSpan.FromSeconds(5);
             });
