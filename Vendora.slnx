@@ -11,35 +11,32 @@
     <Project Path="src/Services/Catalog/Api/Vendora.Services.Catalog.Api.csproj" />
     <Project Path="src/Services/Catalog/Application/Vendora.Services.Catalog.Application.csproj" />
     <Project Path="src/Services/Catalog/Domain/Vendora.Services.Catalog.Domain.csproj" />
-    <Project
-      Path="src/Services/Catalog/Infrastructure/Vendora.Services.Catalog.Infrastructure.csproj" />
+    <Project Path="src/Services/Catalog/Infrastructure/Vendora.Services.Catalog.Infrastructure.csproj" />
     <Project Path="src/Services/Catalog/Worker/Vendora.Services.Catalog.Worker.csproj" />
   </Folder>
   <Folder Name="/Services/Identity/">
     <Project Path="src/Services/Identity/Api/Vendora.Services.Identity.Api.csproj" />
     <Project Path="src/Services/Identity/Application/Vendora.Services.Identity.Application.csproj" />
     <Project Path="src/Services/Identity/Domain/Vendora.Services.Identity.Domain.csproj" />
-    <Project
-      Path="src/Services/Identity/Infrastructure/Vendora.Services.Identity.Infrastructure.csproj" />
+    <Project Path="src/Services/Identity/Infrastructure/Vendora.Services.Identity.Infrastructure.csproj" />
     <Project Path="src/Services/Identity/Worker/Vendora.Services.Identity.Worker.csproj" />
   </Folder>
   <Folder Name="/Services/Inventory/">
     <Project Path="src/Services/Inventory/Api/Vendora.Services.Inventory.Api.csproj" />
     <Project Path="src/Services/Inventory/Application/Vendora.Services.Inventory.Application.csproj" />
     <Project Path="src/Services/Inventory/Domain/Vendora.Services.Inventory.Domain.csproj" />
-    <Project
-      Path="src/Services/Inventory/Infrastructure/Vendora.Services.Inventory.Infrastructure.csproj" />
+    <Project Path="src/Services/Inventory/Infrastructure/Vendora.Services.Inventory.Infrastructure.csproj" />
     <Project Path="src/Services/Inventory/Worker/Vendora.Services.Inventory.Worker.csproj" />
-  </Folder>
-  <Folder Name="/Services/Order/">
-    <Project Path="src/Services/Order/Api/Vendora.Services.Order.Api.csproj" />
-    <Project Path="src/Services/Order/Application/Vendora.Services.Order.Application.csproj" />
-    <Project Path="src/Services/Order/Domain/Vendora.Services.Order.Domain.csproj" />
-    <Project Path="src/Services/Order/Infrastructure/Vendora.Services.Order.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/Cqrs/Vendora.BuildingBlocks.Cqrs.csproj" />
     <Project Path="src/BuildingBlocks/Results/Vendora.BuildingBlocks.Results.csproj" />
     <Project Path="src/BuildingBlocks/Messaging/Vendora.BuildingBlocks.Messaging.csproj" />
+  </Folder>
+  <Folder Name="/Services/Ordering/">
+    <Project Path="src/Services/Ordering/Api/Vendora.Services.Ordering.Api.csproj" />
+    <Project Path="src/Services/Ordering/Application/Vendora.Services.Ordering.Application.csproj" />
+    <Project Path="src/Services/Ordering/Domain/Vendora.Services.Ordering.Domain.csproj" />
+    <Project Path="src/Services/Ordering/Infrastructure/Vendora.Services.Ordering.Infrastructure.csproj" />
   </Folder>
 </Solution>
