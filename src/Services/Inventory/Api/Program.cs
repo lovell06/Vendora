@@ -1,11 +1,9 @@
-using Vendora.Services.Inventory.Infrastructure.Queries;
-using Vendora.Services.Inventory.Infrastructure.Repositories;
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>();
+
 builder.Services.AddOpenApi();
 
 builder.Logging.AddSimpleConsole(options =>
@@ -48,6 +46,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapHealthChecks("/health").AllowAnonymous();
 
 app.MapEndpoints();
 

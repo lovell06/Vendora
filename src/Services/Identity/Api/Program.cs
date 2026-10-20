@@ -1,8 +1,9 @@
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>();
+
 builder.Services.AddOpenApi();
 
 builder.Services
@@ -50,6 +51,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseHttpsRedirection();
+
+app.MapHealthChecks("/health").AllowAnonymous();
 
 app.MapApiEndpoints();
 

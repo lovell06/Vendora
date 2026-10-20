@@ -1,6 +1,9 @@
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<ApplicationDbContext>();
+
 builder.Services.AddOpenApi();
 
 builder.Services.Configure<RouteOptions>(options =>
@@ -48,6 +51,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapHealthChecks("/health").AllowAnonymous();
 
 app.MapEndpoints();
 

@@ -1,7 +1,3 @@
-using Vendora.Services.Cart.Infrastructure.Persistence;
-using Vendora.Services.Cart.Infrastructure.Queries;
-using Vendora.Services.Cart.Infrastructure.Repositories;
-
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Configuration.AddKeyPerFile("/run/secrets/", optional: true);
