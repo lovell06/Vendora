@@ -1,3 +1,10 @@
+# Prepare stage
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS prepare
+
+RUN apt update
+RUN apt install curl -y
+
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 WORKDIR /code
@@ -20,7 +27,8 @@ RUN dotnet publish \
     -o /app/publish \
     src/Services/Identity/Api/
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
+# Runtime stage
+FROM prepare AS runtime
 
 WORKDIR /app
 
