@@ -16,6 +16,7 @@ global using Vendora.Services.Inventory.Api.InventoryItems.Adjust;
 global using Vendora.Services.Inventory.Api.InventoryItems.CheckAvailability;
 global using Vendora.Services.Inventory.Api.InventoryItems.Get;
 global using Vendora.Services.Inventory.Api.InventoryItems.List;
+global using Vendora.Services.Inventory.Api.InventoryItems.Reserve;
 global using Vendora.Services.Inventory.Application;
 global using Vendora.Services.Inventory.Infrastructure.Persistence;
 global using Vendora.Services.Inventory.Infrastructure.Queries;

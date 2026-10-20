@@ -12,5 +12,6 @@ public static class GroupMapper
         inventoryItems.MapListInventoryItemsEndpoint();
         inventoryItems.MapAdjustInventoryItemEndpoint();
         inventoryItems.MapCheckAvailabilityEndpoint();
+        inventoryItems.MapReserveInventoryItemEndpoint();
     }
 }

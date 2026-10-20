@@ -2,6 +2,13 @@ namespace Vendora.Services.Inventory.Infrastructure.Repositories;
 
 public sealed class EfCoreInventoryItemRepository(ApplicationDbContext context) : IInventoryItemRepository
 {
+    public async Task<List<InventoryItem>> ListAsync(IReadOnlyList<long> productIds, CancellationToken cancellation)
+    {
+        return await context.InventoryItems
+            .Where(item => productIds.Contains(item.ProductId))
+            .ToListAsync(cancellation);
+    }
+
     public void Add(InventoryItem item)
     {
         context.InventoryItems.Add(item);
@@ -21,7 +28,7 @@ public sealed class EfCoreInventoryItemRepository(ApplicationDbContext context) 
             .SingleOrDefaultAsync(item => item.ProductId == productId, cancellationToken);
     }
 
-    public async Task<ICollection<InventoryItem>> ListAsync(CancellationToken cancellationToken)
+    public async Task<List<InventoryItem>> ListAsync(CancellationToken cancellationToken)
     {
         return await context.InventoryItems.ToListAsync(cancellationToken);
     }
