@@ -1,8 +1,3 @@
-using System.Net;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using Vendora.BuildingBlocks.Results;
-
 namespace Vendora.Services.Ordering.Infrastructure.Clients;
 
 public sealed class HttpCartServiceClient(

@@ -1,7 +1,3 @@
-using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-
 namespace Vendora.Services.Ordering.Infrastructure.Clients;
 
 public class HttpInventoryServiceClient(HttpClient client) : IInventoryServiceClient
@@ -38,10 +34,8 @@ public class HttpInventoryServiceClient(HttpClient client) : IInventoryServiceCl
                 throw new InvalidOperationException(nameof(HttpStatusCode.MethodNotAllowed));
             default:
             {
-                var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(
-                                        json: await response.Content.ReadAsStringAsync(ct))
+                var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>(ct)
                                     ?? throw new InvalidOperationException("Cannot convert JSON from HTTP Response.");
-
                 return Result.Failure(Error.FromResponse(errorResponse));
             }
         }
