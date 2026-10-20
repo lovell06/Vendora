@@ -1,7 +1,5 @@
 namespace Vendora.Services.Cart.Infrastructure.Repositories;
 
-using CartAggregate = Domain.Carts.Cart;
-
 public sealed class EfCoreCartRepository(ApplicationDbContext context) : ICartRepository
 {
     public void Add(CartAggregate cart)

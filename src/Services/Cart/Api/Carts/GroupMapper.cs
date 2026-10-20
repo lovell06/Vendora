@@ -1,5 +1,3 @@
-using Vendora.Services.Cart.Api.Carts.GetSelectedItems;
-
 namespace Vendora.Services.Cart.Api.Carts;
 
 public static class GroupMapper

@@ -1,5 +1,3 @@
-using Vendora.Services.Catalog.Api.Products.ListByIds;
-
 namespace Vendora.Services.Catalog.Api.Products;
 
 public static class GroupMapper

@@ -1,5 +1,3 @@
-using Microsoft.IdentityModel.JsonWebTokens;
-
 namespace Vendora.Services.Catalog.Api;
 
 public static class DependencyInjection
