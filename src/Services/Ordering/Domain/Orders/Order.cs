@@ -79,6 +79,20 @@ public class Order
         return Result.Success();
     }
 
+    public Result Reject(DateTimeOffset rejectedAt)
+    {
+        if (Status is OrderStatus.Rejected)
+            return Result.Success();
+        
+        if (Status is not OrderStatus.Pending)
+            return Result.Failure(OrderErrors.CannotReject);
+
+        Status = OrderStatus.Rejected;
+        UpdatedAt = rejectedAt;
+        
+        return Result.Success();
+    }
+
     public Result Prepare(DateTimeOffset prepareAt)
     {
         if (Status is OrderStatus.Preparing)

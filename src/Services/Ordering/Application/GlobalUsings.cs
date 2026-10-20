@@ -1,3 +1,8 @@
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
 global using Vendora.BuildingBlocks.Cqrs;
+global using Vendora.BuildingBlocks.Messaging.Abstractions;
 global using Vendora.BuildingBlocks.Results;
+global using Vendora.Services.Ordering.Application.Abstractions.Clients;
+global using Vendora.Services.Ordering.Application.Abstractions.Persistence;
+global using Vendora.Services.Ordering.Domain.Orders;

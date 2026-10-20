@@ -27,9 +27,12 @@ builder.Services
 builder.Services
     .AddCurrentUserService()
     .AddPersistenceServices(builder.Configuration)
-    .AddRepositoryServices()
+    .AddRepositoryServices();
+
+builder.Services
     .AddCartServiceClient(builder.Configuration)
-    .AddCatalogServiceClient(builder.Configuration);
+    .AddCatalogServiceClient(builder.Configuration)
+    .AddInventoryServiceClient(builder.Configuration);
 
 builder.Services
     .AddJwtBearerAuthentication(builder.Configuration)

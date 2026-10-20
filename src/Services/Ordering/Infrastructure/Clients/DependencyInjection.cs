@@ -30,5 +30,19 @@ public static class DependencyInjection
             });
             return services;
         }
+
+        public IServiceCollection AddInventoryServiceClient(IConfiguration configuration)
+        {
+            services.AddHttpClient<IInventoryServiceClient, HttpInventoryServiceClient>(client =>
+            {
+                client.BaseAddress = new Uri(
+                    configuration["Services:Inventory:BaseAddress"]
+                    ?? throw new InvalidOperationException("Missing Services:Inventory:BaseAddress Configuration."));
+
+                client.Timeout = TimeSpan.FromSeconds(5);
+            });
+
+            return services;
+        }
     }
 }

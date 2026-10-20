@@ -12,7 +12,7 @@ public sealed class SelectedItemsResponse
     public required IReadOnlyList<CartItemDto> Items { get; init; }
 }
 
-public sealed class CartItemDto
+public struct CartItemDto
 {
     public long ProductId { get; init; }
     public int Quantity { get; init; }

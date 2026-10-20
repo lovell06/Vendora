@@ -1,8 +1,3 @@
-using Microsoft.Extensions.Logging;
-using Vendora.Services.Ordering.Application.Abstractions.Clients;
-using Vendora.Services.Ordering.Application.Abstractions.Persistence;
-using Vendora.Services.Ordering.Domain.Orders;
-
 namespace Vendora.Services.Ordering.Application.Orders.Place;
 
 public sealed class Handler(
@@ -10,6 +5,7 @@ public sealed class Handler(
     IUnitOfWork unitOfWork,
     ICartServiceClient cartServiceClient,
     ICatalogServiceClient catalogServiceClient,
+    IInventoryServiceClient inventoryServiceClient,
     TimeProvider clock,
     ILogger<Handler> logger) : ICommandHandler<Command>
 {
@@ -74,25 +70,62 @@ public sealed class Handler(
             orderItems.Add(orderItemResult.Value);
         }
 
-        var order = Order.Place(
+        var orderResult = Order.Place(
             userId: cmd.UserId,
             items: orderItems,
             currency: productsInfo.Values.ToArray()[0].Currency,
             createdAt: utcNow);
 
-        if (order.IsFailure)
+        if (orderResult.IsFailure)
         {
             logger.LogWarning(
                 "Placing order rejected because {error}",
-                order.Error.Code);
+                orderResult.Error.Code);
 
-            return Result.Failure(order.Error);
+            return Result.Failure(orderResult.Error);
         }
 
-        orderRepository.Add(order.Value);
+        var order = orderResult.Value;
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        orderRepository.Add(order);
 
+        var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            var reservedResult = await inventoryServiceClient.ReserveAsync(
+                orderItems: order.Items, 
+                ct: cancellationToken);
+
+            if (reservedResult.IsFailure)
+            {
+                var rejectedResult = order.Reject(utcNow);
+                if (rejectedResult.IsFailure)
+                    throw new InvalidOperationException(rejectedResult.Error.Message);
+                
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return Result.Failure(reservedResult.Error);
+            }
+
+            var confirmedResult = order.Confirm(utcNow);
+            if (confirmedResult.IsFailure)
+                throw new InvalidOperationException(confirmedResult.Error.Message);
+            
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+        finally
+        {
+            await transaction.DisposeAsync();
+        }
+        
         return Result.Success();
     }
 }
