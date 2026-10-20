@@ -17,3 +17,5 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      catalog-api:
+        condition: service_healthy

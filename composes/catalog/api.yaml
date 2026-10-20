@@ -3,6 +3,12 @@ services:
     build: 
       context: .
       dockerfile: src/Services/Catalog/Api/Dockerfile
+    healthcheck:
+      test: curl -sSL http://localhost:8080/health
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     env_file:
@@ -20,6 +26,8 @@ services:
       redis:
         condition: service_healthy
       rabbitmq:
+        condition: service_healthy
+      inventory-api:
         condition: service_healthy
 
 secrets:

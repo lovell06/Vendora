@@ -27,6 +27,12 @@ services:
         condition: service_healthy
       rabbitmq: 
         condition: service_healthy
+      inventory-api:
+        condition: service_healthy
+      catalog-api: 
+        condition: service_healthy
+      cart-api:
+        condition: service_healthy
 
 secrets:
   ordering_connection_string: 
