@@ -113,6 +113,8 @@ public sealed class Handler(
             var confirmedResult = order.Confirm(utcNow);
             if (confirmedResult.IsFailure)
                 throw new InvalidOperationException(confirmedResult.Error.Message);
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
             
             await transaction.CommitAsync(cancellationToken);
         }
