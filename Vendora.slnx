@@ -38,5 +38,6 @@
     <Project Path="src/Services/Ordering/Application/Vendora.Services.Ordering.Application.csproj" />
     <Project Path="src/Services/Ordering/Domain/Vendora.Services.Ordering.Domain.csproj" />
     <Project Path="src/Services/Ordering/Infrastructure/Vendora.Services.Ordering.Infrastructure.csproj" />
+    <Project Path="src/Services/Ordering/Worker/Vendora.Services.Ordering.Worker.csproj"/>
   </Folder>
 </Solution>
