@@ -12,7 +12,6 @@ builder.Services
 
 builder.Services
     .AddAuthenticationServices()
-    .AddServiceClients(builder.Configuration)
     .AddEmailServices()
     .AddInfrastructureOptions()
     .AddPersistenceServices(builder.Configuration)

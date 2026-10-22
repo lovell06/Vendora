@@ -14,7 +14,6 @@ global using Vendora.Services.Identity.Api.Auth.VerifyEmail;
 global using Vendora.Services.Identity.Api.Extensions;
 global using Vendora.Services.Identity.Application;
 global using Vendora.Services.Identity.Infrastructure.Authentication;
-global using Vendora.Services.Identity.Infrastructure.Clients;
 global using Vendora.Services.Identity.Infrastructure.Email;
 global using Vendora.Services.Identity.Infrastructure.Options;
 global using Vendora.Services.Identity.Infrastructure.Persistence;
