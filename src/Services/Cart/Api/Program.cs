@@ -1,3 +1,5 @@
+using Vendora.Services.Cart.Infrastructure.Clients;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
@@ -16,6 +18,8 @@ builder.Logging.AddSimpleConsole(options =>
 builder.Services
     .AddTimeProvider()
     .AddApplicationHandlers();
+
+builder.Services.AddHttpCatalogServiceClient(builder.Configuration);
 
 builder.Services
     .AddCurrentUserService()

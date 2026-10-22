@@ -1,14 +1,21 @@
+using Vendora.Services.Cart.Application.Abstractions.Clients;
+
 namespace Vendora.Services.Cart.Application.Carts.AddItem;
 
 public sealed class Handler(
     ICartRepository cartRepository,
     IUnitOfWork unitOfWork,
+    ICatalogServiceClient catalogServiceClient,
     ILogger<Handler> logger,
     TimeProvider clock) : ICommandHandler<Command>
 {
     public async Task<Result> Handle(Command cmd, CancellationToken cancellationToken)
     {
         var utcNow = clock.GetUtcNow();
+
+        var isProductExists = await catalogServiceClient.ProductExistsByIdAsync(cmd.ProductId, cancellationToken);
+        if (isProductExists.IsFailure)
+            return Result.Failure(isProductExists.Error);
 
         var cart = await cartRepository.GetWithItemsAsync(cmd.UserId, cancellationToken);
 
