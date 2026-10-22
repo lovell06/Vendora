@@ -18,6 +18,7 @@ public static class DependencyInjection
             {
                 var registry = new EventTypeRegistry();
                 registry.Add("identity.user-registered", typeof(UserRegisteredEvent));
+                registry.Add("ordering.order-placed", typeof(OrderPlacedEvent));
 
                 return registry;
             });

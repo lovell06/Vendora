@@ -1,3 +1,5 @@
+using Vendora.Services.Cart.Infrastructure.Clients;
+
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Configuration.AddKeyPerFile("/run/secrets/", optional: true);
@@ -13,6 +15,9 @@ builder.Services
     .AddPersistenceServices(builder.Configuration)
     .AddRepositoryServices()
     .AddQueryServices();
+
+builder.Services
+    .AddHttpCatalogServiceClient(builder.Configuration);
 
 builder.Services
     .AddRabbitMqOptions()
