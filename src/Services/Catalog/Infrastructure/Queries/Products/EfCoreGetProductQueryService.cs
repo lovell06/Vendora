@@ -2,18 +2,15 @@ using Vendora.Services.Catalog.Application.Products.Get;
 
 namespace Vendora.Services.Catalog.Infrastructure.Queries.Products;
 
-public sealed class EfCoreGetProductQueryService(
-    ApplicationDbContext context,
-    IInventoryClient inventoryClient) : IGetProductQueryService
+public sealed class EfCoreGetProductQueryService(ApplicationDbContext context) : IGetProductQueryService
 {
-    public async Task<Response?> ExecuteAsync(Query query, CancellationToken cancellationToken)
+    public async Task<ProductDto?> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {
-        var availability = await inventoryClient.CheckAvailabilityAsync(query.Id, cancellationToken);
 
         return await context.Products
             .AsNoTracking()
             .Include(product => product.Category)
-            .Select(product => new Response
+            .Select(product => new ProductDto
             {
                 Id = product.Id,
                 Name = product.Name,
@@ -25,8 +22,6 @@ public sealed class EfCoreGetProductQueryService(
                     Name = product.Category.Name
                 },
                 Price = product.Price,
-                IsAvailable = availability.IsAvailable,
-                AvailableQuantity = availability.AvailableQuantity,
                 Currency = product.Currency,
                 Status = product.Status.ToString()
             })

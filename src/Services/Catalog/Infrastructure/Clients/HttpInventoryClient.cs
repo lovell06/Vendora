@@ -1,8 +1,10 @@
+using System.Net;
+
 namespace Vendora.Services.Catalog.Infrastructure.Clients;
 
 public sealed class HttpInventoryClient(HttpClient client) : IInventoryClient
 {
-    public async Task<CheckAvailabilityResult> CheckAvailabilityAsync(long productId, CancellationToken cancellationToken)
+    public async Task<Result<CheckAvailabilityResult>> CheckAvailabilityAsync(long productId, CancellationToken cancellationToken)
     {
         var response = await client.GetAsync(
             $"/api/inventory-items/{productId}/availability",
@@ -10,18 +12,32 @@ public sealed class HttpInventoryClient(HttpClient client) : IInventoryClient
         
         if (!response.IsSuccessStatusCode)
         {
-            var error = await response.Content
-                .ReadAsStringAsync(cancellationToken) ?? throw new InvalidOperationException(
-                    $"Has an error {response.StatusCode}");
+            var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>(cancellationToken);
+
+            if (errorResponse is null)
+            {
+                return response.StatusCode switch
+                {
+                    HttpStatusCode.Forbidden => Result<CheckAvailabilityResult>.Failure(new Error
+                    {
+                        Type = ErrorType.Forbidden
+                    }),
+                    HttpStatusCode.Unauthorized => Result<CheckAvailabilityResult>.Failure(new Error
+                    {
+                        Type = ErrorType.Unauthorized
+                    }),
+                    _ => Result<CheckAvailabilityResult>.Failure(new Error() { Type = ErrorType.Failure })
+                };
+            }
             
-            throw new InvalidOperationException(
-                $"Error: {error}");
+            return Result<CheckAvailabilityResult>.Failure(Error.FromResponse(errorResponse));
         }
 
         var result = await response.Content.ReadFromJsonAsync<CheckAvailabilityResult>(cancellationToken);
 
-        return result ?? throw new InvalidOperationException(
-            "Has an error: \'Content from inventory is null\'");
+        return result is null
+            ? throw new InvalidOperationException("Has an error: \'Content from inventory is null\'")
+            : Result<CheckAvailabilityResult>.Success(result);
     }
 
     public async Task InitializeStockAsync(long productId, ICurrentUser currentUser, CancellationToken cancellationToken)

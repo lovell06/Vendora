@@ -13,9 +13,3 @@ public sealed class Response
     public required string Currency { get; init; }
     public required string Status { get; init; }
 }
-
-public sealed class CategoryDto
-{
-    public int Id { get; init; }
-    public required string Name { get; init; }
-}

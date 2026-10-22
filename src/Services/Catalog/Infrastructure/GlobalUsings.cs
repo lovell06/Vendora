@@ -10,6 +10,7 @@ global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.IdentityModel.JsonWebTokens;
 global using Vendora.BuildingBlocks.Messaging.Abstractions;
+global using Vendora.BuildingBlocks.Results;
 global using Vendora.Services.Catalog.Application.Abstractions.Authentication;
 global using Vendora.Services.Catalog.Application.Abstractions.Clients.Inventory;
 global using Vendora.Services.Catalog.Application.Abstractions.Persistence;

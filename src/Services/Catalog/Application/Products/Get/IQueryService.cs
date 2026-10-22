@@ -2,5 +2,23 @@ namespace Vendora.Services.Catalog.Application.Products.Get;
 
 public interface IQueryService
 {
-    Task<Response?> ExecuteAsync(Query query, CancellationToken cancellationToken);
+    Task<ProductDto?> ExecuteAsync(Query query, CancellationToken cancellationToken);
+}
+
+public sealed class ProductDto
+{
+    public long Id { get; init; }
+    public required string Name { get; init; }
+    public string? Description { get; init; } = null;
+    public required string Brand { get; init; }
+    public required CategoryDto Category { get; init; }
+    public decimal Price { get; init; }
+    public required string Currency { get; init; }
+    public required string Status { get; init; }
+}
+
+public sealed class CategoryDto
+{
+    public int Id { get; init; }
+    public required string Name { get; init; }
 }

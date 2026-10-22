@@ -1,14 +1,17 @@
+using Vendora.Services.Catalog.Application.Abstractions.Clients.Inventory;
+
 namespace Vendora.Services.Catalog.Application.Products.Get;
 
 public sealed class Handler(
     IQueryService getProductQueryService,
+    IInventoryClient inventoryClient,
     ILogger<Handler> logger) : IQueryHandler<Query, Response>
 {
     public async Task<Result<Response>> Handle(Query query, CancellationToken cancellationToken)
     {
-        var response = await getProductQueryService.ExecuteAsync(query, cancellationToken);
+        var product = await getProductQueryService.ExecuteAsync(query, cancellationToken);
 
-        if (response is null)
+        if (product is null)
         {
             logger.LogWarning("Product retrieval rejected because not found.");
 
@@ -20,6 +23,23 @@ public sealed class Handler(
             });
         }
 
-        return Result<Response>.Success(response);
+        var availabilityResult = await inventoryClient.CheckAvailabilityAsync(product.Id, cancellationToken);
+
+        if (availabilityResult.IsFailure)
+            return Result<Response>.Failure(availabilityResult.Error);
+
+        return Result<Response>.Success(new Response
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Brand = product.Brand,
+            Description = product.Description,
+            Price = product.Price,
+            Currency = product.Currency,
+            Category = product.Category,
+            Status = product.Status,
+            IsAvailable = availabilityResult.Value.IsAvailable,
+            AvailableQuantity = availabilityResult.Value.AvailableQuantity
+        });
     }
 }
