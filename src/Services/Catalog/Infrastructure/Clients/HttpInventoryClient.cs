@@ -1,5 +1,3 @@
-using System.Net;
-
 namespace Vendora.Services.Catalog.Infrastructure.Clients;
 
 public sealed class HttpInventoryClient(HttpClient client) : IInventoryClient
@@ -38,24 +36,5 @@ public sealed class HttpInventoryClient(HttpClient client) : IInventoryClient
         return result is null
             ? throw new InvalidOperationException("Has an error: \'Content from inventory is null\'")
             : Result<CheckAvailabilityResult>.Success(result);
-    }
-
-    public async Task InitializeStockAsync(long productId, ICurrentUser currentUser, CancellationToken cancellationToken)
-    {
-        using var message = new HttpRequestMessage(
-            HttpMethod.Post,
-            "/api/inventory-items/initialize");
-        message.Content = JsonContent.Create(new { ProductId = productId });
-        message.Headers.Authorization = new AuthenticationHeaderValue(
-            scheme: "Bearer",
-            parameter: await currentUser.GetAccessTokenAsync());
-
-        var response = await client.SendAsync(message, cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new InvalidOperationException(
-                $"Status Code: {response.StatusCode}, Data: {await response.Content.ReadAsStringAsync(cancellationToken)}");
-        }
     }
 }
