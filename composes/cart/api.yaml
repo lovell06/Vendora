@@ -13,6 +13,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     env_file:
       - composes/cart/environments/jwt.env
+      - composes/cart/environments/services.env
     ports:
       - 8084:8080
     secrets:
