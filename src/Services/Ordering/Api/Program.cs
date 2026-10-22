@@ -30,6 +30,9 @@ builder.Services
     .AddRepositoryServices();
 
 builder.Services
+    .AddOrderingEventTypeRegistry();
+
+builder.Services
     .AddCartServiceClient(builder.Configuration)
     .AddCatalogServiceClient(builder.Configuration)
     .AddInventoryServiceClient(builder.Configuration);

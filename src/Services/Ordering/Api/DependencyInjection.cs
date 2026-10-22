@@ -1,3 +1,7 @@
+using Vendora.BuildingBlocks.Messaging.Abstractions;
+using Vendora.BuildingBlocks.Messaging.TypeRegistry;
+using Vendora.Services.Ordering.Application.IntegrationEvents;
+
 namespace Vendora.Services.Ordering.Api;
 
 public static class DependencyInjection
@@ -54,6 +58,17 @@ public static class DependencyInjection
         {
             services.AddAuthorization();
             return services;
+        }
+
+        public IServiceCollection AddOrderingEventTypeRegistry()
+        {
+            return services.AddSingleton<IEventTypeRegistry>(_ =>
+            {
+                var registry = new EventTypeRegistry();
+                registry.Add("ordering.order-placed", typeof(OrderPlacedEvent));
+
+                return registry;
+            });
         }
     }
 }

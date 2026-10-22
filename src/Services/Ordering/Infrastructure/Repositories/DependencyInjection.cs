@@ -7,6 +7,7 @@ public static class DependencyInjection
         public IServiceCollection AddRepositoryServices()
         {
             services.AddScoped<IOrderRepository, EfCoreOrderRepository>();
+            services.AddScoped<IOutboxMessageRepository, EfCoreOutboxMessageRepository>();
             return services;
         }
     }

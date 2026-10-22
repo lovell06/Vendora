@@ -1,7 +1,10 @@
+using Vendora.Services.Ordering.Application.IntegrationEvents;
+
 namespace Vendora.Services.Ordering.Application.Orders.Place;
 
 public sealed class Handler(
     IOrderRepository orderRepository,
+    IOutboxMessageRepository outboxMessageRepository,
     IUnitOfWork unitOfWork,
     ICartServiceClient cartServiceClient,
     ICatalogServiceClient catalogServiceClient,
@@ -114,6 +117,13 @@ public sealed class Handler(
             if (confirmedResult.IsFailure)
                 throw new InvalidOperationException(confirmedResult.Error.Message);
 
+            outboxMessageRepository.Add(new OrderPlacedEvent
+            {
+                Id = Guid.CreateVersion7(),
+                OccurredAt = utcNow,
+                OrderId = order.Id
+            }, utcNow);
+            
             await unitOfWork.SaveChangesAsync(cancellationToken);
             
             await transaction.CommitAsync(cancellationToken);
