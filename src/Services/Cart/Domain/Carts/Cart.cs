@@ -1,5 +1,3 @@
-using Vendora.BuildingBlocks.Results;
-
 namespace Vendora.Services.Cart.Domain.Carts;
 
 public class Cart
@@ -35,6 +33,15 @@ public class Cart
     {
         _items.Remove(item);
         UpdatedAt = updatedAt;
+    }
+
+    public void RemoveItems(IReadOnlyList<long> productIds, DateTimeOffset deletedAt)
+    {
+        foreach (var cartItem in _items.ToList())
+        {
+            if (productIds.Contains(cartItem.ProductId))
+                _items.Remove(cartItem);
+        }
     }
 
     public Result SetItemQuantity(
