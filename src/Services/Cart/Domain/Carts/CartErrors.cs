@@ -1,5 +1,3 @@
-using Vendora.BuildingBlocks.Results;
-
 namespace Vendora.Services.Cart.Domain.Carts;
 
 public static class CartErrors
