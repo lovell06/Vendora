@@ -37,11 +37,12 @@ public class Cart
 
     public void RemoveItems(IReadOnlyList<long> productIds, DateTimeOffset deletedAt)
     {
-        foreach (var cartItem in _items.ToList())
-        {
-            if (productIds.Contains(cartItem.ProductId))
-                _items.Remove(cartItem);
-        }
+        var productIdsHashSet = productIds.ToHashSet();
+
+        var removeCount = _items.RemoveAll(item => productIdsHashSet.Contains(item.ProductId));
+
+        if (removeCount > 0)
+            UpdatedAt = deletedAt;
     }
 
     public Result SetItemQuantity(
