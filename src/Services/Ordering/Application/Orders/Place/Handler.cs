@@ -1,5 +1,3 @@
-using Vendora.Services.Ordering.Application.IntegrationEvents;
-
 namespace Vendora.Services.Ordering.Application.Orders.Place;
 
 public sealed class Handler(
@@ -121,7 +119,9 @@ public sealed class Handler(
             {
                 Id = Guid.CreateVersion7(),
                 OccurredAt = utcNow,
-                OrderId = order.Id
+                OrderId = order.Id,
+                UserId = order.UserId,
+                Items = [.. order.Items.Select(i => i.ProductId)]
             }, utcNow);
             
             await unitOfWork.SaveChangesAsync(cancellationToken);
