@@ -3,9 +3,8 @@ services:
     build:
       context: .
       dockerfile: src/Services/Ordering/Worker/Dockerfile
-    environment:
-      - DOTNET_ENVIRONMENT=Development
     env_file:
+      - composes/shared/environments/netcore.env
       - composes/shared/environments/rabbitmq.env
     secrets:
       - source: ordering_connection_string

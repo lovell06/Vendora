@@ -9,9 +9,8 @@ services:
       timeout: 5s
       retries: 10
       start_period: 5s
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
     env_file:
+      - composes/shared/environments/aspnetcore.env
       - composes/inventory/environments/jwt.env
     ports:
       - 8083:8080

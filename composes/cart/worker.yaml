@@ -3,9 +3,8 @@ services:
     build: 
       context: .
       dockerfile: src/Services/Cart/Worker/Dockerfile
-    environment:
-      - DOTNET_ENVIRONMENT=Development
     env_file: 
+      - composes/shared/environments/netcore.env
       - composes/shared/environments/rabbitmq.env
       - composes/cart/environments/rabbitmq.consumer.env
       - composes/cart/environments/rabbitmq.consumer.keys.env

@@ -4,10 +4,9 @@ services:
       context: .
       dockerfile: src/Services/Ordering/Api/Dockerfile
     env_file:
+      - composes/shared/environments/aspnetcore.env
       - composes/ordering/environments/jwt.env
       - composes/ordering/environments/services.env
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
     secrets:
       - source: ordering_connection_string
         target: ConnectionStrings__Postgres

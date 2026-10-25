@@ -4,9 +4,8 @@ services:
       context: .
       dockerfile: src/Services/Catalog/Worker/Dockerfile
     env_file:
+      - composes/shared/environments/netcore.env
       - composes/shared/environments/rabbitmq.env
-    environment:
-      - DOTNET_ENVIRONMENT=Development
     secrets:
       - source: catalog_connection_string
         target: ConnectionStrings__Postgres
