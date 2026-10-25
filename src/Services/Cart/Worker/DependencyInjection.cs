@@ -7,8 +7,13 @@ public static class DependencyInjection
         public IServiceCollection AddIntegrationEventHandlers()
         {
             services.AddTransient<
-                IIntegrationEventHandler<UserRegisteredEvent>,
+                IIntegrationEventHandler<InitializeCartIntegrationEvent>,
                 InitializeCartIntegrationEventHandler>();
+
+            services.AddTransient<
+                IIntegrationEventHandler<RemoveOrderedItemsIntegrationEvent>,
+                RemoveOrderedItemsIntegrationEventHandler>();
+            
             return services;
         }
 
@@ -17,8 +22,8 @@ public static class DependencyInjection
             services.AddSingleton<IEventTypeRegistry>(_ =>
             {
                 var registry = new EventTypeRegistry();
-                registry.Add("identity.user-registered", typeof(UserRegisteredEvent));
-                registry.Add("ordering.order-placed", typeof(OrderPlacedEvent));
+                registry.Add("identity.user-registered", typeof(InitializeCartIntegrationEvent));
+                registry.Add("ordering.order-placed", typeof(RemoveOrderedItemsIntegrationEvent));
 
                 return registry;
             });
