@@ -1,0 +1,21 @@
+services:
+  ordering-worker:
+    build:
+      context: .
+      dockerfile: src/Services/Ordering/Worker/Dockerfile
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+    env_file:
+      - composes/shared/environments/rabbitmq.env
+    secrets:
+      - source: ordering_connection_string
+        target: ConnectionStrings__Postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis: 
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      ordering-api:
+        condition: service_healthy

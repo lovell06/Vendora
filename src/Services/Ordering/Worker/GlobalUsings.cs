@@ -1,1 +1,9 @@
+global using Vendora.BuildingBlocks.Messaging;
+global using Vendora.BuildingBlocks.Messaging.Abstractions;
+global using Vendora.BuildingBlocks.Messaging.Messages;
+global using Vendora.Services.Ordering.Application;
+global using Vendora.Services.Ordering.Application.Abstractions.Persistence;
+global using Vendora.Services.Ordering.Infrastructure.Persistence;
+global using Vendora.Services.Ordering.Infrastructure.Repositories;
 global using Vendora.Services.Ordering.Worker;
+global using Vendora.Services.Ordering.Infrastructure.Clients;

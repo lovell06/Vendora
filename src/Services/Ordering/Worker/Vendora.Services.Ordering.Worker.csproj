@@ -10,4 +10,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.13" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Infrastructure\Vendora.Services.Ordering.Infrastructure.csproj" />
+  </ItemGroup>
 </Project>

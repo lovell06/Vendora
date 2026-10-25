@@ -25,3 +25,5 @@ include:
     project_directory: .
   - path: composes/ordering/api.yaml
     project_directory: .
+  - path: composes/ordering/worker.yaml
+    project_directory: .
