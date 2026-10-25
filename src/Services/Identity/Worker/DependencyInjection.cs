@@ -26,7 +26,7 @@ public static class DependencyInjection
 
         public IServiceCollection AddEventPublisher()
         {
-            return services.AddHostedService<EventPublisher>();
+            return services.AddHostedService<OutboxMessageWorker>();
         }
     }
 }

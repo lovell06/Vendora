@@ -1,5 +1,6 @@
 // global using Vendora.BuildingBlocks.Messaging.RabbitMq;
 global using Vendora.BuildingBlocks.Messaging.Abstractions;
+global using Vendora.BuildingBlocks.Messaging.Messages;
 global using Vendora.BuildingBlocks.Messaging.TypeRegistry;
 global using Vendora.Services.Identity.Application;
 global using Vendora.Services.Identity.Application.Abstractions.Persistence;

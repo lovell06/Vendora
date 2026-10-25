@@ -1,10 +1,10 @@
-namespace Vendora.Services.Catalog.Worker;
+namespace Vendora.Services.Identity.Worker;
 
-public class EventPublisher(
-    IEventBus eventBus,
+public class OutboxMessageWorker(
+    ILogger<OutboxMessageWorker> logger,
     IServiceScopeFactory scopeFactory,
-    TimeProvider clock,
-    ILogger<EventPublisher> logger) : BackgroundService
+    IEventBus eventBus,
+    TimeProvider clock) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -15,20 +15,21 @@ public class EventPublisher(
                 logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             }
 
-            await using var scope = scopeFactory.CreateAsyncScope();
+            using var scope = scopeFactory.CreateScope();
+
             var provider = scope.ServiceProvider;
 
             var outboxRepository = provider.GetRequiredService<IOutboxRepository>();
 
-            var messages = await outboxRepository.ListAsync(50, stoppingToken);
+            var messages = await outboxRepository.ListAsync(10, stoppingToken);
 
             foreach (var message in messages)
             {
                 await eventBus.PublishAsync(new IntegrationMessage
                 {
                     Id = message.Id,
+                    Type = message.Type,
                     Payload = message.Payload,
-                    Type = message.Type
                 }, stoppingToken);
 
                 message.ProcessedAt = clock.GetUtcNow();
@@ -36,7 +37,7 @@ public class EventPublisher(
 
             var unitOfWork = provider.GetRequiredService<IUnitOfWork>();
             await unitOfWork.SaveChangesAsync(stoppingToken);
-            
+
             await Task.Delay(1000, stoppingToken);
         }
     }
