@@ -1,0 +1,26 @@
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: src/ApiGateway/Dockerfile
+    env_file:
+      - composes/shared/environments/aspnetcore.env
+    healthcheck:
+      test: curl -sSL http://localhost:8080/health/
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    depends_on:
+      identity-api:
+        condition: service_healthy
+      catalog-api:
+        condition: service_healthy
+      inventory-api:
+        condition: service_healthy
+      cart-api:
+        condition: service_healthy
+      ordering-api:
+        condition: service_healthy
+    ports:
+      - 8080:8080
