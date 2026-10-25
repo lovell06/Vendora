@@ -20,8 +20,8 @@ public class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage
             .HasMaxLength(256)
             .IsRequired();
 
-        builder.Property(message => message.RetryCount)
-            .HasColumnName("retry_count");
+        builder.Property(message => message.AttemptCount)
+            .HasColumnName("attempt_count");
 
         builder.Property(message => message.CreatedAt)
             .HasColumnName("created_at")
@@ -31,8 +31,8 @@ public class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage
             .HasColumnName("processed_at")
             .IsRequired(false);
 
-        builder.Property(message => message.Error)
-            .HasColumnName("error")
+        builder.Property(message => message.LastError)
+            .HasColumnName("last_error")
             .HasMaxLength(256)
             .IsRequired(false);
 
