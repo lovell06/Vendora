@@ -7,30 +7,26 @@ RUN apt install curl -y
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
-WORKDIR /code/
+WORKDIR /project/
 
-COPY src/BuildingBlocks/Results/Vendora.BuildingBlocks.Results.csproj src/BuildingBlocks/Results/
-COPY src/BuildingBlocks/Cqrs/Vendora.BuildingBlocks.Cqrs.csproj src/BuildingBlocks/Cqrs/
-COPY src/BuildingBlocks/Messaging/Vendora.BuildingBlocks.Messaging.csproj src/BuildingBlocks/Messaging/
-COPY src/Services/Catalog/Domain/Vendora.Services.Catalog.Domain.csproj src/Services/Catalog/Domain/
-COPY src/Services/Catalog/Application/Vendora.Services.Catalog.Application.csproj src/Services/Catalog/Application/
-COPY src/Services/Catalog/Infrastructure/Vendora.Services.Catalog.Infrastructure.csproj src/Services/Catalog/Infrastructure/
-COPY src/Services/Catalog/Worker/Vendora.Services.Catalog.Worker.csproj src/Services/Catalog/Worker/
+COPY --parents src/BuildingBlocks/**/*.csproj .
+COPY --parents src/Services/Catalog/**/*.csproj .
 
 RUN dotnet restore src/Services/Catalog/Worker/
 
-COPY . .
+COPY --parents src/BuildingBlocks/ .
+COPY --parents src/Services/Catalog/ .
 
 RUN dotnet publish src/Services/Catalog/Worker/ \
     -c Release \
     --no-restore \
-    -o /app/publish
+    -o /project/publish
 
 # Runtime stage
 FROM prepare AS runtime
 
 WORKDIR /app/
 
-COPY --from=build /app/publish/ .
+COPY --from=build /project/publish/ .
 
 ENTRYPOINT [ "./Vendora.Services.Catalog.Worker" ]

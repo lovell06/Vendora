@@ -2,12 +2,13 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 
 WORKDIR /project/
 
-COPY --parents src/BuildingBlocks/**/*.csproj ./
-COPY --parents src/Services/Ordering/**/*.csproj ./
+COPY --parents src/BuildingBlocks/**/*.csproj .
+COPY --parents src/Services/Ordering/**/*.csproj .
 
 RUN dotnet restore src/Services/Ordering/Worker/
 
-COPY . .
+COPY --parents src/BuildingBlocks/ .
+COPY --parents src/Services/Ordering/ .
 
 RUN dotnet publish src/Services/Ordering/Worker/ \
     -c Release \
@@ -18,6 +19,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 
 WORKDIR /app/
 
-COPY --from=build /project/publish/ /app/
+COPY --from=build /project/publish/ .
 
 ENTRYPOINT [ "./Vendora.Services.Ordering.Worker" ]
