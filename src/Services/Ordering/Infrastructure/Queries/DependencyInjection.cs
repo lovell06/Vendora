@@ -1,5 +1,3 @@
-using Vendora.Services.Ordering.Application.Orders.Get;
-
 namespace Vendora.Services.Ordering.Infrastructure.Queries;
 
 public static class DependencyInjection
@@ -8,7 +6,8 @@ public static class DependencyInjection
     {
         public IServiceCollection AddQueryServices()
         {
-            services.AddScoped<IQueryService, EfCoreGetOrderQueryService>();
+            services.AddScoped<IGetOrderQueryService, EfCoreGetOrderQueryService>();
+            services.AddScoped<IListOrdersQueryService, EfCoreListOrdersQueryService>();
             return services;
         }
     }
