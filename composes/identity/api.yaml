@@ -14,8 +14,8 @@ services:
       - composes/identity/environments/admin.account.env
       - composes/identity/environments/caching.env
       - composes/identity/environments/jwt.env
-    ports:
-      - 8081:8080
+    # ports:
+    #   - 8081:8080
     secrets:
       - jwt_private_key
       - source: identity_connection_string

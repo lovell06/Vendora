@@ -12,8 +12,8 @@ services:
     env_file:
       - composes/shared/environments/aspnetcore.env
       - composes/inventory/environments/jwt.env
-    ports:
-      - 8083:8080
+    # ports:
+    #   - 8083:8080
     secrets:
       - jwt_public_key
       - source: inventory_connection_string
