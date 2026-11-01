@@ -1,10 +1,11 @@
-using Vendora.Services.Ordering.Application.Orders.Get;
+using GetOrderQuery = Vendora.Services.Ordering.Application.Orders.Get.Query;
+using GetOrderResponse = Vendora.Services.Ordering.Application.Orders.Get.Response;
 
 namespace Vendora.Services.Ordering.Infrastructure.Queries;
 
-public sealed class EfCoreGetOrderQueryService(ApplicationDbContext context) : IQueryService
+public sealed class EfCoreGetOrderQueryService(ApplicationDbContext context) : IGetOrderQueryService
 {
-    public async Task<Response?> GetOrderAsync(Query query, CancellationToken ct)
+    public async Task<GetOrderResponse?> ExecuteAsync(GetOrderQuery query, CancellationToken ct)
     {
         var order = await context.Orders
             .Where(o => o.UserId == query.UserId)
@@ -29,6 +30,6 @@ public sealed class EfCoreGetOrderQueryService(ApplicationDbContext context) : I
 
         return order is null
             ? null
-            : new Response {Order = order};
+            : new GetOrderResponse { Order = order };
     }
 }

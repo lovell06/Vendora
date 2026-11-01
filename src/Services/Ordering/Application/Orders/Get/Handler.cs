@@ -4,7 +4,7 @@ public sealed class Handler(IQueryService queryService) : IQueryHandler<Query, R
 {
     public async Task<Result<Response>> Handle(Query query, CancellationToken cancellationToken)
     {
-        var response = await queryService.GetOrderAsync(query, cancellationToken);
+        var response = await queryService.ExecuteAsync(query, cancellationToken);
 
         if (response is null)
         {
