@@ -1,3 +1,4 @@
+using Vendora.Services.Ordering.Api.Orders.Get;
 using Vendora.Services.Ordering.Api.Orders.Place;
 
 namespace Vendora.Services.Ordering.Api.Orders;
@@ -10,6 +11,7 @@ public static class GroupMapper
         {
             var orders = api.MapGroup("/orders").WithTags("Orders");
             orders.MapPlaceOrderEndpoint();
+            orders.MapGetOrderEndpoint();
         }
     }
 }

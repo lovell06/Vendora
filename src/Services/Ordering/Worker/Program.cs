@@ -14,6 +14,7 @@ builder.Services
     
 builder.Services
     .AddPersistenceServices(builder.Configuration)
+    .AddQueryServices()
     .AddRepositoryServices();
 
 builder.Services

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Vendora.Services.Ordering.Infrastructure.Clients;
+using Vendora.Services.Ordering.Infrastructure.Queries;
 using Vendora.Services.Ordering.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,7 @@ builder.Services
 builder.Services
     .AddCurrentUserService()
     .AddPersistenceServices(builder.Configuration)
+    .AddQueryServices()
     .AddRepositoryServices();
 
 builder.Services
