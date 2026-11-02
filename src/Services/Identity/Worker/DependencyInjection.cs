@@ -1,3 +1,5 @@
+using Vendora.Services.Identity.Worker.EventHandlers;
+
 namespace Vendora.Services.Identity.Worker;
 
 public static class DependencyInjection
@@ -6,7 +8,9 @@ public static class DependencyInjection
     {
         public IServiceCollection AddIntegrationEventHandlers()
         {
-            services.AddTransient<IIntegrationEventHandler<UserRegisteredEvent>, SendVerificationEmailHandler>();
+            services.AddTransient<
+                IIntegrationEventHandler<UserRegisteredEvent>, 
+                SendVerificationEmailOnUserRegisteredHandler>();
 
             return services;
         }
@@ -24,7 +28,7 @@ public static class DependencyInjection
             return services;
         }
 
-        public IServiceCollection AddEventPublisher()
+        public IServiceCollection AddOutboxMessageWorker()
         {
             return services.AddHostedService<OutboxMessageWorker>();
         }

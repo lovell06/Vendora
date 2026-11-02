@@ -1,3 +1,6 @@
+using Vendora.Services.Cart.Application.IntegrationEvents;
+using Vendora.Services.Cart.Worker.EventHandlers;
+
 namespace Vendora.Services.Cart.Worker;
 
 public static class DependencyInjection
@@ -7,12 +10,12 @@ public static class DependencyInjection
         public IServiceCollection AddIntegrationEventHandlers()
         {
             services.AddTransient<
-                IIntegrationEventHandler<InitializeCartIntegrationEvent>,
-                InitializeCartIntegrationEventHandler>();
+                IIntegrationEventHandler<UserRegisteredEvent>,
+                InitializeCartOnUserRegisteredHandler>();
 
             services.AddTransient<
-                IIntegrationEventHandler<RemoveOrderedItemsIntegrationEvent>,
-                RemoveOrderedItemsIntegrationEventHandler>();
+                IIntegrationEventHandler<OrderPlacedEvent>,
+                RemoveItemsOnOrderPlacedHandler>();
             
             return services;
         }
@@ -22,8 +25,8 @@ public static class DependencyInjection
             services.AddSingleton<IEventTypeRegistry>(_ =>
             {
                 var registry = new EventTypeRegistry();
-                registry.Add("identity.user-registered", typeof(InitializeCartIntegrationEvent));
-                registry.Add("ordering.order-placed", typeof(RemoveOrderedItemsIntegrationEvent));
+                registry.Add("identity.user-registered", typeof(UserRegisteredEvent));
+                registry.Add("ordering.order-placed", typeof(OrderPlacedEvent));
 
                 return registry;
             });

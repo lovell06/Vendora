@@ -32,7 +32,7 @@ builder.Services
     .AddRabbitMqEventBus()
     .AddRabbitMqConsumer();
 
-builder.Services.AddEventPublisher();
+builder.Services.AddOutboxMessageWorker();
 
 var host = builder.Build();
 host.Run();

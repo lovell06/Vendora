@@ -7,7 +7,3 @@ global using Vendora.Services.Cart.Infrastructure.Persistence;
 global using Vendora.Services.Cart.Infrastructure.Queries;
 global using Vendora.Services.Cart.Infrastructure.Repositories;
 global using Vendora.Services.Cart.Worker;
-global using InitializeCartIntegrationEvent = Vendora.Services.Cart.Application.IntegrationEvents.UserRegisteredEvent;
-global using InitializeCartIntegrationEventHandler = Vendora.Services.Cart.Application.Carts.Initialize.EventHandler;
-global using RemoveOrderedItemsIntegrationEvent = Vendora.Services.Cart.Application.IntegrationEvents.OrderPlacedEvent;
-global using RemoveOrderedItemsIntegrationEventHandler = Vendora.Services.Cart.Application.Carts.RemoveOrderedItems.EventHandler;

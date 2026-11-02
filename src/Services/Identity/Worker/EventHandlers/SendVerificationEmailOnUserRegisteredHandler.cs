@@ -1,6 +1,8 @@
-namespace Vendora.Services.Identity.Application.Authentication.SendVerificationEmail;
+using Vendora.Services.Identity.Application.Abstractions.Email;
 
-public sealed class Handler(
+namespace Vendora.Services.Identity.Worker.EventHandlers;
+
+public sealed class SendVerificationEmailOnUserRegisteredHandler(
     IEmailVerificationTokenProvider emailVerificationTokenProvider,
     IEmailSender sender) : IIntegrationEventHandler<UserRegisteredEvent>
 {

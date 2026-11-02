@@ -1,6 +1,11 @@
-namespace Vendora.Services.Cart.Application.Carts.Initialize;
+using MediatR;
+using Vendora.Services.Cart.Application.Carts.Initialize;
+using Vendora.Services.Cart.Application.IntegrationEvents;
 
-public sealed class EventHandler(ISender sender) : IIntegrationEventHandler<UserRegisteredEvent>
+namespace Vendora.Services.Cart.Worker.EventHandlers;
+
+public sealed class InitializeCartOnUserRegisteredHandler(ISender sender) 
+    : IIntegrationEventHandler<UserRegisteredEvent>
 {
     public async Task HandleAsync(UserRegisteredEvent @event, CancellationToken ct)
     {
