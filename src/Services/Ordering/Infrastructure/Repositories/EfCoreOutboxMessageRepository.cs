@@ -1,6 +1,5 @@
 using System.Text.Json;
 using Vendora.BuildingBlocks.Messaging.Abstractions;
-using Vendora.Services.Ordering.Application.IntegrationEvents;
 
 namespace Vendora.Services.Ordering.Infrastructure.Repositories;
 
@@ -14,7 +13,7 @@ public sealed class EfCoreOutboxMessageRepository(
         context.OutboxMessages.Add(new OutboxMessage
         {
             Id = Guid.CreateVersion7(),
-            Type = registry[typeof(OrderPlacedEvent)],
+            Type = registry[typeof(TIntegrationEvent)],
             Payload = payload,
             CreatedAt = createdAt
         });
