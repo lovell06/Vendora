@@ -1,5 +1,3 @@
-using Vendora.BuildingBlocks.Messaging.Abstractions;
-
 namespace Vendora.Services.Inventory.Application.IntegrationEvents;
 
 public sealed class ProductCreatedEvent : IIntegrationEvent
