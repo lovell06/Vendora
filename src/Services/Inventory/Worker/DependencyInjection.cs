@@ -1,3 +1,5 @@
+using Vendora.Services.Inventory.Worker.EventHandlers;
+
 namespace Vendora.Services.Inventory.Worker;
 
 public static class DependencyInjection
@@ -8,7 +10,11 @@ public static class DependencyInjection
         {
             services.AddTransient<
                 IIntegrationEventHandler<ProductCreatedEvent>, 
-                InitializeInventoryHandler>();
+                InitializeOnProductCreatedHandler>();
+
+            services.AddTransient<
+                IIntegrationEventHandler<OrderCancelledEvent>,
+                ReleaseStockOnOrderCancelledHandler>();
             
             return services;
         }
@@ -19,6 +25,7 @@ public static class DependencyInjection
             {
                 var registry = new EventTypeRegistry();
                 registry.Add("catalog.product-created", typeof(ProductCreatedEvent));
+                registry.Add("ordering.order-cancelled", typeof(OrderCancelledEvent));
 
                 return registry;
             });
