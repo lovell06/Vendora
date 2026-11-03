@@ -1,4 +1,5 @@
 using Vendora.Services.Ordering.Api.Orders.Cancel;
+using Vendora.Services.Ordering.Api.Orders.Complete;
 using Vendora.Services.Ordering.Api.Orders.Deliver;
 using Vendora.Services.Ordering.Api.Orders.Get;
 using Vendora.Services.Ordering.Api.Orders.List;
@@ -20,6 +21,7 @@ public static class GroupMapper
             orders.MapCancelOrderEndpoint();
             orders.MapPrepareOrderEndpoint();
             orders.MapDeliverOrderEndpoint();
+            orders.MapCompleteOrderEndpoint();
         }
     }
 }
