@@ -107,7 +107,7 @@ public class Order
         return Result.Success();
     }
 
-    public Result Delivery(DateTimeOffset deliveryAt)
+    public Result Deliver(DateTimeOffset deliveryAt)
     {
         if (Status is OrderStatus.Delivering)
             return Result.Success();
