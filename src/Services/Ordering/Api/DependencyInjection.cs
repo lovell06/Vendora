@@ -1,5 +1,6 @@
 using Vendora.BuildingBlocks.Messaging.Abstractions;
 using Vendora.BuildingBlocks.Messaging.TypeRegistry;
+using Vendora.Services.Ordering.Api.Constants;
 using Vendora.Services.Ordering.Application.IntegrationEvents;
 
 namespace Vendora.Services.Ordering.Api;
@@ -56,7 +57,14 @@ public static class DependencyInjection
 
         public IServiceCollection AddApplicationAuthorization()
         {
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(AuthorizationPolicies.ManageOrderLifecycle, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(RoleNames.Admin, RoleNames.Employee);
+                });
+            });
             return services;
         }
 
