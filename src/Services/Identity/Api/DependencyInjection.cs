@@ -1,6 +1,7 @@
 using Microsoft.IdentityModel.JsonWebTokens;
 using Vendora.BuildingBlocks.Messaging.Abstractions;
 using Vendora.BuildingBlocks.Messaging.TypeRegistry;
+using Vendora.Services.Identity.Api.Constants;
 using Vendora.Services.Identity.Application.IntegrationEvents;
 
 namespace Vendora.Services.Identity.Api;
@@ -69,7 +70,14 @@ public static class DependencyInjection
 
         public IServiceCollection AddApplicationAuthorization()
         {
-            services.AddAuthorization();
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(AuthorizationPolicies.ManageAccounts, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole(RoleNames.Admin);
+                });
+            });
             return services;
         }
 
