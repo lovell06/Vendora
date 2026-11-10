@@ -22,10 +22,10 @@ public sealed class EfCoreInventoryItemRepository(ApplicationDbContext context) 
                 cancellationToken) is not null;
     }
 
-    public async Task<InventoryItem?> GetAsync(long productId, CancellationToken cancellationToken)
+    public async Task<InventoryItem?> GetAsync(long inventoryItemId, CancellationToken cancellationToken)
     {
         return await context.InventoryItems
-            .SingleOrDefaultAsync(item => item.ProductId == productId, cancellationToken);
+            .SingleOrDefaultAsync(item => item.Id == inventoryItemId, cancellationToken);
     }
 
     public async Task<List<InventoryItem>> ListAsync(CancellationToken cancellationToken)
