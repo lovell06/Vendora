@@ -6,7 +6,6 @@ public sealed class EfCoreGetProductQueryService(ApplicationDbContext context) :
 {
     public async Task<ProductDto?> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {
-
         return await context.Products
             .AsNoTracking()
             .Include(product => product.Category)
@@ -21,9 +20,14 @@ public sealed class EfCoreGetProductQueryService(ApplicationDbContext context) :
                     Id = product.Category!.Id,
                     Name = product.Category.Name
                 },
-                Price = product.Price,
                 Currency = product.Currency,
-                Status = product.Status.ToString()
+                Status = product.Status.ToString(),
+                Variants = product.Variants.Select(variant => new ProductVariantDto
+                {
+                    Name = variant.Name,
+                    Sku = variant.Sku,
+                    Price = variant.Price
+                }).ToList()
             })
             .SingleOrDefaultAsync(product => product.Id == query.Id, cancellationToken);
     }

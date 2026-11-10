@@ -2,5 +2,5 @@
 
 public class Query : IQuery<Response>
 {
-    public required List<long> ProductIds { get; init; }
+    public required List<long> ProductVariantReferences { get; init; }
 }

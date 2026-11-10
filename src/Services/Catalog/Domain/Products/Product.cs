@@ -11,7 +11,6 @@ public class Product
     public string Brand { get; private set; } = null!;
     public int CategoryId { get; private set; }
     public Category? Category { get; private set; } = null;
-    public decimal Price { get; private set; }
     public string Currency { get; private set; } = null!;
     public ProductStatus Status { get; private set; }
     public bool IsVisible { get; private set; }
@@ -19,6 +18,9 @@ public class Product
     public DateTimeOffset? UpdatedAt { get; private set; }
     public DateTimeOffset? DeletedAt { get; private set; }
     public bool IsDeleted => DeletedAt is not null;
+
+    private readonly List<ProductVariant> _variants = [];
+    public IReadOnlyList<ProductVariant> Variants => _variants;
 
     private Product()
     {
@@ -29,7 +31,6 @@ public class Product
         string? description,
         string brand,
         int categoryId,
-        decimal price,
         string currency,
         bool isVisible,
         DateTimeOffset createdAt)
@@ -39,44 +40,13 @@ public class Product
         brand = brand.Trim();
 
         if (string.IsNullOrEmpty(name))
-        {
-            return Result<Product>.Failure(new Error
-            {
-                Code = "product_create.name_is_null",
-                Message = "Product name is requered.",
-                Type = ErrorType.Validation
-            });
-        }
+            return Result<Product>.Failure(Errors.ProductNameIsNull);
 
         if (string.IsNullOrEmpty(brand))
-        {
-            return Result<Product>.Failure(new Error
-            {
-                Code = "product_create.brand_is_null",
-                Message = "Product brand is requered.",
-                Type = ErrorType.Validation
-            });
-        }
-
-        if (price < 0)
-        {
-            return Result<Product>.Failure(new Error
-            {
-                Code = "product_create.price_is_negative",
-                Message = "Product price must be more than or equal zero.",
-                Type = ErrorType.Validation
-            });
-        }
+            return Result<Product>.Failure(Errors.ProductBrandIsNull);
 
         if (categoryId < 0)
-        {
-            return Result<Product>.Failure(new Error
-            {
-                Code = "product_create.category_invalid",
-                Message = "Category ID must not be negative.",
-                Type = ErrorType.Validation
-            });
-        }
+            return Result<Product>.Failure(Errors.InvalidProductCategory);
 
         return Result<Product>.Success(new Product
         {
@@ -85,7 +55,6 @@ public class Product
             Description = description,
             Brand = brand,
             CategoryId = categoryId,
-            Price = price,
             Currency = currency,
             Status = ProductStatus.Active,
             IsVisible = isVisible,
@@ -167,24 +136,6 @@ public class Product
         return Result.Success();
     }
 
-    public Result ChangePrice(decimal price, DateTimeOffset updatedAt)
-    {
-        if (IsDeleted)
-        {
-            return Result.Failure(new Error
-            {
-                Code = "product_change_price.deleted",
-                Message = "Cannot change price of a deleted product.",
-                Type = ErrorType.Validation
-            });
-        }
-
-        Price = price;
-        UpdatedAt = updatedAt;
-
-        return Result.Success();
-    }
-
     public Result Discontinue(DateTimeOffset discontinuedAt)
     {
         if (IsDeleted)
@@ -261,5 +212,29 @@ public class Product
 
         DeletedAt = null;
         UpdatedAt = restoredAt;
+    }
+
+    public Result AddVariant(ProductVariant variant, DateTimeOffset updatedAt)
+    {
+        if (_variants.Any(v => v.Sku == variant.Sku))
+            return Result.Failure(Errors.ProductVariantExistsBySku);
+        
+        _variants.Add(variant);
+        UpdatedAt = updatedAt;
+
+        return Result.Success();
+    }
+
+    public Result RemoveVariant(string sku, DateTimeOffset updatedAt)
+    {
+        var variant = _variants.SingleOrDefault(v => v.Sku == sku);
+
+        if (variant is null)
+            return Result.Success();
+
+        variant.Delete(updatedAt);
+        UpdatedAt = updatedAt;
+
+        return Result.Success();
     }
 }

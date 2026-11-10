@@ -10,7 +10,6 @@ public sealed class UpdateProductRequest
     public string? Description { get; init; } = null;
     public required string Brand { get; init; }
     public int CategoryId { get; init; }
-    public decimal Price { get; init; }
 
     public Command ToCommand()
     {
@@ -21,7 +20,6 @@ public sealed class UpdateProductRequest
             Description = Description,
             Brand = Brand,
             CategoryId = CategoryId,
-            Price = Price
         };
     }
 }

@@ -28,11 +28,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasColumnName("category_id")
             .IsRequired();
 
-        builder.Property(p => p.Price)
-            .HasColumnName("price")
-            .HasPrecision(18, 2)
-            .IsRequired();
-
         builder.Property(p => p.Currency)
             .HasColumnName("currency")
             .HasMaxLength(3)
@@ -63,6 +58,10 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.HasOne(p => p.Category)
             .WithMany(cat => cat.Products)
             .HasForeignKey(p => p.CategoryId);
+
+        builder.HasMany(p => p.Variants)
+            .WithOne(variant => variant.Product)
+            .HasForeignKey(variant => variant.ProductId);
 
         builder.HasIndex(p => new { p.CreatedAt, p.Id })
             .IsUnique()

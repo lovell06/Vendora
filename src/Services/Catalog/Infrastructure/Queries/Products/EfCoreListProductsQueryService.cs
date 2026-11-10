@@ -42,7 +42,8 @@ public sealed class EfCoreListProductsQueryService(ApplicationDbContext context)
                 Id = prod.Id,
                 Name = prod.Name,
                 Currency = prod.Currency,
-                Price = prod.Price
+                MinPrice = prod.Variants.Select(variant => variant.Price).Min(),
+                MaxPrice = prod.Variants.Select(variant => variant.Price).Max()
             })
             .Skip((query.Page-1) * query.Size)
             .Take(query.Size)

@@ -18,6 +18,7 @@ public sealed class ProductDto
 {
     public long Id { get; init; }
     public required string Name { get; init; }
-    public decimal Price { get; init; }
+    public decimal MinPrice { get; init; }
+    public decimal MaxPrice { get; init; }
     public required string Currency { get; init; }
 }

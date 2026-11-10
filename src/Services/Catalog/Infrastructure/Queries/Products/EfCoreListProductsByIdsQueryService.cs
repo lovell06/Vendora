@@ -8,16 +8,19 @@ public sealed class EfCoreListProductsByIdsQueryService(ApplicationDbContext con
     {
         return new Response
         {
-            Products = await context.Products
+            Products = await context.ProductVariants
                 .AsNoTracking()
-                .Select(p => new ProductDto
+                .Where(variant => query.ProductVariantReferences.Contains(variant.Id))
+                .Select(variant => new ProductVariantDto
                 {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Price = p.Price,
-                    Currency = p.Currency
+                    ProductId = variant.Product!.Id,
+                    VariantId = variant.Id,
+                    Sku = variant.Sku,
+                    ProductName = variant.Product!.Name,
+                    VariantName = variant.Name,
+                    Price = variant.Price,
+                    Currency = variant.Product!.Currency
                 })
-                .Where(p => query.ProductIds.Contains(p.Id))
                 .ToListAsync(ct)
         };
     }

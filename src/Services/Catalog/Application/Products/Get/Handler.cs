@@ -30,16 +30,7 @@ public sealed class Handler(
 
         return Result<Response>.Success(new Response
         {
-            Id = product.Id,
-            Name = product.Name,
-            Brand = product.Brand,
-            Description = product.Description,
-            Price = product.Price,
-            Currency = product.Currency,
-            Category = product.Category,
-            Status = product.Status,
-            IsAvailable = availabilityResult.Value.IsAvailable,
-            AvailableQuantity = availabilityResult.Value.AvailableQuantity
+            Product = product
         });
     }
 }

@@ -7,5 +7,4 @@ public sealed class Command : ICommand
     public string? Description { get; init; } = null;
     public required string Brand { get; init; }
     public int CategoryId { get; init; }
-    public decimal Price { get; init; }
 }

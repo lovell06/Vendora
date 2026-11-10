@@ -27,7 +27,6 @@ public sealed class Handler(
         product.ChangeDescription(cmd.Description!, utcNow);
         product.ChangeBrand(cmd.Brand, utcNow);
         product.ChangeCategory(cmd.CategoryId, utcNow);
-        product.ChangePrice(cmd.Price, utcNow);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 

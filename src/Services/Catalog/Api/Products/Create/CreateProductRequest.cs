@@ -9,9 +9,9 @@ public sealed class CreateProductRequest
     public string? Description { get; init; }
     public required string Brand { get; init; }
     public int CategoryId { get; init; }
-    public decimal Price { get; init; }
     public required string Currency { get; init; }
     public bool IsVisible { get; init; }
+    public required IReadOnlyList<ProductVariantDto> ProductVariants { get; init; }
 
     public Command ToCommand()
     {
@@ -21,9 +21,9 @@ public sealed class CreateProductRequest
             Description = Description,
             Brand = Brand,
             CategoryId = CategoryId,
-            Price = Price,
             Currency = Currency,
-            IsVisible = IsVisible
+            IsVisible = IsVisible,
+            ProductVariants = ProductVariants
         };
     }
 }
