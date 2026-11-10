@@ -21,7 +21,7 @@ public static class DependencyInjection
             {
                 var eventTypeRegistry = new EventTypeRegistry();
 
-                eventTypeRegistry.Add("identity.user-registered", typeof(UserRegisteredEvent));
+                eventTypeRegistry.Add("identity.user.registered", typeof(UserRegisteredEvent));
 
                 return eventTypeRegistry;
             });

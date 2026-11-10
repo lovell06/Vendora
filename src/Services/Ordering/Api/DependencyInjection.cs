@@ -73,8 +73,8 @@ public static class DependencyInjection
             return services.AddSingleton<IEventTypeRegistry>(_ =>
             {
                 var registry = new EventTypeRegistry();
-                registry.Add("ordering.order-placed", typeof(OrderPlacedEvent));
-                registry.Add("ordering.order-cancelled", typeof(OrderCancelledEvent));
+                registry.Add("ordering.order.placed", typeof(OrderPlacedEvent));
+                registry.Add("ordering.order.cancelled", typeof(OrderCancelledEvent));
 
                 return registry;
             });
