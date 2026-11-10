@@ -11,6 +11,7 @@ public static class DependencyInjection
             services.AddScoped<IListCategoriesQueryService, EfCoreListCategoriesQuerySerivce>();
             services.AddScoped<IGetCategoryQueryService, EfCoreGetCategoryQueryService>();
             services.AddScoped<IListProductsByIdsQueryService, EfCoreListProductsByIdsQueryService>();
+            services.AddScoped<IGetProductVariantQueryService, EfCoreGetVariantQueryService>();
         
             return services;
         }

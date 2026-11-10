@@ -25,3 +25,4 @@ global using IGetProductQueryService = Vendora.Services.Catalog.Application.Prod
 global using IListCategoriesQueryService = Vendora.Services.Catalog.Application.Categories.List.IQueryService;
 global using IListProductsByIdsQueryService = Vendora.Services.Catalog.Application.Products.ListByIds.IQueryService;
 global using IListProductsQueryService = Vendora.Services.Catalog.Application.Products.List.IQueryService;
+global using IGetProductVariantQueryService = Vendora.Services.Catalog.Application.Products.GetVariant.IQueryService;

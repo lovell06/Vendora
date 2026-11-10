@@ -1,3 +1,5 @@
+using Vendora.Services.Catalog.Api.Products.GetVariant;
+
 namespace Vendora.Services.Catalog.Api.Products;
 
 public static class GroupMapper
@@ -15,5 +17,6 @@ public static class GroupMapper
         group.MapDiscontinueProductEndpoint();
         group.MapReactivateProductEndpoint();
         group.MapListProductsByIdsEndpoint();
+        group.MapGetProductVariantEndpoint();
     }
 }
