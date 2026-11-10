@@ -8,7 +8,7 @@ public sealed class EfCoreListProductsByIdsQueryService(ApplicationDbContext con
     {
         return new Response
         {
-            Products = await context.ProductVariants
+            ProductVariants = await context.ProductVariants
                 .AsNoTracking()
                 .Where(variant => query.ProductVariantReferences.Contains(variant.Id))
                 .Select(variant => new ProductVariantDto

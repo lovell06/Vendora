@@ -9,7 +9,7 @@ public sealed class Handler(IQueryService queryService) : IQueryHandler<Query, R
 
         var response = await queryService.ExecuteAsync(query, cancellationToken);
 
-        if (query.ProductVariantReferences.Count != response.Products.Count)
+        if (query.ProductVariantReferences.Count != response.ProductVariants.Count)
             return Result<Response>.Failure(Errors.SomeProductsNotFound);
 
         return Result<Response>.Success(response);

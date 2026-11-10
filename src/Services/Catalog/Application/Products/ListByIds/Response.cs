@@ -2,13 +2,13 @@
 
 public class Response
 {
-    public required List<ProductVariantDto> Products { get; init; }
+    public required List<ProductVariantDto> ProductVariants { get; init; }
 }
 
 public sealed class ProductVariantDto
 {
-    public long ProductId { get; init; }
-    public long VariantId { get; init; }
+    public required long ProductId { get; init; }
+    public required long VariantId { get; init; }
     public required string ProductName { get; init; }
     public required string VariantName { get; init; }
     public required string Sku { get; init; }
