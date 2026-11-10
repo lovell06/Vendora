@@ -10,7 +10,7 @@ public sealed class Handler(
     {
         var utcNow = clock.GetUtcNow();
 
-        var inventoryItem = await inventoryItemRepository.GetAsync(cmd.ProductId, cancellationToken);
+        var inventoryItem = await inventoryItemRepository.GetAsync(cmd.InventoryItemId, cancellationToken);
 
         if (inventoryItem is null)
         {
@@ -25,7 +25,7 @@ public sealed class Handler(
         }
 
         var createdAdjustmentResult = InventoryAdjustment.Create(
-            productId: cmd.ProductId,
+            inventoryItemId: cmd.InventoryItemId,
             quantityChange: cmd.QuantityChange,
             reason: cmd.Reason,
             createdBy: cmd.CreatedBy,

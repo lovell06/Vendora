@@ -10,7 +10,7 @@ public sealed class CheckAvailabilityRequest
     {
         return new Query
         {
-            ProductId = ProductId
+            ProductVariantId = ProductId
         };
     }
 }

@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Vendora.Services.Inventory.Infrastructure.Persistence;
@@ -12,15 +11,13 @@ using Vendora.Services.Inventory.Infrastructure.Persistence;
 namespace Vendora.Services.Inventory.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260922082843_AddInventoryAdjustmentsTable")]
-    partial class AddInventoryAdjustmentsTable
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -28,6 +25,7 @@ namespace Vendora.Services.Inventory.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Vendora.Services.Inventory.Domain.InventoryItems.InventoryAdjustment", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -39,9 +37,9 @@ namespace Vendora.Services.Inventory.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("created_by");
 
-                    b.Property<long>("ProductId")
+                    b.Property<long>("InventoryItemId")
                         .HasColumnType("bigint")
-                        .HasColumnName("product_id");
+                        .HasColumnName("inventory_item_id");
 
                     b.Property<int>("QuantityChange")
                         .HasColumnType("integer")
@@ -55,7 +53,7 @@ namespace Vendora.Services.Inventory.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId", "CreatedAt", "Id")
+                    b.HasIndex("InventoryItemId", "CreatedAt", "Id")
                         .IsDescending(false, true, true);
 
                     b.ToTable("inventory_adjustments", (string)null);
@@ -63,9 +61,12 @@ namespace Vendora.Services.Inventory.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Vendora.Services.Inventory.Domain.InventoryItems.InventoryItem", b =>
                 {
-                    b.Property<long>("ProductId")
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasColumnName("product_id");
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -75,15 +76,29 @@ namespace Vendora.Services.Inventory.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("on_hand_quantity");
 
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("product_id");
+
+                    b.Property<long>("ProductVariantId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("product_variant_id");
+
                     b.Property<int>("ReservedQuantity")
                         .HasColumnType("integer")
                         .HasColumnName("reserved_quantity");
+
+                    b.Property<string>("Sku")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("sku");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("ProductId");
+                    b.HasKey("Id");
 
                     b.ToTable("inventory_items", (string)null);
                 });
@@ -91,10 +106,15 @@ namespace Vendora.Services.Inventory.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Vendora.Services.Inventory.Domain.InventoryItems.InventoryAdjustment", b =>
                 {
                     b.HasOne("Vendora.Services.Inventory.Domain.InventoryItems.InventoryItem", null)
-                        .WithMany()
-                        .HasForeignKey("ProductId")
+                        .WithMany("Adjustments")
+                        .HasForeignKey("InventoryItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Vendora.Services.Inventory.Domain.InventoryItems.InventoryItem", b =>
+                {
+                    b.Navigation("Adjustments");
                 });
 #pragma warning restore 612, 618
         }

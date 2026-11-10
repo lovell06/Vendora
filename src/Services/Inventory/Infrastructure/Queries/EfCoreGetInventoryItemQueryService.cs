@@ -9,12 +9,12 @@ public sealed class EfCoreGetInventoryItemQueryService(ApplicationDbContext cont
         return await context.InventoryItems
             .Select(item => new Response
             {
-                ProductId = item.ProductId,
+                ProductVariantId = item.ProductVariantId,
                 OnHandQuantity = item.OnHandQuantity,
                 ReservedQuantity = item.ReservedQuantity,
                 CreatedAt = item.CreatedAt,
                 UpdatedAt = item.UpdatedAt
             })
-            .SingleOrDefaultAsync(item => item.ProductId == query.ProductId, cancellationToken);
+            .SingleOrDefaultAsync(item => item.ProductVariantId == query.ProductVariantId, cancellationToken);
     }
 }

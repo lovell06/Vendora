@@ -10,6 +10,8 @@ public sealed class Response
 public sealed class InventoryItemDto
 {
     public long ProductId { get; init; }
+    public long ProductVariantId { get; init; }
+    public required string Sku { get; init; }
     public int OnHandQuantity { get; init; }
     public int ReservedQuantity { get; init; }
 }

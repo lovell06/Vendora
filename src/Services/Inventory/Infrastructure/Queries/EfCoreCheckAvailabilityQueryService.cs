@@ -9,12 +9,12 @@ public sealed class EfCoreCheckAvailabilityQueryService(ApplicationDbContext con
         return await context.InventoryItems
             .Select(item => new Response()
             {
-                ProductId = item.ProductId,
+                ProductVariantId = item.ProductVariantId,
                 IsAvailable = item.IsAvailable,
                 AvailableQuantity = item.AvailableQuantity
             })
             .SingleOrDefaultAsync(
-                item => item.ProductId == query.ProductId, 
+                item => item.ProductVariantId == query.ProductVariantId, 
                 cancellationToken);
     }
 }

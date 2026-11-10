@@ -11,7 +11,7 @@ public sealed class ReserveInventoryItemsRequest
     {
         return new Command
         {
-            Items = [.. Items.DistinctBy(i => i.ProductId)]
+            Items = [.. Items.DistinctBy(i => i.ProductVariantId)]
         };
     }
 }

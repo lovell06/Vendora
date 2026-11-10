@@ -12,7 +12,7 @@ public sealed class GetInventoryItemRequest
     {
         return new Query
         {
-            ProductId = ProductId
+            ProductVariantId = ProductId
         };
     }
 }

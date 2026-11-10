@@ -2,5 +2,5 @@ namespace Vendora.Services.Inventory.Application.InventoryItems.CheckAvailabilit
 
 public sealed class Query : IQuery<Response>
 {
-    public long ProductId { get; init; }
+    public long ProductVariantId { get; init; }
 }

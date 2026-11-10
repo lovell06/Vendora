@@ -11,6 +11,8 @@ public sealed class EfCoreListInventoryItemsQueryService(ApplicationDbContext co
             .Select(item => new InventoryItemDto
             {
                 ProductId = item.ProductId,
+                ProductVariantId = item.ProductVariantId,
+                Sku = item.Sku,
                 OnHandQuantity = item.OnHandQuantity,
                 ReservedQuantity = item.ReservedQuantity
             });

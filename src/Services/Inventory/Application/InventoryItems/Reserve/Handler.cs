@@ -13,7 +13,7 @@ public sealed class Handler(
         var utcNow = clock.GetUtcNow();
 
         var inventoryItems = await inventoryItemRepository.ListAsync(
-            productIds: [.. cmd.Items.Select(item => item.ProductId)], 
+            productVariantIds: [.. cmd.Items.Select(item => item.ProductVariantId)], 
             cancellationToken: cancellationToken);
 
         if (cmd.Items.Count != inventoryItems.Count)
@@ -21,7 +21,7 @@ public sealed class Handler(
 
         foreach (var item in cmd.Items)
         {
-            var inventoryItem = inventoryItems.SingleOrDefault(i => i.ProductId == item.ProductId);
+            var inventoryItem = inventoryItems.SingleOrDefault(i => i.ProductVariantId == item.ProductVariantId);
             if (inventoryItem is null)
                 return Result.Failure(Errors.ItemNotFound);
 

@@ -9,7 +9,7 @@ public static class DependencyInjection
         public IServiceCollection AddIntegrationEventHandlers()
         {
             services.AddTransient<
-                IIntegrationEventHandler<ProductCreatedEvent>, 
+                IIntegrationEventHandler<ProductVariantAddedEvent>, 
                 InitializeOnProductCreatedHandler>();
 
             services.AddTransient<
@@ -24,7 +24,8 @@ public static class DependencyInjection
             services.AddSingleton<IEventTypeRegistry>(_ =>
             {
                 var registry = new EventTypeRegistry();
-                registry.Add("catalog.product.created", typeof(ProductCreatedEvent));
+                // registry.Add("catalog.product.created", typeof(ProductCreatedEvent));
+                registry.Add("catalog.product-variant.added", typeof(ProductVariantAddedEvent));
                 registry.Add("ordering.order.cancelled", typeof(OrderCancelledEvent));
 
                 return registry;

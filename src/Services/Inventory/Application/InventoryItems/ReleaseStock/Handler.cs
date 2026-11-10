@@ -10,15 +10,15 @@ public sealed class Handler(
         var utcNow = clock.GetUtcNow();
 
         var inventoryItems = await inventoryItemRepository.ListAsync(
-            productIds: [.. cmd.Items.Select(i => i.ProductId)],
+            productVariantIds: [.. cmd.Items.Select(i => i.ProductVariantId)],
             cancellationToken: cancellationToken);
 
-        var dict = cmd.Items.ToDictionary(i => i.ProductId);
+        var dict = cmd.Items.ToDictionary(i => i.ProductVariantId);
 
         foreach (var inventoryItem in inventoryItems)
         {
             var releaseStockResult = inventoryItem.Release(
-                quantity: dict[inventoryItem.ProductId].Quantity, 
+                quantity: dict[inventoryItem.ProductVariantId].Quantity, 
                 occurredAt: utcNow);
 
             if (releaseStockResult.IsFailure)

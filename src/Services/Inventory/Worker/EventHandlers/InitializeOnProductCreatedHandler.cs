@@ -2,11 +2,17 @@ using InitializeCommand = Vendora.Services.Inventory.Application.InventoryItems.
 
 namespace Vendora.Services.Inventory.Worker.EventHandlers;
 
-public sealed class InitializeOnProductCreatedHandler(ISender sender) : IIntegrationEventHandler<ProductCreatedEvent>
+public sealed class InitializeOnProductCreatedHandler(ISender sender) : IIntegrationEventHandler<ProductVariantAddedEvent>
 {
-    public async Task HandleAsync(ProductCreatedEvent @event, CancellationToken ct)
+    public async Task HandleAsync(ProductVariantAddedEvent @event, CancellationToken ct)
     {
-        var cmd = new InitializeCommand { ProductId = @event.ProductId };
+        var cmd = new InitializeCommand
+        {
+            ProductId = @event.ProductId,
+            ProductVariantId = @event.VariantId,
+            Sku = @event.Sku
+        };
+        
         var result = await sender.Send(cmd, ct);
 
         if (result.IsFailure)

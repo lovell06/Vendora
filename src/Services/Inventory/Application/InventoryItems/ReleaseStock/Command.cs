@@ -7,6 +7,6 @@ public sealed class Command : ICommand
 
 public sealed class ItemDto
 {
-    public required long ProductId { get; init; }
+    public required long ProductVariantId { get; init; }
     public required int Quantity { get; init; }
 }

@@ -2,7 +2,7 @@ namespace Vendora.Services.Inventory.Application.InventoryItems.CheckAvailabilit
 
 public sealed class Response
 {
-    public long ProductId { get; init; }
+    public long ProductVariantId { get; init; }
     public bool IsAvailable { get; init; }
     public int AvailableQuantity { get; init; }
 }

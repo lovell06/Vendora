@@ -10,21 +10,23 @@ public sealed class Handler(
     {
         var utcNow = clock.GetUtcNow();
 
-        if (await inventoryItemRepository.ExistsByProductId(cmd.ProductId, cancellationToken))
+        if (await inventoryItemRepository.ExistsByProductVariantId(cmd.ProductVariantId, cancellationToken))
         {
-            logger.LogWarning("Inventory Item Creation rejected because product not existed.");
+            logger.LogWarning("Inventory Item Creation rejected because product variant existed.");
 
             return Result.Failure(new Error
             {
                 Code = "inventory_item_creation.existed",
-                Message = "Product is existed.",
+                Message = "Product variant is existed.",
                 Type = ErrorType.Conflict
             });
         }
 
         var result = InventoryItem.Create(
-            cmd.ProductId,
-            utcNow);
+            productId: cmd.ProductId,
+            productVariantId: cmd.ProductVariantId,
+            sku: cmd.Sku,
+            createdAt: utcNow);
 
         if (result.IsFailure)
         {

@@ -14,7 +14,7 @@ public sealed class AdjustInventoryItemRequest
     {
         return new Command
         {
-            ProductId = ProductId,
+            InventoryItemId = ProductId,
             QuantityChange = QuantityChange,
             Reason = Reason,
             CreatedBy = createdBy

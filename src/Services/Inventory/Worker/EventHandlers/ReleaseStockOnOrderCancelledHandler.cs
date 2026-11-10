@@ -13,7 +13,7 @@ public sealed class ReleaseStockOnOrderCancelledHandler(ISender sender)
             [
                 .. @event.CancelledOrderItems.Select(i => new ItemDto
                 {
-                    ProductId = i.ProductId,
+                    ProductVariantId = i.ProductVariantId,
                     Quantity = i.Quantity
                 })
             ]

@@ -11,6 +11,6 @@ public sealed class OrderCancelledEvent : IIntegrationEvent
 
 public sealed class CancelledOrderItemDto
 {
-    public required long ProductId { get; init; }
+    public required long ProductVariantId { get; init; }
     public required int Quantity { get; init; }
 }

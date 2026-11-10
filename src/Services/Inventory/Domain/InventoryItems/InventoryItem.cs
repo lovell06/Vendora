@@ -4,7 +4,10 @@ namespace Vendora.Services.Inventory.Domain.InventoryItems;
 
 public class InventoryItem
 {
-    public long ProductId { get; init; }
+    public long Id { get; init; }
+    public required long ProductId { get; init; }
+    public required long ProductVariantId { get; init; }
+    public required string Sku { get; init; }
     public int OnHandQuantity { get; private set; }
     public int ReservedQuantity { get; private set; }
     public int AvailableQuantity => OnHandQuantity - ReservedQuantity;
@@ -20,14 +23,19 @@ public class InventoryItem
 
     public static Result<InventoryItem> Create(
         long productId,
+        long productVariantId,
+        string sku,
         DateTimeOffset createdAt)
     {
-        if (productId < 0)
+        if (productVariantId < 0)
             return Result<InventoryItem>.Failure(InventoryItemErrors.InvalidProductId);
         
         return Result<InventoryItem>.Success(new InventoryItem
         {
+            Id = 0,
             ProductId = productId,
+            ProductVariantId = productVariantId,
+            Sku = sku,
             OnHandQuantity = 0,
             ReservedQuantity = 0,
             CreatedAt = createdAt

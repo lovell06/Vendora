@@ -5,7 +5,7 @@ namespace Vendora.Services.Inventory.Domain.InventoryItems;
 public sealed class InventoryAdjustment
 {
     public Guid Id { get; init; }
-    public long ProductId { get; init; }
+    public long InventoryItemId { get; init; }
     public int QuantityChange { get; init; }
     public required string Reason { get; init; }
     public Guid CreatedBy { get; init; }
@@ -16,18 +16,18 @@ public sealed class InventoryAdjustment
     }
 
     public static Result<InventoryAdjustment> Create(
-        long productId,
+        long inventoryItemId,
         int quantityChange,
         string reason,
         Guid createdBy,
         DateTimeOffset createdAt)
     {
-        if (productId < 0)
+        if (inventoryItemId < 0)
         {
             return Result<InventoryAdjustment>.Failure(new Error
             {
-                Code = "inventory_adjustment.product_id_invalid",
-                Message = "ProductId invalid.",
+                Code = "inventory_adjustment.inventory_item_id_invalid",
+                Message = "Inventory item ID invalid.",
                 Type = ErrorType.Validation
             });
         }
@@ -38,7 +38,7 @@ public sealed class InventoryAdjustment
         return Result<InventoryAdjustment>.Success(new InventoryAdjustment
         {
             Id = Guid.NewGuid(),
-            ProductId = productId,
+            InventoryItemId = inventoryItemId,
             QuantityChange = quantityChange,
             Reason = reason,
             CreatedBy = createdBy,

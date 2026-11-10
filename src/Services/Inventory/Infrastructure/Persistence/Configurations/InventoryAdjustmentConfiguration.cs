@@ -8,11 +8,10 @@ public sealed class InventoryAdjustmentConfiguration : IEntityTypeConfiguration<
         builder.HasKey(adjustment => adjustment.Id);
 
         builder.Property(adjustment => adjustment.Id)
-            .HasColumnName("id")
-            .ValueGeneratedNever();
+            .HasColumnName("id");
 
-        builder.Property(adjustment => adjustment.ProductId)
-            .HasColumnName("product_id")
+        builder.Property(adjustment => adjustment.InventoryItemId)
+            .HasColumnName("inventory_item_id")
             .IsRequired();
 
         builder.Property(adjustment => adjustment.QuantityChange)
@@ -34,7 +33,7 @@ public sealed class InventoryAdjustmentConfiguration : IEntityTypeConfiguration<
 
         builder.HasIndex(adjustment => new
             {
-                adjustment.ProductId, 
+                adjustment.InventoryItemId, 
                 adjustment.CreatedAt,
                 adjustment.Id
             })
