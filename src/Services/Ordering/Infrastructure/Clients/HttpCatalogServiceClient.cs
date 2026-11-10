@@ -3,10 +3,10 @@ namespace Vendora.Services.Ordering.Infrastructure.Clients;
 public sealed class HttpCatalogServiceClient(
     HttpClient client) : ICatalogServiceClient
 {
-    public async Task<Result<ProductsInfoResponse>> GetProductsInfoAsync(IReadOnlyList<long> productIds, CancellationToken ct)
+    public async Task<Result<ProductsInfoResponse>> GetProductVariantsInfoAsync(IReadOnlyList<long> productVariantIds, CancellationToken ct)
     {
         using var message = new HttpRequestMessage(HttpMethod.Post, "/api/products/batch");
-        message.Content = JsonContent.Create(new { ProductIds = productIds });
+        message.Content = JsonContent.Create(new { ProductVariantIds = productVariantIds });
 
         using var response = await client.SendAsync(message, ct);
 

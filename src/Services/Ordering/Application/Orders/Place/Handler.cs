@@ -15,7 +15,7 @@ public sealed class Handler(
         var utcNow = clock.GetUtcNow();
 
         var itemsResult = await cartServiceClient.GetSelectedItems(
-            productIds: cmd.ProductIds,
+            productVariantIds: cmd.ProductVariantIds,
             ct: cancellationToken);
 
         if (itemsResult.IsFailure)
@@ -23,19 +23,19 @@ public sealed class Handler(
 
         var cartItemsResponse = itemsResult.Value;
 
-        var productsInfoResult = await catalogServiceClient.GetProductsInfoAsync(
-            productIds: [.. cartItemsResponse.Items.Select(i => i.ProductId)],
+        var productVariantsInfoResult = await catalogServiceClient.GetProductVariantsInfoAsync(
+            productVariantIds: [.. cartItemsResponse.Items.Select(i => i.ProductVariantId)],
             ct: cancellationToken);
 
-        if (productsInfoResult.IsFailure)
-            return Result.Failure(productsInfoResult.Error);
+        if (productVariantsInfoResult.IsFailure)
+            return Result.Failure(productVariantsInfoResult.Error);
 
-        if (productsInfoResult.Value.Products.Count == 0)
+        if (productVariantsInfoResult.Value.ProductVariants.Count == 0)
             return Result.Failure(Errors.ProductNotFound);
         
-        var productsInfo = productsInfoResult.Value.Products.ToDictionary(p => p.Id);
+        var productVariantsInfo = productVariantsInfoResult.Value.ProductVariants.ToDictionary(p => p.VariantId);
 
-        var currencyTypeCount = productsInfo.Select(p => p.Value.Currency).Distinct().Count();
+        var currencyTypeCount = productVariantsInfo.Select(p => p.Value.Currency).Distinct().Count();
         if (currencyTypeCount != 1)
         {
             logger.LogWarning(
@@ -48,20 +48,23 @@ public sealed class Handler(
         var orderItems = new List<OrderItem>();
         foreach (var item in cartItemsResponse.Items)
         {
-            if (!productsInfo.TryGetValue(item.ProductId, out var productInfo))
+            if (!productVariantsInfo.TryGetValue(item.ProductVariantId, out var productVariantInfo))
             {
                 logger.LogWarning(
                     "Placing order rejected because product {Id} not found.",
-                    item.ProductId);
+                    item.ProductVariantId);
 
                 return Result.Failure(Errors.ProductNotFound);
             }
 
             var orderItemResult = OrderItem.Create(
-                productId: item.ProductId,
-                productName: productInfo.Name,
+                variantId: item.ProductVariantId,
+                productId: productVariantInfo.ProductId,
+                sku: productVariantInfo.Sku,
+                productName: productVariantInfo.ProductName,
+                variantName: productVariantInfo.VariantName,
                 quantity: item.Quantity,
-                unitPrice: productInfo.Price);
+                unitPrice: productVariantInfo.Price);
 
             if (orderItemResult.IsFailure)
             {
@@ -74,7 +77,7 @@ public sealed class Handler(
         var orderResult = Order.Place(
             userId: cmd.UserId,
             items: orderItems,
-            currency: productsInfo.Values.ToArray()[0].Currency,
+            currency: productVariantsInfo.Values.ToArray()[0].Currency,
             createdAt: utcNow);
 
         if (orderResult.IsFailure)

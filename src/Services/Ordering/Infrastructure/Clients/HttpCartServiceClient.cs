@@ -4,13 +4,13 @@ public sealed class HttpCartServiceClient(
     HttpClient client,
     ICurrentUser user) : ICartServiceClient
 {
-    public async Task<Result<SelectedItemsResponse>> GetSelectedItems(IReadOnlyList<long> productIds, CancellationToken ct)
+    public async Task<Result<SelectedItemsResponse>> GetSelectedItems(IReadOnlyList<long> productVariantIds, CancellationToken ct)
     {
         using var message = new HttpRequestMessage(HttpMethod.Post, "/api/carts/items/query");
         message.Headers.Authorization = new AuthenticationHeaderValue(
             scheme: "bearer",
             parameter: await user.GetAccessTokenAsync());
-        message.Content = JsonContent.Create(new { ProductIds = productIds });
+        message.Content = JsonContent.Create(new { ProductVariantIds = productVariantIds });
 
         using var response = await client.SendAsync(message, ct);
 

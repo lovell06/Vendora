@@ -14,7 +14,7 @@ public class HttpInventoryServiceClient(HttpClient client) : IInventoryServiceCl
             [
                 .. orderItems.Select(i => new ReservedItemDto
                 {
-                    ProductId = i.ProductId,
+                    ProductVariantId = i.VariantId,
                     Quantity = i.Quantity
                 })
             ]
@@ -44,7 +44,7 @@ public class HttpInventoryServiceClient(HttpClient client) : IInventoryServiceCl
 
 public struct ReservedItemDto
 {
-    public long ProductId { get; init; }
+    public long ProductVariantId { get; init; }
     public int Quantity { get; init; }
 }
 
