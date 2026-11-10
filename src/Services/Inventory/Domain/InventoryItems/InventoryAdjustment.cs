@@ -37,7 +37,7 @@ public sealed class InventoryAdjustment
 
         return Result<InventoryAdjustment>.Success(new InventoryAdjustment
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.CreateVersion7(),
             InventoryItemId = inventoryItemId,
             QuantityChange = quantityChange,
             Reason = reason,
