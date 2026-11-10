@@ -52,12 +52,12 @@ public sealed class Handler(
         {
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            outboxRepository.Add(new ProductCreatedEvent
-            {
-                Id = Guid.CreateVersion7(),
-                OccurredAt = utcNow,
-                ProductId = product.Id
-            }, utcNow);
+            // outboxRepository.Add(new ProductCreatedEvent
+            // {
+            //     Id = Guid.CreateVersion7(),
+            //     OccurredAt = utcNow,
+            //     ProductId = product.Id
+            // }, utcNow);
 
             foreach (var productVariant in command.ProductVariants)
             {

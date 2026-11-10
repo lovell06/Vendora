@@ -92,7 +92,7 @@ public static class DependencyInjection
             {
                 var registry = new EventTypeRegistry();
                 registry.Add("catalog.product.created", typeof(ProductCreatedEvent));
-                registry.Add("catalog.prodcut-variant.added", typeof(ProductVariantAddedEvent));
+                registry.Add("catalog.product-variant.added", typeof(ProductVariantAddedEvent));
 
                 return registry;
             });
