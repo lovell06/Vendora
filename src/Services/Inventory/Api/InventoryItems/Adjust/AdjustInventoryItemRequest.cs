@@ -6,7 +6,7 @@ public sealed class AdjustInventoryItemRequest
 {
     public const string Pattern = "/adjust";
 
-    public long ProductId { get; init; }
+    public long InventoryItemId { get; init; }
     public int QuantityChange { get; init; }
     public required string Reason { get; init; }
 
@@ -14,7 +14,7 @@ public sealed class AdjustInventoryItemRequest
     {
         return new Command
         {
-            InventoryItemId = ProductId,
+            InventoryItemId = InventoryItemId,
             QuantityChange = QuantityChange,
             Reason = Reason,
             CreatedBy = createdBy

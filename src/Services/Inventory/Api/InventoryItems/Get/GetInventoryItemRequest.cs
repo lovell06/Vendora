@@ -6,13 +6,13 @@ public sealed class GetInventoryItemRequest
 {
     public const string Pattern = "/{productId}";
 
-    public long ProductId { get; init; }
+    public long ProductVariantId { get; init; }
 
     public Query ToQuery()
     {
         return new Query
         {
-            ProductVariantId = ProductId
+            ProductVariantId = ProductVariantId
         };
     }
 }

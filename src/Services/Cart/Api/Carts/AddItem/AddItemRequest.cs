@@ -5,7 +5,7 @@ namespace Vendora.Services.Cart.Api.Carts.AddItem;
 public sealed class AddItemRequest
 {
     public const string Pattern = "/add-item";
-    public long ProductId { get; init; }
+    public long ProductVariantId { get; init; }
     public int Quantity { get; init; }
 
     public Command ToCommand(Guid userId)
@@ -13,7 +13,7 @@ public sealed class AddItemRequest
         return new Command
         {
             UserId = userId,
-            ProductVariantId = ProductId,
+            ProductVariantId = ProductVariantId,
             Quantity = Quantity
         };
     }

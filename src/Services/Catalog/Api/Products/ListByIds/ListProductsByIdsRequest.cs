@@ -6,10 +6,10 @@ public sealed class ListProductsByIdsRequest
 {
     public const string Pattern = "/batch";
 
-    public required List<long> ProductVariantReferences { get; init; }
+    public required List<long> ProductVariantIds { get; init; }
 
     public Query ToQuery()
     {
-        return new Query { ProductVariantReferences = ProductVariantReferences };
+        return new Query { ProductVariantReferences = ProductVariantIds };
     }
 }

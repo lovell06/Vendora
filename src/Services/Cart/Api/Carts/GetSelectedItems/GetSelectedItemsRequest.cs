@@ -6,10 +6,10 @@ public sealed class GetSelectedItemsRequest
 {
     public const string Pattern = "/items/query";
 
-    public required List<long> ProductIds { get; init; }
+    public required List<long> ProductVariantIds { get; init; }
 
     public Query ToQuery(Guid userId)
     {
-        return new Query(userId, ProductIds);
+        return new Query(userId, ProductVariantIds);
     }
 }
