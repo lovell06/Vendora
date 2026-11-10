@@ -43,7 +43,7 @@ public class Order
     {
         if (_items.SingleOrDefault(i =>
                 i.OrderId == item.OrderId &&
-                i.ProductId == item.ProductId) is not null)
+                i.VariantId == item.VariantId) is not null)
         {
             return Result.Failure(OrderErrors.CannotAddItem);
         }
