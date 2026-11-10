@@ -25,7 +25,6 @@ namespace Vendora.Services.Inventory.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Vendora.Services.Inventory.Domain.InventoryItems.InventoryAdjustment", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 

@@ -8,7 +8,8 @@ public sealed class InventoryAdjustmentConfiguration : IEntityTypeConfiguration<
         builder.HasKey(adjustment => adjustment.Id);
 
         builder.Property(adjustment => adjustment.Id)
-            .HasColumnName("id");
+            .HasColumnName("id")
+            .ValueGeneratedNever();
 
         builder.Property(adjustment => adjustment.InventoryItemId)
             .HasColumnName("inventory_item_id")
