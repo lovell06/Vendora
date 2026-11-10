@@ -2,7 +2,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Vendora.Services.Cart.Infrastructure.Persistence;
@@ -12,15 +11,13 @@ using Vendora.Services.Cart.Infrastructure.Persistence;
 namespace Vendora.Services.Cart.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260928101627_Initialize")]
-    partial class Initialize
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.12")
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -60,9 +57,9 @@ namespace Vendora.Services.Cart.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("cart_id");
 
-                    b.Property<long>("ProductId")
+                    b.Property<long>("ProductVariantId")
                         .HasColumnType("bigint")
-                        .HasColumnName("product_id");
+                        .HasColumnName("product_variant_id");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
@@ -76,7 +73,7 @@ namespace Vendora.Services.Cart.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at");
 
-                    b.HasKey("CartId", "ProductId");
+                    b.HasKey("CartId", "ProductVariantId");
 
                     b.ToTable("cart_items", (string)null);
                 });
