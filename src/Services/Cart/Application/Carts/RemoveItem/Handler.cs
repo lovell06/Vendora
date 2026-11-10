@@ -26,13 +26,13 @@ public sealed class Handler(
             });
         }
 
-        var removedItem = cart.Items.SingleOrDefault(item => item.ProductId == cmd.ProducId);
+        var removedItem = cart.Items.SingleOrDefault(item => item.ProductVariantId == cmd.ProducVariantId);
         
         if (removedItem is null)
         {
             logger.LogInformation(
                 "Item {ProductId} has not added to cart.",
-                cmd.ProducId);
+                cmd.ProducVariantId);
             
             return Result.Success();
         }

@@ -3,7 +3,7 @@ namespace Vendora.Services.Cart.Domain.Carts;
 public class CartItem
 {
     public long CartId { get; init; }
-    public long ProductId { get; init; }
+    public long ProductVariantId { get; init; }
     public int Quantity { get; private set; }
     public DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? UpdatedAt { get; private set; }
@@ -14,14 +14,14 @@ public class CartItem
 
     public static CartItem Create(
         long cartId,
-        long productId,
+        long productVariantId,
         int quantity,
         DateTimeOffset createdAt)
     {
         return new CartItem
         {
             CartId = cartId,
-            ProductId = productId,
+            ProductVariantId = productVariantId,
             Quantity = quantity,
             CreatedAt = createdAt
         };

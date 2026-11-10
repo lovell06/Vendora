@@ -12,7 +12,7 @@ public sealed class RemoveItemRequest
         return new Command
         {
             UserId = userId,
-            ProducId = ProductId
+            ProducVariantId = ProductId
         };
     }
 }

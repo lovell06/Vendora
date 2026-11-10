@@ -13,7 +13,7 @@ public sealed class Handler(
     {
         var utcNow = clock.GetUtcNow();
 
-        var isProductExists = await catalogServiceClient.ProductExistsByIdAsync(cmd.ProductId, cancellationToken);
+        var isProductExists = await catalogServiceClient.ProductExistsByIdAsync(cmd.ProductVariantId, cancellationToken);
         if (isProductExists.IsFailure)
             return Result.Failure(isProductExists.Error);
 
@@ -33,13 +33,13 @@ public sealed class Handler(
             });
         }
 
-        var itemInCart = cart.Items.SingleOrDefault(i => i.ProductId == cmd.ProductId);
+        var itemInCart = cart.Items.SingleOrDefault(i => i.ProductVariantId == cmd.ProductVariantId);
         
         if (itemInCart is not null)
         {
             logger.LogWarning(
                 "Item {ProductId} previously added by User {UserId}.",
-                cmd.ProductId,
+                cmd.ProductVariantId,
                 cmd.UserId);
 
             itemInCart.SetQuantity(cmd.Quantity, utcNow);
@@ -48,7 +48,7 @@ public sealed class Handler(
         {
             var item = CartItem.Create(
                 cartId: cart.Id,
-                productId: cmd.ProductId,
+                productVariantId: cmd.ProductVariantId,
                 quantity: cmd.Quantity,
                 createdAt: utcNow);
 

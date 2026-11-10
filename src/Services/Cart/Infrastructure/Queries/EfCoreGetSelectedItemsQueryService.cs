@@ -10,15 +10,15 @@ public sealed class EfCoreGetSelectedItemsQueryService(ApplicationDbContext cont
         var cart = await context.Carts
             .Include(c => 
                 c.Items.Where(i => 
-                    query.ProductIds.Any(productId => 
-                        productId == i.ProductId)))
+                    query.ProductVariantIds.Any(productVariantId => 
+                        productVariantId == i.ProductVariantId)))
             .SingleOrDefaultAsync(c => c.UserId == query.UserId, ct);
 
         if (cart is null)
             return null;
 
         var items = cart.Items
-            .Select(i => new CartItemDto { ProductId = i.ProductId, Quantity = i.Quantity })
+            .Select(i => new CartItemDto { ProductVariantId = i.ProductVariantId, Quantity = i.Quantity })
             .ToList();
         
         return new Response { Items = items };

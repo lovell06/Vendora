@@ -1,7 +1,7 @@
 namespace Vendora.Services.Cart.Application.Carts.GetSelectedItems;
 
-public sealed class Query(Guid userId, List<long> productIds) : IQuery<Response>
+public sealed class Query(Guid userId, List<long> productVariantIds) : IQuery<Response>
 {
     public Guid UserId { get; init; } = userId;
-    public List<long> ProductIds { get; private set; } = [.. productIds.Distinct()];
+    public List<long> ProductVariantIds { get; private set; } = [.. productVariantIds.Distinct()];
 }

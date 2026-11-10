@@ -5,14 +5,14 @@ public sealed class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
     public void Configure(EntityTypeBuilder<CartItem> builder)
     {
         builder.ToTable("cart_items");
-        builder.HasKey(item => new { item.CartId, item.ProductId });
+        builder.HasKey(item => new { item.CartId, item.ProductVariantId });
 
         builder.Property(item => item.CartId)
             .HasColumnName("cart_id")
             .IsRequired();
 
-        builder.Property(item => item.ProductId)
-            .HasColumnName("product_id")
+        builder.Property(item => item.ProductVariantId)
+            .HasColumnName("product_variant_id")
             .IsRequired();
 
         builder.Property(item => item.Quantity)

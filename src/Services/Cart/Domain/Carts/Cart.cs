@@ -35,22 +35,22 @@ public class Cart
         UpdatedAt = updatedAt;
     }
 
-    public void RemoveItems(IReadOnlyList<long> productIds, DateTimeOffset deletedAt)
+    public void RemoveItems(IReadOnlyList<long> productVariantIds, DateTimeOffset deletedAt)
     {
-        var productIdsHashSet = productIds.ToHashSet();
+        var productVariantIdsHashSet = productVariantIds.ToHashSet();
 
-        var removeCount = _items.RemoveAll(item => productIdsHashSet.Contains(item.ProductId));
+        var removeCount = _items.RemoveAll(item => productVariantIdsHashSet.Contains(item.ProductVariantId));
 
         if (removeCount > 0)
             UpdatedAt = deletedAt;
     }
 
     public Result SetItemQuantity(
-        long productId, 
+        long productVariantId, 
         int quantity,
         DateTimeOffset updatedAt)
     {
-        var item = _items.SingleOrDefault(i => i.ProductId == productId);
+        var item = _items.SingleOrDefault(i => i.ProductVariantId == productVariantId);
 
         return item is not null
             ? item.SetQuantity(quantity, updatedAt)

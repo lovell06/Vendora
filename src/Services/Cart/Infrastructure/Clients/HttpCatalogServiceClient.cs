@@ -2,9 +2,9 @@ namespace Vendora.Services.Cart.Infrastructure.Clients;
 
 public sealed class HttpCatalogServiceClient(HttpClient client) : ICatalogServiceClient
 {
-    public async Task<Result> ProductExistsByIdAsync(long productId, CancellationToken ct)
+    public async Task<Result> ProductExistsByIdAsync(long productVariantId, CancellationToken ct)
     {
-        using var message = new HttpRequestMessage(HttpMethod.Get, $"/api/products/{productId}");
+        using var message = new HttpRequestMessage(HttpMethod.Get, $"/api/products/variants/{productVariantId}");
         var response = await client.SendAsync(message, ct);
 
         if (response.IsSuccessStatusCode)

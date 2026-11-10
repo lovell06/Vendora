@@ -19,7 +19,7 @@ public sealed class EfCoreListItemQueryService(ApplicationDbContext context) : I
             .Where(i => i.CartId == cartId)
             .Select(i => new ItemDto()
             {
-                ProductId = i.ProductId,
+                ProductVariantId = i.ProductVariantId,
                 Quantity = i.Quantity
             })
             .ToListAsync(ct);

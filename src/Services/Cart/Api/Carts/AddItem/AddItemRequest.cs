@@ -13,7 +13,7 @@ public sealed class AddItemRequest
         return new Command
         {
             UserId = userId,
-            ProductId = ProductId,
+            ProductVariantId = ProductId,
             Quantity = Quantity
         };
     }

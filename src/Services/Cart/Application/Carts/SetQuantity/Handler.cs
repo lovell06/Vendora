@@ -26,7 +26,7 @@ public sealed class Handler(
             });
         }
 
-        var result = cart.SetItemQuantity(cmd.ProductId, cmd.NewQuantity, utcNow);
+        var result = cart.SetItemQuantity(cmd.ProductVariantId, cmd.NewQuantity, utcNow);
 
         if (result.IsSuccess)
             await unitOfWork.SaveChangesAsync(cancellationToken);

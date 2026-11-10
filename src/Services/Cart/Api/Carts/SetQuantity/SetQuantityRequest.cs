@@ -13,7 +13,7 @@ public sealed class SetQuantityRequest
         return new Command
         {
             UserId = userId,
-            ProductId = productId,
+            ProductVariantId = productId,
             NewQuantity = Quantity
         };
     }

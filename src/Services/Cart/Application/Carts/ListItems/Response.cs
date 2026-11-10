@@ -7,6 +7,6 @@ public sealed class Response
 
 public sealed class ItemDto
 {
-    public long ProductId { get; init; }
+    public long ProductVariantId { get; init; }
     public int Quantity { get; init; }
 }
