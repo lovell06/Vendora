@@ -112,6 +112,12 @@ namespace Vendora.Services.Ordering.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Vendora.Services.Ordering.Domain.Orders.OrderItem", b =>
                 {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint")
                         .HasColumnName("order_id");
@@ -130,11 +136,32 @@ namespace Vendora.Services.Ordering.Infrastructure.Persistence.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("quantity");
 
+                    b.Property<string>("Sku")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("sku");
+
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("numeric")
                         .HasColumnName("unit_price");
 
-                    b.HasKey("OrderId", "ProductId");
+                    b.Property<long>("VariantId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("variant_id");
+
+                    b.Property<string>("VariantName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("variant_name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("Sku")
+                        .IsUnique();
 
                     b.ToTable("order_items", (string)null);
                 });
