@@ -1,0 +1,11 @@
+@inherits LayoutComponentBase
+<div class="auth-shell">
+    <SkipLink />
+    <header class="auth-header">
+        <BrandLink />
+        <ThemePicker />
+    </header>
+    <main class="form-content" id="main-content" tabindex="-1">@Body</main>
+    <footer class="auth-footer"><a href="/">Back to home</a></footer>
+</div>
+<ConnectionAlert />

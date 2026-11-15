@@ -1,0 +1,112 @@
+@page "/products/{Id}"
+@layout Vendora.Web.Features.Home.HomeLayout
+@using Vendora.Web.Features.Home
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IBrowserViewportService Viewport
+
+<PageTitle>@(_product is null ? "Product not found" : _product.Name) | Vendora</PageTitle>
+<StoreHeader />
+<main id="home-content" class="product-detail-page" tabindex="-1">
+    @if (_product is null)
+    {
+        <StatusPage Code="404" Title="Product not found" Description="This product is unavailable. Return home to explore other products." Icon="@Icons.Material.Outlined.SearchOff" MinimalOnMobile="true" />
+    }
+    else
+    {
+        <MudButton Href="/" StartIcon="@Icons.Material.Outlined.ArrowBack" Variant="Variant.Text" Color="Color.Primary" Class="app-button back-link">All products</MudButton>
+        <p class="demo-note">Demo catalog · Sample product and price</p>
+        <div class="detail-layout">
+            <div class="detail-image">
+                @if (!_imageFailed)
+                {
+                    <img src="@_product.ImageUrl" alt="@_product.Name" width="480" height="480" fetchpriority="high" @onerror="() => _imageFailed = true" />
+                }
+                else { <MudIcon Icon="@Icons.Material.Outlined.Inventory2" aria-label="Product image unavailable" /> }
+            </div>
+            <section class="detail-summary" aria-labelledby="product-title">
+                <p class="category">@_product.Category</p>
+                <h1 id="product-title">@_product.Name</h1>
+                <p class="detail-price">@_product.PriceText</p>
+                <p class="stock"><MudIcon Icon="@(_product.InStock ? Icons.Material.Outlined.CheckCircle : Icons.Material.Outlined.RemoveCircleOutline)" Size="Size.Small" aria-hidden="true" />@(_product.InStock ? "In stock" : "Out of stock")</p>
+                <p class="description">@_product.Description</p>
+                <div class="purchase-controls">
+                    <div class="desktop-quantity"><QuantitySelector @bind-Value="_quantity" Min="1" Max="99" Disabled="@(!_product.InStock)" /></div>
+                    <AppButton OnClick="RequestAddToCart" Disabled="@(!_product.InStock || _openingSheet || _quantity < 1 || _quantity > 99)" Class="detail-add">@(_product.InStock ? "Add to cart" : "Out of stock")</AppButton>
+                </div>
+                <section class="product-information" aria-labelledby="information-title">
+                    <h2 id="information-title">Product information</h2>
+                    <dl><div><dt>Category</dt><dd>@_product.Category</dd></div><div><dt>Product code</dt><dd>@_product.Id.ToUpperInvariant()</dd></div></dl>
+                </section>
+            </section>
+        </div>
+        <section class="related" aria-labelledby="related-title">
+            <h2 id="related-title">You may also like</h2>
+            <ProductGrid>
+                @foreach (var product in RelatedProducts)
+                {
+                    <ProductCard @key="product.Id" Name="@product.Name" Category="@product.Category" PriceText="@product.PriceText" ImageUrl="@product.ImageUrl" InStock="@product.InStock" DetailsHref="@($"/products/{product.Id}")" />
+                }
+            </ProductGrid>
+        </section>
+    }
+</main>
+@code {
+    [Parameter] public string Id { get; set; } = "";
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
+    private DemoCatalog.Product? _product;
+    private int _quantity = 1;
+    private bool _openingSheet;
+    private bool _imageFailed;
+    private IEnumerable<DemoCatalog.Product> RelatedProducts => DemoCatalog.Products
+        .Where(product => product.Id != Id)
+        .OrderByDescending(product => product.Category == _product?.Category).Take(4);
+    protected override void OnParametersSet()
+    {
+        _product = DemoCatalog.Products.FirstOrDefault(product => product.Id == Id);
+        _quantity = 1;
+        _imageFailed = false;
+        if (_product is null && HttpContext is { Response.HasStarted: false })
+            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+    }
+    private async Task RequestAddToCart()
+    {
+        if (_product is not { InStock: true } || _openingSheet) return;
+        _openingSheet = true;
+        var productId = Id;
+        try
+        {
+            if (await Viewport.GetCurrentBreakpointAsync() != Breakpoint.Xs)
+            {
+                AddToCart();
+                return;
+            }
+            var parameters = new DialogParameters<AddToCartSheet>
+            {
+                { sheet => sheet.Name, _product.Name },
+                { sheet => sheet.ImageUrl, _product.ImageUrl },
+                { sheet => sheet.PriceText, _product.PriceText },
+                { sheet => sheet.InitialQuantity, _quantity }
+            };
+            var options = new DialogOptions
+            {
+                Position = DialogPosition.BottomCenter, FullWidth = true, MaxWidth = MaxWidth.False,
+                NoHeader = true, BackdropClick = true, CloseOnEscapeKey = true,
+                CloseOnNavigation = true, BackgroundClass = "cart-sheet-backdrop"
+            };
+            var dialog = await DialogService.ShowAsync<AddToCartSheet>("Add to cart", parameters, options);
+            var result = await dialog.Result;
+            if (Id == productId && result is { Canceled: false, Data: int quantity })
+            {
+                _quantity = quantity;
+                AddToCart();
+            }
+        }
+        finally { _openingSheet = false; }
+    }
+    private void AddToCart()
+    {
+        if (_product is not { InStock: true } || _quantity is < 1 or > 99) return;
+        Snackbar.Add($"Demo: {_quantity} × {_product.Name} selected. No order has been placed.", Severity.Info);
+    }
+}

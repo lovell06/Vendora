@@ -1,0 +1,2 @@
+.card-preview { width: 100%; max-width: 1120px; }
+.card-preview > p { color: var(--md-on-surface-variant); font-size: .875rem; }

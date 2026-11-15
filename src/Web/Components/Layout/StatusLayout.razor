@@ -1,0 +1,13 @@
+@inherits LayoutComponentBase
+
+<div class="status-shell">
+    <SkipLink />
+    <header class="status-header">
+        <BrandLink />
+        <ThemePicker />
+    </header>
+    <main id="main-content" class="status-main" tabindex="-1">
+        @Body
+    </main>
+</div>
+<ConnectionAlert />

@@ -1,0 +1,19 @@
+@implements IDisposable
+@inject ThemeState ThemeState
+
+<MudThemeProvider Theme="_theme" IsDarkMode="ThemeState.IsDark" ObserveSystemDarkModeChange="false" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<BackToTop />
+
+@code {
+    private readonly MudTheme _theme = VendoraTheme.Create();
+    protected override void OnInitialized() => ThemeState.Changed += Refresh;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender) await ThemeState.InitializeAsync();
+    }
+    private void Refresh() => _ = InvokeAsync(StateHasChanged);
+    public void Dispose() => ThemeState.Changed -= Refresh;
+}

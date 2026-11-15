@@ -1,0 +1,31 @@
+@page "/preview/product-cards"
+@layout StatusLayout
+@inject IWebHostEnvironment Environment
+@inject ISnackbar Snackbar
+
+<PageTitle>Product card preview | Vendora</PageTitle>
+@if (Environment.IsDevelopment())
+{
+    <div class="card-preview">
+        <PageHeading Title="Product cards" />
+        <p>Component preview · Sample data</p>
+        <ProductGrid>
+            <ProductCard Name="Wireless headphones" Category="Audio" PriceText="1.290.000 ₫" OnAddToCart="PreviewAdd" />
+            <ProductCard Name="Portable speaker with a longer product name" Category="Audio" PriceText="890.000 ₫" InStock="false" OnAddToCart="PreviewAdd" />
+            <ProductCard Name="Everyday backpack" Category="Accessories" PriceText="590.000 ₫" />
+        </ProductGrid>
+    </div>
+}
+else
+{
+    <StatusPage MinimalOnMobile="true" Code="404" Title="Page not found" Description="This page is unavailable." Icon="@Icons.Material.Outlined.SearchOff" />
+}
+@code {
+    private void PreviewAdd() => Snackbar.Add("Preview: add to cart selected.", Severity.Info);
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
+    protected override void OnInitialized()
+    {
+        if (!Environment.IsDevelopment() && HttpContext is { Response.HasStarted: false })
+            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+    }
+}

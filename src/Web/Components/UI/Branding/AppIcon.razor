@@ -1,0 +1,12 @@
+<MudIcon Icon="@Icon" Size="Size.Medium" aria-hidden="true" />
+@code {
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+    private string Icon => Name switch
+    {
+        "search" => Icons.Material.Outlined.Search,
+        "bag" => Icons.Material.Outlined.ShoppingBag,
+        "user" => Icons.Material.Outlined.PersonOutline,
+        "grid" => Icons.Material.Outlined.GridView,
+        _ => throw new ArgumentOutOfRangeException(nameof(Name), Name, "Unknown shared icon.")
+    };
+}

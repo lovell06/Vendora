@@ -1,0 +1,25 @@
+@using Vendora.Web.Components.UI.Forms
+@using Vendora.Web.Components.UI.Buttons
+
+<MudDialog Class="cart-sheet" AriaLabel="Add to cart">
+    <DialogContent>
+        <header class="cart-sheet-header">
+            <div class="cart-sheet-image"><img src="@ImageUrl" alt="" width="64" height="64" /></div>
+            <div class="cart-sheet-product"><h2>@Name</h2><p>@PriceText</p></div>
+            <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small" OnClick="Cancel" aria-label="Close" />
+        </header>
+        <div class="cart-sheet-quantity"><QuantitySelector @bind-Value="_quantity" Min="1" Max="99" /></div>
+        <footer class="cart-sheet-footer"><AppButton OnClick="Confirm" Class="cart-sheet-confirm">Add to cart</AppButton></footer>
+    </DialogContent>
+</MudDialog>
+@code {
+    [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
+    [Parameter, EditorRequired] public string Name { get; set; } = "";
+    [Parameter] public string? ImageUrl { get; set; }
+    [Parameter, EditorRequired] public string PriceText { get; set; } = "";
+    [Parameter] public int InitialQuantity { get; set; } = 1;
+    private int _quantity;
+    protected override void OnInitialized() => _quantity = Math.Clamp(InitialQuantity, 1, 99);
+    private void Cancel() => Dialog.Cancel();
+    private void Confirm() => Dialog.Close(DialogResult.Ok(Math.Clamp(_quantity, 1, 99)));
+}

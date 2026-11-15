@@ -1,0 +1,49 @@
+@using System.Globalization
+
+<div class="quantity-selector @Class">
+    <label class="quantity-label" for="@Id">@Label</label>
+    <div class="quantity-control">
+        <MudIconButton Icon="@Icons.Material.Outlined.Remove" Size="Size.Small" Disabled="@(Unavailable || _current <= Min)" OnClick="@(() => MoveAsync(-1))" Class="quantity-step" aria-label="@($"Decrease {Label.ToLowerInvariant()}")" />
+        <input id="@Id" class="quantity-value" type="number" inputmode="numeric" min="@Min" max="@Max" step="@Step" @bind="_text" @bind:after="CommitAsync" disabled="@Unavailable" aria-label="@Label" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Add" Size="Size.Small" Disabled="@(Unavailable || _current >= Max)" OnClick="@(() => MoveAsync(1))" Class="quantity-step quantity-increase" aria-label="@($"Increase {Label.ToLowerInvariant()}")" />
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Id { get; set; } = $"quantity-{Guid.NewGuid():N}";
+    [Parameter] public string Label { get; set; } = "Quantity";
+    [Parameter] public int Value { get; set; } = 1;
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
+    [Parameter] public int Min { get; set; } = 1;
+    [Parameter] public int Max { get; set; } = 99;
+    [Parameter] public int Step { get; set; } = 1;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool Busy { get; set; }
+    [Parameter] public string? Class { get; set; }
+    private int _current = 1;
+    private string _text = "1";
+    private bool _changing;
+    private bool Unavailable => Disabled || Busy || _changing;
+
+    protected override void OnParametersSet()
+    {
+        if (Min < 0 || Max < Min || Step <= 0)
+            throw new ArgumentException("Quantity requires 0 <= Min <= Max and Step > 0.");
+        _current = Math.Clamp(Value, Min, Max);
+        _text = _current.ToString(CultureInfo.InvariantCulture);
+    }
+
+    private Task MoveAsync(int direction) => SetValueAsync((long)_current + (long)direction * Step);
+    private Task CommitAsync() => SetValueAsync(int.TryParse(_text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value) ? value : _current);
+
+    private async Task SetValueAsync(long value)
+    {
+        var next = Unavailable ? _current : (int)Math.Clamp(value, Min, Max);
+        _text = next.ToString(CultureInfo.InvariantCulture);
+        if (next == _current) return;
+        _current = next;
+        _changing = true;
+        try { await ValueChanged.InvokeAsync(next); }
+        finally { _changing = false; }
+    }
+}

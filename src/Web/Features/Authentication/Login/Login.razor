@@ -1,0 +1,27 @@
+@page "/login"
+@page "/dang-nhap"
+@layout AuthLayout
+@inject AuthGateway Gateway
+<PageTitle>Sign in | Vendora</PageTitle>
+<PageHeading Title="Sign in" Eyebrow="VENDORA ACCOUNT" />
+<EditForm Model="_model" OnValidSubmit="Submit" FormName="login" aria-busy="@_busy">
+    <DataAnnotationsValidator />
+    <AppTextField Id="email" Label="Email address" Type="email" @bind-Value="_model.Email" Autocomplete="username" />
+    <AppTextField Id="password" Label="Password" @bind-Value="_model.Password" Autocomplete="current-password" RevealPassword="true" />
+    @if (_result is not null)
+    {
+        <InlineFeedback Message="@_result.Message" Success="@_result.Success"></InlineFeedback>
+    }
+    <AppButton Type="submit" Busy="@_busy" BusyText="Signing in…" Class="auth-submit">Sign in</AppButton>
+</EditForm>
+<div class="switch-form">Don’t have an account? <a href="/register">Create account</a></div>
+@code {
+    private readonly LoginModel _model = new();
+    private bool _busy;
+    private AuthResult? _result;
+    private async Task Submit() { if (_busy) return; _busy = true; _result = null; try { _result = await Gateway.SubmitAsync(new { email = _model.Email, password = _model.Password }, false); } finally { _busy = false; } }
+    private sealed class LoginModel {
+        [Required(ErrorMessage = "Enter your email address."), EmailAddress(ErrorMessage = "Enter a valid email address.")] public string Email { get; set; } = "";
+        [Required(ErrorMessage = "Enter your password.")] public string Password { get; set; } = "";
+    }
+}

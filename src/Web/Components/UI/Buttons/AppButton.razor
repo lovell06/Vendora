@@ -1,0 +1,26 @@
+<MudButton UserAttributes="ButtonAttributes" ButtonType="@MudButtonType" Variant="@MudVariant" Color="Color.Primary" Size="Size.Small" Class="@($"app-button app-button--{Variant.ToString().ToLowerInvariant()} {Class}")" Disabled="@(Disabled || Busy)" DropShadow="false" OnClick="OnClick">
+    @if (Busy && BusyText is not null) { @BusyText }
+    else { @ChildContent }
+</MudButton>
+@code {
+    [Parameter] public string Type { get; set; } = "button";
+    [Parameter] public ButtonVariant Variant { get; set; } = ButtonVariant.Primary;
+    [Parameter] public string? Class { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool Busy { get; set; }
+    [Parameter] public string? BusyText { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    private Dictionary<string, object> ButtonAttributes
+    {
+        get
+        {
+            var attributes = AdditionalAttributes is null ? new Dictionary<string, object>() : new(AdditionalAttributes);
+            attributes["aria-busy"] = Busy ? "true" : "false";
+            return attributes;
+        }
+    }
+    private MudBlazor.Variant MudVariant => Variant == ButtonVariant.Primary ? MudBlazor.Variant.Filled : MudBlazor.Variant.Text;
+    private ButtonType MudButtonType => Type switch { "submit" => ButtonType.Submit, "reset" => ButtonType.Reset, _ => ButtonType.Button };
+}

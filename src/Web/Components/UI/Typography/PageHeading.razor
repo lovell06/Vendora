@@ -1,0 +1,6 @@
+@if (!string.IsNullOrWhiteSpace(Eyebrow)) { <span class="eyebrow">@Eyebrow</span> }
+<h1>@Title</h1>
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Eyebrow { get; set; }
+}

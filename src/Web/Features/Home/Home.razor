@@ -1,0 +1,140 @@
+@page "/"
+@page "/home"
+@layout HomeLayout
+@using Microsoft.AspNetCore.Components.Authorization
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IBrowserViewportService Viewport
+<PageTitle>Home | Vendora</PageTitle>
+<StoreHeader>
+        @if (_isAuthenticated)
+        {
+            <AppButton Variant="ButtonVariant.Icon" OnClick="ToggleCart" aria-label="Open cart" aria-expanded="@_cartOpen" aria-controls="cart-panel"><AppIcon Name="bag" /><span class="desktop-action-label">Cart</span></AppButton>
+            <AppButton Variant="ButtonVariant.Icon" OnClick="ToggleAccount" aria-label="Your account" aria-expanded="@_accountOpen" aria-controls="account-panel"><AppIcon Name="user" /><span class="desktop-action-label">Account</span></AppButton>
+        }
+        else
+        {
+            <MudButton Href="/login" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button sign-in-link">Sign in</MudButton>
+        }
+</StoreHeader>
+<main id="home-content" class="store-content" tabindex="-1">
+    <div class="catalog-intro"><PageHeading Title="Explore products" Eyebrow="CATALOG" /></div>
+    <p class="demo-notice">Demo catalog · Sample products and prices</p>
+    @if (_isAuthenticated && _accountOpen)
+    {
+        <section id="account-panel" class="cart-panel" aria-labelledby="account-title">
+            <div class="section-heading"><h2 id="account-title">Your account</h2><AppButton Variant="ButtonVariant.Text" OnClick="ToggleAccount">Close</AppButton></div>
+            <p>@_accountName</p>
+        </section>
+    }
+    @if (_isAuthenticated && _cartOpen)
+    {
+        <section id="cart-panel" class="cart-panel" aria-labelledby="cart-title">
+            <div class="section-heading"><h2 id="cart-title">Your cart</h2><AppButton Variant="ButtonVariant.Text" OnClick="ToggleCart">Close</AppButton></div>
+            <p>Your cart is empty.</p>
+        </section>
+    }
+    <form class="store-search" @onsubmit="Search" @onsubmit:preventDefault role="search">
+        <MudTextField T="string" InputId="product-search" @bind-Value="_query" InputType="InputType.Search" Placeholder="Search products" Variant="Variant.Text" Underline="false" Immediate="true" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Outlined.Search" Margin="Margin.Dense" Class="catalog-search-input" aria-label="Search products" />
+        <AppButton Type="submit">Search</AppButton>
+    </form>
+    <div class="catalog-layout">
+        <aside class="catalog-filters" aria-labelledby="category-title">
+            <h2 id="category-title">Categories</h2>
+            <div class="category-options">
+                <MudChipSet T="string" @bind-SelectedValue="_selectedCategory" SelectionMode="SelectionMode.SingleSelection" CheckMark="true" Size="Size.Small" Label="true" aria-label="Product category">
+                    <MudChip T="string" Value="@("all")">All products</MudChip>
+                    @foreach (var category in DemoCatalog.Products.Select(product => product.Category).Distinct())
+                    {
+                        <MudChip T="string" Value="@category">@category</MudChip>
+                    }
+                </MudChipSet>
+            </div>
+        </aside>
+        <section class="catalog-results" aria-labelledby="products-title">
+            <div class="section-heading results-heading"><h2 id="products-title">@(_submittedQuery.Length == 0 ? "All products" : "Search results")</h2><span class="product-count" aria-live="polite">@VisibleProducts.Length products</span></div>
+            @if (_submittedQuery.Length > 0)
+            {
+                <div class="search-summary"><span>Results for “@_submittedQuery”</span><AppButton Variant="ButtonVariant.Text" OnClick="ClearSearch">Clear search</AppButton></div>
+            }
+            @if (VisibleProducts.Length > 0)
+            {
+                <ProductGrid>
+                    @foreach (var product in VisibleProducts)
+                    {
+                        <ProductCard @key="product.Id" Name="@product.Name" Category="@product.Category" PriceText="@product.PriceText" ImageUrl="@product.ImageUrl" DetailsHref="@($"/products/{product.Id}")" InStock="@product.InStock" OnAddToCart="@(() => PreviewAdd(product.Name))" />
+                    }
+                </ProductGrid>
+            }
+            else
+            {
+                <div class="catalog-empty">
+                    <h3>No products found</h3>
+                    <p>Try another search or category.</p>
+                    <AppButton Variant="ButtonVariant.Text" OnClick="ResetFilters">Reset filters</AppButton>
+                </div>
+            }
+        </section>
+    </div>
+</main>
+@code {
+    private DemoCatalog.Product[] VisibleProducts => DemoCatalog.Products
+        .Where(product => (_selectedCategory == "all" || product.Category == _selectedCategory)
+            && (product.Name.Contains(_submittedQuery, StringComparison.OrdinalIgnoreCase)
+                || product.Category.Contains(_submittedQuery, StringComparison.OrdinalIgnoreCase)))
+        .ToArray();
+    private bool _openingSheet;
+    private async Task PreviewAdd(string name)
+    {
+        if (_openingSheet) return;
+        var product = DemoCatalog.Products.FirstOrDefault(item => item.Name == name);
+        if (product is not { InStock: true }) return;
+        _openingSheet = true;
+        try
+        {
+            var quantity = 1;
+            if (await Viewport.GetCurrentBreakpointAsync() == Breakpoint.Xs)
+            {
+                var parameters = new DialogParameters<AddToCartSheet>
+                {
+                    { sheet => sheet.Name, product.Name },
+                    { sheet => sheet.ImageUrl, product.ImageUrl },
+                    { sheet => sheet.PriceText, product.PriceText }
+                };
+                var options = new DialogOptions
+                {
+                    Position = DialogPosition.BottomCenter, FullWidth = true, MaxWidth = MaxWidth.False,
+                    NoHeader = true, BackdropClick = true, CloseOnEscapeKey = true,
+                    CloseOnNavigation = true, BackgroundClass = "cart-sheet-backdrop"
+                };
+                var dialog = await DialogService.ShowAsync<AddToCartSheet>("Add to cart", parameters, options);
+                var result = await dialog.Result;
+                if (result is not { Canceled: false, Data: int selected }) return;
+                quantity = selected;
+            }
+            Snackbar.Add($"Demo: {quantity} × {name} selected. No order has been placed.", Severity.Info);
+        }
+        finally { _openingSheet = false; }
+    }
+    private void ResetFilters() { _selectedCategory = "all"; ClearSearch(); }
+    private string _selectedCategory = "all";
+    private string _query = "";
+    private string _submittedQuery = "";
+    [CascadingParameter] private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
+    private bool _cartOpen;
+    private bool _accountOpen;
+    private bool _isAuthenticated;
+    private string _accountName = "";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var state = AuthenticationStateTask is null ? null : await AuthenticationStateTask;
+        _isAuthenticated = state?.User.Identity?.IsAuthenticated == true;
+        _accountName = state?.User.Identity?.Name ?? "";
+        if (!_isAuthenticated) { _cartOpen = false; _accountOpen = false; }
+    }
+    private void Search() => _submittedQuery = _query.Trim();
+    private void ClearSearch() { _query = ""; _submittedQuery = ""; }
+    private void ToggleCart() { if (!_isAuthenticated) return; _cartOpen = !_cartOpen; _accountOpen = false; }
+    private void ToggleAccount() { if (!_isAuthenticated) return; _accountOpen = !_accountOpen; _cartOpen = false; }
+}

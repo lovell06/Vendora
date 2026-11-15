@@ -1,0 +1,15 @@
+<section class="status-content @(MinimalOnMobile ? "status-minimal-mobile" : null)" aria-labelledby="status-title">
+    <div class="status-symbol"><MudIcon Icon="@Icon" aria-hidden="true" /></div>
+    <p class="status-code">@Code</p>
+    <h1 id="status-title">@Title</h1>
+    <p class="status-description">@Description</p>
+    <MudButton Href="/" Target="_top" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small" DropShadow="false" Class="app-button" StartIcon="@Icons.Material.Outlined.Home">Back to home</MudButton>
+</section>
+
+@code {
+    [Parameter] public bool MinimalOnMobile { get; set; }
+    [Parameter, EditorRequired] public string Code { get; set; } = "";
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter, EditorRequired] public string Description { get; set; } = "";
+    [Parameter, EditorRequired] public string Icon { get; set; } = "";
+}

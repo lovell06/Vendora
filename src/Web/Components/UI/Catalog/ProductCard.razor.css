@@ -1,0 +1,24 @@
+.product-card { min-width: 0; height: 100%; }
+.product-card ::deep .product-card-surface { display: flex; flex-direction: column; height: 100%; background: var(--md-surface-container-lowest); border-radius: var(--shape-small); overflow: hidden; }
+.product-image { position: relative; aspect-ratio: 1; background: var(--md-surface-container); }
+.product-image img { display: block; width: 100%; height: 100%; object-fit: contain; padding: 16px; }
+.image-fallback { display: grid; place-items: center; width: 100%; height: 100%; color: var(--md-on-surface-variant); }
+.image-fallback ::deep .mud-icon-root { font-size: 48px; opacity: .7; }
+.stock-label { position: absolute; bottom: 8px; left: 8px; right: 8px; width: fit-content; max-width: calc(100% - 16px); padding: 4px 8px; background: var(--md-surface-container-lowest); color: var(--md-on-surface-variant); border-radius: var(--button-radius); font-size: .75rem; font-weight: 500; }
+.product-card ::deep .product-content { flex: 1; padding: 16px; }
+.product-category { margin: 0 0 6px; color: var(--md-on-surface-variant); font-size: .75rem; overflow-wrap: anywhere; }
+.product-name { margin: 0 0 12px; color: var(--md-on-surface); font-size: 1rem; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+.product-name a { color: inherit; text-decoration: none; }
+.product-name a:hover { color: var(--md-primary); text-decoration: underline; }
+.product-price { margin: 0; font-size: 1.125rem; font-weight: 600; color: var(--md-primary); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.product-card ::deep .product-actions { padding: 0 16px 16px; }
+.product-card ::deep .product-add { width: 100%; }
+@media (max-width: 599px) {
+  .product-image img { padding: 8px; }
+  .product-card ::deep .product-content { padding: 12px; }
+  .product-category { margin-bottom: 4px; }
+  .product-name { font-size: .875rem; margin-bottom: 8px; }
+  .product-price { font-size: 1rem; }
+  .product-card ::deep .product-actions { padding: 0 12px 12px; }
+  .image-fallback ::deep .mud-icon-root { font-size: 32px; }
+}

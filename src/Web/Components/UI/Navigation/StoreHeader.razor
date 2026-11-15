@@ -1,0 +1,11 @@
+<header class="store-header">
+    <BrandLink />
+    <nav aria-label="Account">
+        <ThemePicker />
+        @if (ChildContent is not null) { @ChildContent }
+        else { <MudButton Href="/login" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button">Sign in</MudButton> }
+    </nav>
+</header>
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

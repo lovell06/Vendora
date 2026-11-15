@@ -1,0 +1,31 @@
+<MudTextField T="string" UserAttributes="InputAttributes" InputId="@Id" Label="@Label" InputType="@EffectiveType" Value="@Value" ValueChanged="@ValueChanged" For="@ValueExpression" Placeholder="@Placeholder" HelperText="@Hint" Variant="Variant.Outlined" Margin="Margin.Dense" FullWidth="true" Class="field app-text-field" Adornment="@(RevealPassword ? Adornment.End : Adornment.None)" AdornmentIcon="@(_showPassword ? Icons.Material.Outlined.VisibilityOff : Icons.Material.Outlined.Visibility)" AdornmentAriaLabel="@(_showPassword ? "Hide password" : "Show password")" OnAdornmentClick="TogglePassword" IconSize="Size.Small" />
+@code {
+    [Parameter, EditorRequired] public string Id { get; set; } = "";
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter] public string Type { get; set; } = "text";
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+    [Parameter, EditorRequired] public Expression<Func<string?>> ValueExpression { get; set; } = default!;
+    [Parameter] public string? Autocomplete { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? Hint { get; set; }
+    [Parameter] public bool RevealPassword { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object>? AdditionalAttributes { get; set; }
+    private bool _showPassword;
+    private InputType EffectiveType => RevealPassword ? (_showPassword ? InputType.Text : InputType.Password) : Type switch
+    {
+        "email" => InputType.Email, "password" => InputType.Password,
+        "search" => InputType.Search, "tel" => InputType.Telephone, "url" => InputType.Url,
+        _ => InputType.Text
+    };
+    private Dictionary<string, object> InputAttributes
+    {
+        get
+        {
+            var attributes = AdditionalAttributes is null ? new Dictionary<string, object>() : new(AdditionalAttributes);
+            if (!string.IsNullOrWhiteSpace(Autocomplete)) attributes["autocomplete"] = Autocomplete;
+            return attributes;
+        }
+    }
+    private void TogglePassword() => _showPassword = !_showPassword;
+}

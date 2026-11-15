@@ -1,0 +1,15 @@
+@page "/Error"
+@layout StatusLayout
+
+<PageTitle>Something went wrong | Vendora</PageTitle>
+<StatusPage Code="500" Title="Something went wrong" Description="We couldn’t load this page. Please return home and try again in a moment." Icon="@Icons.Material.Outlined.ErrorOutline" />
+
+@code {
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (HttpContext is { Response.HasStarted: false })
+            HttpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
+    }
+}

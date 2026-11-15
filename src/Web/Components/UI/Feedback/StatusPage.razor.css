@@ -1,0 +1,15 @@
+.status-content { width: 100%; max-width: 480px; text-align: center; }
+.status-symbol { display: grid; place-items: center; width: 72px; height: 72px; margin: 0 auto 24px; border-radius: var(--shape-medium); background: var(--md-primary-container); color: var(--md-on-primary-container); }
+.status-symbol ::deep .mud-icon-root { font-size: 32px; }
+.status-code { margin: 0 0 12px; color: var(--md-primary); font-size: var(--type-label); font-weight: 600; letter-spacing: .12em; font-variant-numeric: tabular-nums; }
+h1 { margin-bottom: 16px; }
+.status-description { max-width: 40ch; margin: 0 auto 28px; color: var(--md-on-surface-variant); font-size: 1rem; line-height: 1.6; }
+@media (max-width: 599px) {
+  .status-symbol { display: none; }
+  .status-code { margin-bottom: 8px; font-size: .75rem; }
+  h1 { margin-bottom: 12px; }
+  .status-description { margin-bottom: 24px; font-size: .875rem; }
+  .status-minimal-mobile h1 { font-size: 1.25rem; margin-bottom: 20px; }
+  .status-minimal-mobile .status-description { display: none; }
+  .status-minimal-mobile ::deep .mud-button-start-icon { display: none; }
+}
