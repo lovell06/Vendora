@@ -6,6 +6,9 @@
 # secrets
 [Ss]ecrets/
 
+# agents
+**/.agents/
+
 # dotenv files
 .env
 [Ee]nvironments/
