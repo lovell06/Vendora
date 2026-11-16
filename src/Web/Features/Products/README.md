@@ -1,71 +1,47 @@
-# Product details
+# Products
 
-Route: `/products/{Id}`. Sample IDs: headphones, speaker, backpack, keyboard,
-bottle, lamp. Product cards on the homepage link to these routes.
+The product detail page at `/products/{Id}` shares Home's sample data. This feature demonstrates variant selection, image galleries, and quantity selection; it does not retrieve backend prices/stock or persist a cart.
 
-Uses the existing DemoCatalog presentation fixtures, shared StoreHeader,
-ProductCard/ProductGrid, AppButton, QuantitySelector and StatusPage. Desktop uses
-an image/summary split; compact windows use one column. Existing theme tokens,
-compact button dimensions, sticky header and BackToTop remain shared.
+## Try it
 
-The image reserves square space and falls back to a labeled icon on load failure.
-Quantity is a UI limit of 1–99, not a statement of inventory quantity. Out-of-stock
-items disable purchasing. Demo add-to-cart emits a snackbar only; it never places
-orders or persists a cart. Descriptions are sample copy, not verified product
-specifications. Real pricing, stock, cart and detail data need a Gateway contract.
+Follow the [Web instructions](../../README.md#run-and-explore), then open `http://localhost:5111/products/headphones`.
 
-Missing IDs return HTTP 404 on initial server rendering and a recovery page on
-client navigation. Quantity/image state resets when route parameters change.
-Related products prioritize the current category and exclude the current product.
+Select `Graphite` to change the representative image and product code; enable `View all product photos` to browse the entire gallery without changing the selected variant. Select `Sand` to inspect the sample out-of-stock state and disabled purchase action.
 
-Validation: `dotnet build --no-restore`. Browser review should cover compact/wide
-windows, light/dark, quantity limits, out-of-stock state, related links and missing
-IDs. Browser interaction checks have not yet been performed for this page.
+Other sample IDs are `speaker`, `backpack`, `keyboard`, `bottle`, and `lamp`. The quantity range of 1–99 is a UI limit, not a statement of available stock.
 
-## Mobile add-to-cart sheet
+## Current behavior
 
-Below 600px, quantity is hidden on the detail page. Add to cart opens the shared
-AddToCartSheet through MudDialog: image/name/price header, QuantitySelector,
-and a full-width confirmation action. It targets 40dvh, with a 300px minimum
-where space permits and scrollable content for small landscape windows/zoom.
-A dark translucent backdrop has 3px blur; close button, backdrop and Escape
-cancel without feedback or cart mutation. MudDialog handles focus trapping,
-return focus, page scroll locking and navigation dismissal. Desktop keeps the
-inline quantity picker. Homepage cards open the same sheet on mobile.
-Confirmation still emits demo feedback only. Build checked; browser interactions
-for the sheet still need visual verification.
+| Action or state | Result |
+| --- | --- |
+| Select a variant | Resets quantity to 1, selects its representative image, and filters its images |
+| View all photos | Opens the product gallery while keeping the purchase variant selected |
+| Image failure | Displays a fallback; thumbnails retain navigation labels |
+| Out-of-stock product/variant | Allows inspection but disables purchasing |
+| Add to cart on desktop | Displays a demo snackbar with quantity and variant name, when present |
+| Add to cart at widths up to 599px | Opens a quantity sheet; confirmation displays demo feedback |
+| Change product route | Resets quantity, variant, and gallery state |
+| Unknown ID | Displays recovery content and sets HTTP 404 if the server response has not started |
 
-## Product variants and shared gallery
+Related products exclude the current product, prioritize its category, and include at most four samples. Browsing another image does not change the representative image supplied to the cart sheet.
 
-The product detail UI keeps all image metadata in one product-level `Gallery`.
-`ProductVariant` references that gallery through `ImageIds` and one
-`PrimaryImageId`; the representative image must be one of its selected images.
-This is a presentation model, pending a catalog Gateway contract.
+## Image and variant models
 
-`/products/headphones` demonstrates three color variants and six local SVG
-illustrations. Choosing a variant resets quantity, shows its representative
-image and filters thumbnails to that variant's images. “View all product photos”
-opens the shared gallery without changing the selected purchase variant. Choosing
-another variant returns to its filtered gallery. Product code and availability
-follow the selected variant; an unavailable variant remains inspectable with
-purchasing disabled. Products without variants retain their existing behavior.
+[ProductMedia.cs](ProductMedia.cs) defines the presentation models:
 
-`ProductGallery` stays feature-local and uses labeled native thumbnail buttons,
-pressed states, reserved image space, keyboard focus, live image captions and
-image-error placeholders. It does not auto-rotate. Variant controls include
-text labels and a selected checkmark. Layout and colors use the existing tokens.
-The mobile cart sheet receives the selected variant label and representative
-image, independent of the currently browsed photo; desktop demo feedback also
-includes the variant. Route changes reset gallery and variant state.
+- `ProductImage`: `Id`, `Url`, `Alt`.
+- `ProductVariant`: `Id`, `Name`, `ProductCode`, `ImageIds`, `PrimaryImageId`, `InStock`.
 
-This change provides storefront selection only. Uploading images, editing
-variant/image assignments, persistence, variant prices and real cart requests
-require the respective administration UI and Gateway contracts.
+Each product owns a shared gallery; variants reference images by ID. When adding sample data, keep `PrimaryImageId` within `ImageIds` and ensure every referenced ID exists in the gallery. This is a presentation-data convention, not the Catalog API contract.
 
-Verification for this change: `dotnet build --no-restore` passes with no warnings.
-Firefox headless interaction checks passed for thumbnail selection, variant
-representative image/SKU changes, all-photo gallery, out-of-stock purchasing,
-variant-aware desktop feedback and mobile sheet, products without variants and
-unknown product recovery. No horizontal overflow at 375×812, 812×375 and
-1280×900. The add-to-cart action now checks the live compact media query so
-resizing a desktop window also opens the mobile sheet correctly.
+[ProductDetails.razor](ProductDetails.razor) coordinates selection and feedback. [ProductGallery.razor](ProductGallery.razor) renders images/thumbnails, labels, and image-error states; it does not auto-rotate images. `QuantitySelector` and `AddToCartSheet` belong to [Shared UI](../../Components/UI/README.md).
+
+Image uploads, editing variant/image assignments, variant pricing, real inventory data, and cart persistence require further integration. This feature does not provide those administration workflows.
+
+## Verification when making changes
+
+Build using the [Web instructions](../../README.md#verification-when-making-changes). Manually check variant changes, representative images, the full gallery, quantity limits, out-of-stock products, canceling/confirming the sheet, route changes, and unknown IDs. Check keyboard operation, image errors, themes, and compact/wide layouts.
+
+Content was checked against source code; builds and browser checks were not run during this documentation update.
+
+[Home](../Home/README.md) · [Web](../../README.md).

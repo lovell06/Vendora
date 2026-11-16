@@ -1,53 +1,41 @@
 # Home
 
-Storefront home at `/` and `/home`. The slice owns its page, styles, layout
-and feature composition. Shared components provide branding, icons, buttons and headings.
-English UI, shared Inter typography and semantic blue
-color tokens support both system themes and compact windows.
+The storefront homepage at `/` and `/home` supports browsing, searching, and filtering products. It uses sample data from [DemoCatalog.cs](DemoCatalog.cs) and does not call the Catalog or Cart API.
 
-Search stores the submitted query and supports clearing it. The cart expands
-inline without a modal. Keyboard focus and a skip link support navigation.
+## Try it
 
-No catalog endpoint or cart persistence is configured. Product and category
-collections are intentionally empty; counts represent only this empty UI state.
-No requests, product data, prices or authenticated session are simulated.
-Connect catalog and cart through the API Gateway when their contracts exist.
+Run Web using the [shared setup instructions](../../README.md#run-and-explore), then open `http://localhost:5111/`.
 
-Validation: `dotnet build Vendora.Web --no-restore`.
+The initial list contains six sample products. Enter `headphones` and submit the search to filter by name or category; select a category to combine filters. `Clear search` clears the query, while `Reset filters` resets both the query and category. Select a product name/image to open its details.
 
-Guest navigation contains only Sign in. Cart and account controls require a
-cascaded authenticated AuthenticationState; until authentication integration is
-configured, they stay hidden. Mobile places cart and account icon buttons on
-the right of the navbar. Search inputs retain 16px text with compact padding.
+## Current behavior
 
-Across all screens, the Vendora logo links to the home route `/`.
+- Search uses the submitted query, trims leading/trailing whitespace, and ignores case. Categories are derived from the sample products.
+- The displayed count reflects filtered results; an empty result offers a reset action.
+- Sample out-of-stock cards disable adding to the cart. On compact screens, adding opens `AddToCartSheet` for quantity selection; confirmation only displays a demo snackbar.
+- Guests see `Sign in`. Cart/account controls appear only when an authenticated `AuthenticationState` is supplied; Web does not currently establish that state through login.
+- The cart panel only displays an empty state when opened; it does not query or persist a cart.
 
-## Material 3 refactor
+## Source layout
 
-Shared semantic blue tokens and locally hosted Inter are defined in `wwwroot/app.css`.
-The catalog uses a two-pane layout above 839px and a single-column layout below it.
-The existing empty catalog and authentication-gated actions remain truthful.
-`Components/Shared/ThemePicker.razor` offers System / Light / Dark on the catalog
-and auth pages. `wwwroot/theme.js` applies the saved preference before first paint,
-tracks system changes, and synchronizes ThemeState and MudThemeProvider.
-Logos follow the resolved theme. CSS isolation owns catalog-specific layout;
-shared controls, auth styling, keyboard focus and reduced motion use global CSS.
+| File | Responsibility |
+| --- | --- |
+| [Home.razor](Home.razor) | Listing, filtering, search, panels, and demo cart feedback |
+| [HomeLayout.razor](HomeLayout.razor) | Layout and skip navigation link |
+| [DemoCatalog.cs](DemoCatalog.cs) | Sample products, prices, images, variants, and availability |
+| [Home.razor.css](Home.razor.css) | Layout and compact-screen adjustments |
 
-At compact widths (up to 599px), decorative eyebrows and the empty-state icon
-are hidden. The category selector appears directly below search as a compact,
-26px tonal filter chip with 12px text and 4px corners. Its heading is visually hidden
-on mobile. Currently only “All products” is available until catalog categories
-are connected. The results heading remains accessible without repeating the page
-heading visually. The header stays on one row with a text sign-in action.
+The page uses `StoreHeader`, `ProductCard`, `ProductGrid`, and controls from [Shared UI](../../Components/UI/README.md). Categories sit beside results on wide screens; the layout switches to one column at widths of 839px or less.
 
-Shared component architecture and examples: [UI component guide](../../Components/UI/README.md).
+## Verification when making changes
 
-The search field and category selection use MudTextField and MudChipSet/MudChip;
-shared AppButton/AppIcon render MudButton/MudIcon. MudBlazor providers are
-mounted once in interactive Routes. Native layout elements remain for semantic
-header/main/aside/section regions. Catalog data remains unconfigured.
+Build using the [Web instructions](../../README.md#verification-when-making-changes). Manually check:
 
-Category selection uses single-select filter chips with a checkmark, tonal
-selected state, keyboard focus, wrapping labels and 8px gaps. Desktop uses 32px
-chips; compact screens retain the requested 26px chip and 12px label. The current
-category is bound to page state. No categories or product counts are fabricated.
+- Searching by name/category, case differences, clearing search, and combined filters.
+- Empty results and `Reset filters`.
+- Product links, out-of-stock products, and canceling/confirming the compact-screen sheet.
+- Keyboard navigation, themes, and layouts without horizontal overflow.
+
+These behaviors were checked against source code; builds and browser checks were not run during this documentation update.
+
+[Product details](../Products/README.md) · [Authentication](../Authentication/README.md) · [Web](../../README.md).
