@@ -37,11 +37,36 @@ Each service contains `Api`, `Application`, `Domain`, `Infrastructure`, and `Wor
 
 An outbox stores events in the same transaction as business data before a worker publishes them asynchronously. Services also call each other directly over HTTP; for example, Ordering has clients for Cart, Catalog, and Inventory.
 
-```text
-HTTP client → API Gateway → Identity / Catalog / Inventory / Cart / Ordering
-Blazor Web → API Gateway (authentication forms when configured)
-API → PostgreSQL + outbox → publishing worker → RabbitMQ → consuming worker
-Identity → Redis
+```mermaid
+flowchart LR
+    Client["HTTP client"] --> Gateway["API Gateway / YARP"]
+    Web["Blazor Web"] -.->|Authentication when configured| Gateway
+
+    subgraph APIs["Business APIs"]
+        Identity["Identity"]
+        Catalog["Catalog"]
+        Inventory["Inventory"]
+        Cart["Cart"]
+        Ordering["Ordering"]
+    end
+
+    Gateway --> Identity
+    Gateway --> Catalog
+    Gateway --> Inventory
+    Gateway --> Cart
+    Gateway --> Ordering
+
+    Identity --> Postgres[("PostgreSQL")]
+    Catalog --> Postgres
+    Inventory --> Postgres
+    Cart --> Postgres
+    Ordering --> Postgres
+    Identity --> Redis[("Redis")]
+
+    Postgres -->|Read outbox| Publishers["Publishing workers"]
+    Publishers --> RabbitMQ["RabbitMQ"]
+    RabbitMQ --> Consumers["Consuming workers"]
+    Consumers -->|Update business data| Postgres
 ```
 
 This diagram summarizes groups of connections. The Web catalog and cart do not currently call the Gateway.
