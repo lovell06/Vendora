@@ -1,5 +1,16 @@
-.product-card { min-width: 0; height: 100%; }
-.product-card ::deep .product-card-surface { display: flex; flex-direction: column; height: 100%; background: var(--md-surface-container-lowest); border-radius: var(--shape-small); overflow: hidden; }
+.product-card { position: relative; isolation: isolate; min-width: 0; height: 100%; }
+.product-card::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: var(--shape-small); box-shadow: 0 16px 32px -8px color-mix(in srgb, var(--md-shadow) 24%, transparent), 0 4px 12px -4px color-mix(in srgb, var(--md-shadow) 16%, transparent); opacity: 0; transition: opacity var(--motion-fast) ease-out, transform var(--motion-fast) ease-out; }
+.product-card ::deep .product-card-surface { position: relative; display: flex; flex-direction: column; height: 100%; background: var(--md-surface-container-lowest); border-radius: var(--shape-small); overflow: hidden; transform: perspective(1000px) translateY(0) rotateX(0); transition: transform var(--motion-fast) cubic-bezier(.2, 0, .2, 1); }
+@media (hover: hover) and (pointer: fine) {
+  .product-card:has(.product-name a):hover ::deep .product-card-surface { transform: perspective(1000px) translateY(-4px) rotateX(1deg); }
+  .product-card:has(.product-name a):hover::before { opacity: 1; transform: translateY(-4px); }
+}
+.product-card:has(.product-name a:active) ::deep .product-card-surface { transform: perspective(1000px) translateY(-6px) rotateX(1.5deg); transition-duration: calc(var(--motion-fast) / 2); }
+.product-card:has(.product-name a:active)::before { opacity: 1; transform: translateY(-6px); transition-duration: calc(var(--motion-fast) / 2); }
+@media (prefers-reduced-motion: reduce) {
+  .product-card:has(.product-name a) ::deep .product-card-surface { transform: none !important; transition: none; }
+  .product-card:has(.product-name a)::before { transform: none !important; transition: none; }
+}
 .product-image { position: relative; aspect-ratio: 1; background: var(--md-surface-container); }
 .product-image img { display: block; width: 100%; height: 100%; object-fit: contain; padding: 16px; }
 .image-fallback { display: grid; place-items: center; width: 100%; height: 100%; color: var(--md-on-surface-variant); }
@@ -8,10 +19,12 @@
 .product-card ::deep .product-content { flex: 1; padding: 16px; }
 .product-category { margin: 0 0 6px; color: var(--md-on-surface-variant); font-size: .75rem; overflow-wrap: anywhere; }
 .product-name { margin: 0 0 12px; color: var(--md-on-surface); font-size: 1rem; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
-.product-name a { color: inherit; text-decoration: none; }
-.product-name a:hover { color: var(--md-primary); text-decoration: underline; }
+.product-name a, .product-name a:visited, .product-name a:hover, .product-name a:active { color: inherit; text-decoration: none; }
+.product-name a::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: var(--shape-small); }
+.product-name a:focus-visible { outline: none; }
+.product-name a:focus-visible::after { outline: 3px solid var(--md-primary); outline-offset: -3px; }
 .product-price { margin: 0; font-size: 1.125rem; font-weight: 600; color: var(--md-primary); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.product-card ::deep .product-actions { padding: 0 16px 16px; }
+.product-card ::deep .product-actions { position: relative; z-index: 2; padding: 0 16px 16px; }
 .product-card ::deep .product-add { width: 100%; }
 @media (max-width: 599px) {
   .product-image img { padding: 8px; }

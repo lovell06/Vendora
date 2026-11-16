@@ -126,6 +126,17 @@ use a themed placeholder; changing ImageUrl resets image failure state.
 An action only appears with a callback, and is disabled while busy or out of stock.
 The feature owns actual cart requests and success/error handling. Only pass a
 DetailsHref when a real route exists. Names wrap rather than hiding essential text.
+The product name link extends across the card, so clicking its image or content
+opens DetailsHref. Link text keeps the product name color without underlining,
+including hover and visited states. Keyboard focus outlines the card. Cart actions
+sit above the extended link and retain their own behavior.
+On devices with a mouse, linked cards lift with a slight perspective tilt and
+soft shadow on hover, rising a little farther while the link is held. The outer
+card keeps its layout space; transitions animate transform and shadow opacity.
+Touch devices lift the card and reveal its shadow while the product link is
+pressed, with an 80ms response and no persistent hover or navigation delay.
+Releasing or canceling the press restores the card. Reduced motion disables
+the tilt/lift while preserving shadow feedback.
 
 `ProductGrid` provides 2 compact columns, 3 from 900px, 4 from 1200px and one below
 360px. Cards use square reserved image space, lazy images, local semantic tokens,
