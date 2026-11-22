@@ -12,6 +12,7 @@ public sealed class CreateProductRequest
     public required string Currency { get; init; }
     public bool IsVisible { get; init; }
     public required IReadOnlyList<ProductVariantDto> ProductVariants { get; init; }
+    public required IReadOnlyList<IFormFile> Images { get; init; }
 
     public Command ToCommand()
     {
@@ -23,7 +24,17 @@ public sealed class CreateProductRequest
             CategoryId = CategoryId,
             Currency = Currency,
             IsVisible = IsVisible,
-            ProductVariants = ProductVariants
+            ProductVariants = ProductVariants,
+            ProductImageUploads =
+            [
+                .. Images.Select((file, index) => new ProductImageUploadDto()
+                {
+                    OpenReadStream = file.OpenReadStream,
+                    ContentType = file.ContentType,
+                    SizeBytes = file.Length,
+                    IsPrimary = index == 0
+                })
+            ]
         };
     }
 }

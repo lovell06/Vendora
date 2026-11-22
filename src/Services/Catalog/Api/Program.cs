@@ -1,10 +1,20 @@
+using Microsoft.OpenApi;
+using Vendora.Services.Catalog.Infrastructure.Storage;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, _, _) =>
+    {
+        document.Servers = [new OpenApiServer { Url = "/" }];
+        return Task.CompletedTask;
+    });
+});
 
 builder.Services.Configure<RouteOptions>(options =>
 {
@@ -20,6 +30,7 @@ builder.Services
     .AddServiceClients(builder.Configuration)
     .AddPersistenceServices(builder.Configuration)
     .AddQueryServices()
+    .AddStorageServices(builder.Configuration)
     .AddRepositoryServices()
     .AddEventTypeRegistry();
 
@@ -54,8 +65,8 @@ app.UseAuthorization();
 
 app.MapHealthChecks("/health").AllowAnonymous();
 
-app.MapEndpoints();
-
 app.UseHttpsRedirection();
+
+app.MapEndpoints();
 
 app.Run();

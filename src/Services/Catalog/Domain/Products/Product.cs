@@ -22,6 +22,9 @@ public class Product
     private readonly List<ProductVariant> _variants = [];
     public IReadOnlyList<ProductVariant> Variants => _variants;
 
+    private readonly List<ProductImage> _images = [];
+    public IReadOnlyList<ProductImage> Images => _images;
+
     private Product()
     {
     }
@@ -233,6 +236,116 @@ public class Product
             return Result.Success();
 
         variant.Delete(updatedAt);
+        UpdatedAt = updatedAt;
+
+        return Result.Success();
+    }
+
+    public Result AddImage(ProductImage image, DateTimeOffset updatedAt)
+    {
+        if (image.IsPrimary &&
+            _images.Any(i => i.IsPrimary))
+            return Result.Failure(Errors.PrimaryProductImageConflict);
+
+        _images.Add(image);
+
+        return Result.Success();
+    }
+
+    public Result MoveImage(long imageId, int targetIndex, DateTimeOffset updatedAt)
+    {
+        var image = _images.SingleOrDefault(image => image.Id == imageId);
+        if (image is null)
+            return Result.Failure(Errors.ProductImageNotFound);
+        
+        if (targetIndex < 1 || targetIndex > _images.Count)
+            return Result.Failure(Errors.InvalidProductImageIndex);
+
+        var sourceIndex = image.SortOrder;
+        
+        if (sourceIndex == targetIndex)
+            return Result.Success();
+
+        var movingBackward = sourceIndex > targetIndex;
+        var startIndex = movingBackward ? targetIndex - 1 : sourceIndex;
+        var endIndex = movingBackward ? sourceIndex - 1 : targetIndex;
+        var offset = movingBackward ? 1 : -1;
+
+        var orderedImages = _images.OrderBy(i => i.SortOrder).ToList();
+        
+        for(var index = startIndex; index < endIndex; ++index)
+        {
+            var currentImage = orderedImages[index];
+            var moveResult = currentImage.ChangeSortOrder(currentImage.SortOrder + offset);
+            if (moveResult.IsFailure)
+                return Result.Failure(moveResult.Error);
+        }
+
+        var result = image.ChangeSortOrder(targetIndex);
+        if (result.IsFailure)
+            return Result.Failure(result.Error);
+
+        UpdatedAt = updatedAt;
+        
+        return Result.Success();
+    }
+
+    public Result ReorderImages(List<long> orderedImageIds, DateTimeOffset updatedAt)
+    {
+        orderedImageIds = [.. orderedImageIds.Distinct()];
+
+        if (orderedImageIds.Count != _images.Count)
+            return Result.Failure(Errors.CannotReorderImages);
+
+        var imagesById = _images.ToDictionary(image => image.Id);
+
+        for (var index = 0; index < orderedImageIds.Count; ++index)
+        {
+            if (!imagesById.TryGetValue(orderedImageIds[index], out var image))
+                return Result.Failure(Errors.ProductImageNotFound);
+
+            var result = image.ChangeSortOrder(index + 1);
+
+            if (result.IsFailure)
+                return Result.Failure(result.Error);
+        }
+
+        UpdatedAt = updatedAt;
+
+        return Result.Success();
+    }
+
+    public Result SetPrimaryImage(long imageId)
+    {
+        var newPrimaryImage = _images.SingleOrDefault(image => image.Id == imageId);
+        if (newPrimaryImage is null)
+            return Result.Failure(Errors.ProductImageNotFound);
+        
+        if (newPrimaryImage.IsPrimary)
+            return Result.Success();
+
+        var unsetPrimaryImageResult = _images.Single(image => image.IsPrimary).UnsetPrimary();
+        if (unsetPrimaryImageResult.IsFailure)
+            return Result.Failure(unsetPrimaryImageResult.Error);
+
+        var setNewPrimaryResult = newPrimaryImage.SetPrimary();
+
+        return setNewPrimaryResult.IsFailure
+            ? Result.Failure(setNewPrimaryResult.Error)
+            : Result.Success();
+    }
+
+    public Result AssignImageToVariant(
+        ProductImage image, 
+        ProductVariant variant, 
+        bool isPrimary,
+        DateTimeOffset updatedAt)
+    {
+        var assignImageResult = variant.AssignImage(image, isPrimary, updatedAt);
+
+        if (assignImageResult.IsFailure)
+            return Result.Failure(assignImageResult.Error);
+
         UpdatedAt = updatedAt;
 
         return Result.Success();
