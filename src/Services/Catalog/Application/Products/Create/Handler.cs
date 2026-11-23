@@ -15,6 +15,11 @@ public sealed class Handler(
     {
         var utcNow = clock.GetUtcNow();
 
+        if (command.ProductImageUploads.Count == 0)
+            return Result.Failure(Error.Validation(
+                code: "product_creation.images_empty",
+                message: "The product require has least one image."));
+
         if (!await categoryRepository.ExistsByIdAsync(command.CategoryId, cancellationToken))
         {
             logger.LogWarning("Product creation rejected because category not existed.");
