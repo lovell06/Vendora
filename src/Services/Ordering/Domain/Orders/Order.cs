@@ -137,15 +137,10 @@ public class Order
 
     public Result Cancel(DateTimeOffset cancelledAt)
     {
-        if (Status is OrderStatus.Cancelled)
-            return Result.Success();
-
-        if (Status is not OrderStatus.Preparing &&
+        if (Status is OrderStatus.Cancelled || Status is not OrderStatus.Preparing &&
             Status is not OrderStatus.Confirmed &&
             Status is not OrderStatus.Pending)
-        {
             return Result.Failure(OrderErrors.CannotCancel);
-        }
 
         Status = OrderStatus.Cancelled;
         UpdatedAt = cancelledAt;
