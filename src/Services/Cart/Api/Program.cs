@@ -1,3 +1,4 @@
+using Vendora.Services.Cart.Api.ExceptionHandlers;
 using Vendora.Services.Cart.Infrastructure.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +32,13 @@ builder.Services
     .AddJwtBearerAuthentication(builder.Configuration)
     .AddApplicationAuthorization();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ConflictExceptionHandler>();
+builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
+
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
