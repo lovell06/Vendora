@@ -107,7 +107,7 @@ Compose starts PostgreSQL, Redis, RabbitMQ, Azurite, five APIs, five workers, an
 | RabbitMQ AMQP | `localhost:5672` |
 | Azurite Blob endpoint | http://localhost:10000/<account_name> |
 
-Gateway route groups are `/api/auth`, `/api/users`, `/api/products`, `/api/categories`, `/api/inventory-items`, `/api/carts`, and `/api/orders`. Service OpenAPI documents are exposed through `/openapi/identity.json`, `/openapi/catalog.json`, `/openapi/inventory.json`, `/openapi/cart.json`, and `/openapi/ordering.json`.
+Gateway route groups are `/api/auth`, `/api/users`, `/api/products`, `/api/categories`, `/api/inventory-items`, `/api/carts`, and `/api/orders`. `/media/{**key}` (GET/HEAD) serves product images from Azurite. Service OpenAPI documents are exposed through `/openapi/identity.json`, `/openapi/catalog.json`, `/openapi/inventory.json`, `/openapi/cart.json`, and `/openapi/ordering.json`.
 
 Internal APIs listen on container port `8080`; their individual host port mappings are currently commented out in Compose. Gateway `/health` checks the Gateway itself; inspect `docker compose ps` and individual service logs to check the backend.
 
@@ -129,8 +129,8 @@ Stop the stack with `docker compose down`. PostgreSQL, RabbitMQ, and Azurite (`a
 | API is unhealthy or reports missing tables | Check connection strings, database permissions, migration logs, and `ASPNETCORE_ENVIRONMENT=Development` |
 | Gateway returns 404 or 502 | Routes currently live in `src/ApiGateway/appsettings.Development.json`; check the environment, API status, and internal Docker hostnames |
 | Gateway is healthy but business operations fail | Check relevant API/worker health and logs; Gateway health does not check every dependency |
-| Catalog API does not start or creating a product fails at upload | Check `catalog/environments/azureblob.env`, that its account name/key match `AZURITE_ACCOUNTS`, and that the `object-storage` container is healthy. Catalog creates the `catalog-images` container on first use |
-| Product image URLs return 404 | `AzureBlobStorage:PublicBaseUrl` defaults to `http://127.0.0.1:8080/media`, but the Gateway does not route `/media` yet |
+| Catalog API does not start or creating a product fails at upload | Check `catalog/environments/azureblob.env`, that its account name/key match `AZURITE_ACCOUNTS`, and that the `object-storage` container is healthy. Catalog creates the `catalog-images` container (public blob read access) at startup, so Catalog API fails to start when Azurite is unreachable |
+| Product image URLs return 404 | Image URLs use `AzureBlobStorage:PublicBaseUrl` (`http://127.0.0.1:8080/media`). The Gateway maps `/media/{**key}` to `object-storage:10000/catalogdevaccount/catalog-images/{**key}`; the Azurite account name must be `catalogdevaccount` for this route to work |
 | API rejects JWTs | Check issuer/audience, token expiry, and matching RSA keys |
 | Email or event synchronization does not work | Check the Identity worker, SMTP, RabbitMQ credentials, exchange, queues, and binding keys |
 | Gateway is configured but Web cannot establish login | Web does not handle sessions yet; see [authentication contract limitations](../src/Web/Features/Authentication/README.md#current-contracts-and-limitations) |

@@ -87,25 +87,28 @@ src/
 
 ## Project status
 
-Last updated 2026-11-23, against branch `refactors/add-product-image` at commit `19a92e5`.
+Last updated 2026-11-24, against `main` at commit `8b3ad04` (after merging pull request #2).
 
 **Recently completed**
 
-- Catalog: create products with multiple images (multipart upload to Azure Blob Storage) and assign images to variants; `GET /products/{id}` now returns image URLs and each variant's `ImageIds`.
+- Catalog: create products with multiple images (multipart upload to Azure Blob Storage) and assign images to variants; `GET /products/{id}` returns image URLs and each variant's `ImageIds`; `GET /products` returns each product's primary image URL.
+- API Gateway: `/media/{**key}` serves product images from Azurite (Development configuration). Catalog creates the `catalog-images` container at startup with public read access for blobs.
 - Inventory: initializing an inventory item is idempotent for a repeated `catalog.product-variant.added` event; `product_variant_id` and `sku` are unique; `InventoryItem` has a concurrency token; reservations require authentication and Ordering forwards the user's token.
 - Ordering: events use `VariantId`; cancelling an already cancelled order is rejected, so stock is not released twice; `Order` has a concurrency token; marking a cancelled or rejected order as paid is rejected.
+- Error handling: Catalog, Inventory, and Ordering APIs map concurrency conflicts and unique-constraint violations to HTTP 409 and log other unhandled exceptions as HTTP 500 with a generic error body. Inventory reserve and stock release retry up to 3 times on a concurrency conflict.
 
 **Known gaps (not yet fixed)**
 
 | Area | Gap |
 | --- | --- |
-| Concurrency | `DbUpdateConcurrencyException` and unique-constraint violations are not mapped, so conflicts return HTTP 500 instead of 409 |
+| Error handling | Identity and Cart APIs do not have the 409/500 exception handlers yet; the 500 body shape differs from the 409 body shape |
 | Inventory reservation | Any authenticated user can call `/api/inventory-items/reserve` through the Gateway; there is no service-to-service policy |
 | Placing orders | Stock is reserved over HTTP inside the Ordering database transaction, with no compensation or idempotency key |
 | Messaging | Catalog/Identity outbox workers stop on the first publish error; the RabbitMQ consumer requeues failures forever (no dead-letter queue) and does not reconnect |
-| Creating products | Image indexes, file type, and file size are not validated; images upload before the command is validated; a SKU that already exists on another product returns 500; failed commits can leave orphaned blobs |
+| Creating products | Image indexes, file type, and file size are not validated; images upload before the command is validated (a SKU that already exists on another product now returns 409, but only after the upload); failed commits can leave orphaned blobs |
 | Product details | Availability is requested with the product id instead of each variant id, and the result is not returned |
-| Product images | Image URLs use `AzureBlobStorage:PublicBaseUrl` (`http://127.0.0.1:8080/media` in Development), but the Gateway has no `/media` route yet, so these URLs do not resolve |
+| Product list | `GET /products` reads the primary image with `Single(IsPrimary)`; products without images (for example, created before the image feature) may fail the whole list or produce an invalid URL |
+| Media route | The Gateway `/media` route hard-codes the dev account name `catalogdevaccount` and exists only in `appsettings.Development.json` |
 
 ## Development and verification
 
