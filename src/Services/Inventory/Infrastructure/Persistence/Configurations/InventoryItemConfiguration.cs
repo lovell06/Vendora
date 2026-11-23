@@ -40,6 +40,8 @@ public sealed class InventoryItemConfiguration : IEntityTypeConfiguration<Invent
             .HasColumnName("updated_at")
             .IsRequired(false);
 
+        builder.Property(item => item.Version).IsRowVersion();
+
         builder.HasMany(item => item.Adjustments)
             .WithOne()
             .HasForeignKey(adjustment => adjustment.InventoryItemId)
