@@ -6,6 +6,8 @@ public sealed class InventoryItemConfiguration : IEntityTypeConfiguration<Invent
     {
         builder.ToTable("inventory_items");
         builder.HasKey(item => item.Id);
+        builder.HasIndex(item => item.ProductVariantId)
+            .IsUnique();
 
         builder.Property(item => item.Id)
             .HasColumnName("id");
