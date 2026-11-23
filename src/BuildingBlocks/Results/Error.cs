@@ -33,4 +33,46 @@ public class Error
             Type = errorType
         };
     }
+
+    public static Error Failure(string code, string message) => new()
+    {
+        Code = code,
+        Message = message,
+        Type = ErrorType.Failure
+    };
+
+    public static Error Validation(string code, string message) => new()
+    {
+        Code = code,
+        Message = message,
+        Type = ErrorType.Validation
+    };
+
+    public static Error NotFound(string code, string message) => new()
+    {
+        Code = code,
+        Message = message,
+        Type = ErrorType.NotFound
+    };
+
+    public static Error Conflict(string code, string message) => new()
+    {
+        Code = code,
+        Message = message,
+        Type = ErrorType.Conflict
+    };
+
+    public static Error Unauthorized() => new()
+    {
+        Code = string.Empty,
+        Message = string.Empty,
+        Type = ErrorType.Unauthorized
+    };
+
+    public static Error Forbidden() => new()
+    {
+        Code = string.Empty,
+        Message = string.Empty,
+        Type = ErrorType.Forbidden
+    };
 }
