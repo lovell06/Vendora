@@ -17,9 +17,9 @@ public sealed class EfCoreInventoryItemRepository(ApplicationDbContext context) 
     public async Task<bool> ExistsByProductVariantId(long variantId, CancellationToken cancellationToken)
     {
         return await context.InventoryItems
-            .SingleOrDefaultAsync(
+            .AnyAsync(
                 item => item.ProductVariantId == variantId, 
-                cancellationToken) is not null;
+                cancellationToken);
     }
 
     public async Task<InventoryItem?> GetAsync(long inventoryItemId, CancellationToken cancellationToken)
