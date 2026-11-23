@@ -31,6 +31,7 @@ public sealed class ConflictExceptionHandler(ILogger<ConflictExceptionHandler> l
             "{Method} {Path} returned 409 ({Code}).",
             httpContext.Request.Method, httpContext.Request.Path, error.Code);
 
+        httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
         await httpContext.Response.WriteAsJsonAsync(error.ToResponse(), cancellationToken);
 
         return true;

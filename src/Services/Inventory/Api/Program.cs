@@ -28,7 +28,9 @@ builder.Services
     .AddJwtBearerAuthentication(builder.Configuration)
     .AddApplicationAuthorization();
 
+builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<ConflictExceptionHandler>();
+builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
 
 var app = builder.Build();
 

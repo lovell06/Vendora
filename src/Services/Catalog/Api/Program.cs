@@ -1,6 +1,7 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.OpenApi;
+using Vendora.Services.Catalog.Api.ExceptionHandlers;
 using Vendora.Services.Catalog.Infrastructure.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,7 +48,13 @@ builder.Logging.AddSimpleConsole(config =>
     config.UseUtcTimestamp = true;
 });
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ConflictExceptionHandler>();
+builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
+
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
