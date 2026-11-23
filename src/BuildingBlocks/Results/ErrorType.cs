@@ -2,7 +2,7 @@ namespace Vendora.BuildingBlocks.Results;
 
 public enum ErrorType
 {
-    Failure,
+    Unexpected,
     Validation,
     NotFound,
     Conflict,

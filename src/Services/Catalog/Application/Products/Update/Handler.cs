@@ -19,7 +19,7 @@ public sealed class Handler(
             {
                 Code = "product_update.failed",
                 Message = "Product update failed.",
-                Type = ErrorType.Failure
+                Type = ErrorType.Unexpected
             });
         }
 

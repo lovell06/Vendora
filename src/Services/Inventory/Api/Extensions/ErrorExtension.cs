@@ -12,7 +12,7 @@ public static class ErrorExtension
 
             ErrorType.NotFound => TypedResults.NotFound(error.ToResponse()),
 
-            ErrorType.Failure => TypedResults.InternalServerError(error.ToResponse()),
+            ErrorType.Unexpected => TypedResults.InternalServerError(error.ToResponse()),
 
             ErrorType.Unauthorized => TypedResults.Unauthorized(),
 

@@ -24,7 +24,7 @@ public sealed class HttpInventoryClient(HttpClient client) : IInventoryClient
                     {
                         Type = ErrorType.Unauthorized
                     }),
-                    _ => Result<CheckAvailabilityResult>.Failure(new Error() { Type = ErrorType.Failure })
+                    _ => Result<CheckAvailabilityResult>.Failure(new Error() { Type = ErrorType.Unexpected })
                 };
             }
             

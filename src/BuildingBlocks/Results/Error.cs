@@ -34,11 +34,11 @@ public class Error
         };
     }
 
-    public static Error Failure(string code, string message) => new()
+    public static Error Unexpected(string code, string message) => new()
     {
         Code = code,
         Message = message,
-        Type = ErrorType.Failure
+        Type = ErrorType.Unexpected
     };
 
     public static Error Validation(string code, string message) => new()

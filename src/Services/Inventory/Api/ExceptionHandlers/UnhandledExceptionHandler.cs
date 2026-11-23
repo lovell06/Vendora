@@ -13,7 +13,7 @@ public sealed class UnhandledExceptionHandler(ILogger<UnhandledExceptionHandler>
             httpContext.Request.Path);
 
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        await httpContext.Response.WriteAsJsonAsync(Error.Failure(
+        await httpContext.Response.WriteAsJsonAsync(Error.Unexpected(
             code: "server.unexpected_error",
             message: "An unexpected error occurred."), cancellationToken);
 
