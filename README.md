@@ -22,14 +22,14 @@ To run the backend, follow the [Docker Compose guide](composes/README.md): prepa
 | Component | Scope in the codebase |
 | --- | --- |
 | Identity | Registration, login, logout, email verification, and employee account creation |
-| Catalog | Products, variants, categories, and product lifecycle states |
-| Inventory | Stock queries, adjustments, availability checks, and reservations |
+| Catalog | Products, variants, categories, product lifecycle states, and product/variant images stored in Azure Blob Storage (Azurite locally) |
+| Inventory | Stock queries, adjustments, availability checks, and reservations (reservations require an authenticated user) |
 | Cart | Adding, removing, updating quantities, and querying cart items |
 | Ordering | Placing, canceling, preparing, delivering, and completing orders |
 | API Gateway | HTTP routing through YARP and aggregated API documentation in Development |
 | Web | Searching/filtering sample data, product details, variant selection, image galleries, and authentication forms |
 
-The backend uses ASP.NET Core Minimal APIs, Entity Framework Core 10, and PostgreSQL 18. Redis supports Identity; RabbitMQ carries events between services. API authentication uses JSON Web Tokens (JWTs) signed with RSA keys. Web uses MudBlazor and locally hosted Inter fonts, supports light/dark/system themes, and displays its interface in English.
+The backend uses ASP.NET Core Minimal APIs, Entity Framework Core 10, and PostgreSQL 18. Redis supports Identity; RabbitMQ carries events between services; Catalog stores product images in Azure Blob Storage, emulated locally by Azurite. `InventoryItem` and `Order` use PostgreSQL `xmin` as an optimistic concurrency token. API authentication uses JSON Web Tokens (JWTs) signed with RSA keys. Web uses MudBlazor and locally hosted Inter fonts, supports light/dark/system themes, and displays its interface in English.
 
 ## Architecture
 
@@ -62,6 +62,7 @@ flowchart LR
     Cart --> Postgres
     Ordering --> Postgres
     Identity --> Redis[("Redis")]
+    Catalog --> Blob[("Azure Blob / Azurite")]
 
     Postgres -->|Read outbox| Publishers["Publishing workers"]
     Publishers --> RabbitMQ["RabbitMQ"]
@@ -83,6 +84,28 @@ src/
 ```
 
 `BuildingBlocks/Cqrs` provides Command Query Responsibility Segregation (CQRS) infrastructure, separating requests that change data from queries. The `tests/` and `docs/` directories are currently empty.
+
+## Project status
+
+Last updated 2026-11-23, against branch `refactors/add-product-image` at commit `19a92e5`.
+
+**Recently completed**
+
+- Catalog: create products with multiple images (multipart upload to Azure Blob Storage) and assign images to variants; `GET /products/{id}` now returns image URLs and each variant's `ImageIds`.
+- Inventory: initializing an inventory item is idempotent for a repeated `catalog.product-variant.added` event; `product_variant_id` and `sku` are unique; `InventoryItem` has a concurrency token; reservations require authentication and Ordering forwards the user's token.
+- Ordering: events use `VariantId`; cancelling an already cancelled order is rejected, so stock is not released twice; `Order` has a concurrency token; marking a cancelled or rejected order as paid is rejected.
+
+**Known gaps (not yet fixed)**
+
+| Area | Gap |
+| --- | --- |
+| Concurrency | `DbUpdateConcurrencyException` and unique-constraint violations are not mapped, so conflicts return HTTP 500 instead of 409 |
+| Inventory reservation | Any authenticated user can call `/api/inventory-items/reserve` through the Gateway; there is no service-to-service policy |
+| Placing orders | Stock is reserved over HTTP inside the Ordering database transaction, with no compensation or idempotency key |
+| Messaging | Catalog/Identity outbox workers stop on the first publish error; the RabbitMQ consumer requeues failures forever (no dead-letter queue) and does not reconnect |
+| Creating products | Image indexes, file type, and file size are not validated; images upload before the command is validated; a SKU that already exists on another product returns 500; failed commits can leave orphaned blobs |
+| Product details | Availability is requested with the product id instead of each variant id, and the result is not returned |
+| Product images | Image URLs use `AzureBlobStorage:PublicBaseUrl` (`http://127.0.0.1:8080/media` in Development), but the Gateway has no `/media` route yet, so these URLs do not resolve |
 
 ## Development and verification
 

@@ -8,7 +8,7 @@ Login and registration forms for Vendora Web. Each screen owns its model, valida
 
 Follow the [Web instructions](../../README.md#run-and-explore), then open `/login` or `/register` at `http://localhost:5111`. Their aliases are `/dang-nhap` and `/dang-ky`.
 
-The forms and validation do not require the backend. With empty Gateway settings, a valid submission displays an authentication-unavailable message rather than simulating success.
+The forms and validation do not require the backend. With the default settings (empty login/register paths), a valid submission displays an authentication-unavailable message rather than simulating success.
 
 ## Configure the API Gateway
 
@@ -21,7 +21,7 @@ ApiGateway__RegisterPath=/api/auth/register \
 dotnet run --project src/Web/Vendora.Web.csproj --launch-profile http
 ```
 
-The corresponding .NET settings are `ApiGateway:BaseUrl`, `ApiGateway:LoginPath`, and `ApiGateway:RegisterPath`; defaults in [appsettings.json](../../appsettings.json) are empty. `BaseUrl` must be an absolute URL; paths are combined using `new Uri(baseUrl, path)`. Include a trailing `/` on the base URL and use a relative path when a path prefix needs to be preserved.
+The corresponding .NET settings are `ApiGateway:BaseUrl`, `ApiGateway:LoginPath`, and `ApiGateway:RegisterPath`; in [appsettings.json](../../appsettings.json), `BaseUrl` defaults to `http://127.0.0.1:8080/` and both paths are empty. `BaseUrl` must be an absolute URL; paths are combined using `new Uri(baseUrl, path)`. Include a trailing `/` on the base URL and use a relative path when a path prefix needs to be preserved.
 
 [AuthGateway.cs](Shared/AuthGateway.cs) sends JSON to the Gateway without calling services directly. HTTP 401 becomes an invalid-credentials message, 409 becomes an email-already-in-use message, and other HTTP/connection errors have their own feedback. A 2xx response only means the Gateway accepted the request; the client does not read or store tokens yet.
 

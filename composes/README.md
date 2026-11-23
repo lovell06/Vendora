@@ -1,6 +1,6 @@
 # Backend and Docker Compose
 
-A guide for developers running Vendora's backend locally. The stack includes PostgreSQL, Redis, RabbitMQ, five APIs, five workers, and the API Gateway.
+A guide for developers running Vendora's backend locally. The stack includes PostgreSQL, Redis, RabbitMQ, Azurite (Azure Blob Storage emulator for product images), five APIs, five workers, and the API Gateway.
 
 [Back to the project overview](../README.md). Commands below use a POSIX shell such as Bash/Zsh and run from the **repository root**, not from `composes/`.
 
@@ -8,7 +8,7 @@ A guide for developers running Vendora's backend locally. The stack includes Pos
 
 - A running Docker Engine or Docker Desktop.
 - The `docker compose` plugin with `include` support and Docker BuildKit with support for the `COPY --parents` instructions used by the Dockerfiles.
-- Available ports `8080`, `5432`, `6379`, `5672`, and `15672`.
+- Available ports `8080`, `5432`, `6379`, `5672`, `15672`, and `10000`.
 - .NET SDK 10 if you build or run source code outside containers; Dockerfiles supply the SDK for container builds.
 
 ## 1. Prepare local configuration
@@ -23,6 +23,7 @@ Choose PostgreSQL and RabbitMQ credentials, then use matching values in the corr
 | --- | --- |
 | `infra/environments/postgres.env` | `POSTGRES_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password` |
 | `infra/secrets/postgres-password.txt` | PostgreSQL password matching the connection strings |
+| `infra/environments/object-storage.env` | `AZURITE_ACCOUNTS=<account_name>:<base64_key>`; the account must match the Catalog connection string |
 | `infra/environments/rabbitmq.env` | `RABBITMQ_DEFAULT_USER`, `RABBITMQ_DEFAULT_PASS`; use a dedicated application account |
 | `shared/environments/aspnetcore.env` | `ASPNETCORE_ENVIRONMENT=Development` for the existing local Gateway routes, OpenAPI, and migrations |
 | `shared/environments/netcore.env` | `DOTNET_ENVIRONMENT=Development` for workers |
@@ -39,6 +40,7 @@ Choose PostgreSQL and RabbitMQ credentials, then use matching values in the corr
 | `identity/environments/rabbitmq.consumer.keys.env` | `RabbitMqConsumer__BindingKeys__0` |
 | `cart/environments/rabbitmq.consumer.env`, `inventory/environments/rabbitmq.consumer.env` | A separate queue name for each worker and `RabbitMqConsumer__PrefetchCount` |
 | `cart/environments/rabbitmq.consumer.keys.env`, `inventory/environments/rabbitmq.consumer.keys.env` | `RabbitMqConsumer__BindingKeys__0`, `RabbitMqConsumer__BindingKeys__1` |
+| `catalog/environments/azureblob.env` | `ConnectionStrings__AzureBlobStorage` pointing at Azurite, for example `DefaultEndpointsProtocol=http;AccountName=<account_name>;AccountKey=<base64_key>;BlobEndpoint=http://object-storage:10000/<account_name>;` |
 | `catalog/environments/services.env` | `Services__Inventory__BaseAddress=http://inventory-api:8080/` |
 | `cart/environments/services.env` | `Services__Catalog__BaseAddress=http://catalog-api:8080/` |
 | `ordering/environments/services.env` | `Services__Cart__BaseAddress=http://cart-api:8080/`, `Services__Catalog__BaseAddress=http://catalog-api:8080/`, `Services__Inventory__BaseAddress=http://inventory-api:8080/` |
@@ -90,7 +92,7 @@ docker compose up --build -d
 docker compose ps
 ```
 
-Compose starts PostgreSQL, Redis, RabbitMQ, five APIs, five workers, and the API Gateway. **Web is not included in Compose**; run it separately using the [Web guide](../src/Web/README.md).
+Compose starts PostgreSQL, Redis, RabbitMQ, Azurite, five APIs, five workers, and the API Gateway. Catalog API waits for Azurite to become healthy. **Web is not included in Compose**; run it separately using the [Web guide](../src/Web/README.md).
 
 ## 3. Access and inspect
 
@@ -103,6 +105,7 @@ Compose starts PostgreSQL, Redis, RabbitMQ, five APIs, five workers, and the API
 | PostgreSQL | `localhost:5432` |
 | Redis | `localhost:6379` |
 | RabbitMQ AMQP | `localhost:5672` |
+| Azurite Blob endpoint | http://localhost:10000/<account_name> |
 
 Gateway route groups are `/api/auth`, `/api/users`, `/api/products`, `/api/categories`, `/api/inventory-items`, `/api/carts`, and `/api/orders`. Service OpenAPI documents are exposed through `/openapi/identity.json`, `/openapi/catalog.json`, `/openapi/inventory.json`, `/openapi/cart.json`, and `/openapi/ordering.json`.
 
@@ -115,7 +118,7 @@ docker compose logs -f api-gateway identity-api identity-worker
 
 After startup, the Gateway health request should return HTTP 200. Open Scalar to check that API documents load through the Gateway. This is an additional connectivity check, not verification of data-changing operations or event processing.
 
-Stop the stack with `docker compose down`. PostgreSQL and RabbitMQ data live in named volumes and are retained after this command.
+Stop the stack with `docker compose down`. PostgreSQL, RabbitMQ, and Azurite (`azurite_data`) data live in named volumes and are retained after this command.
 
 ## Troubleshooting
 
@@ -126,6 +129,8 @@ Stop the stack with `docker compose down`. PostgreSQL and RabbitMQ data live in 
 | API is unhealthy or reports missing tables | Check connection strings, database permissions, migration logs, and `ASPNETCORE_ENVIRONMENT=Development` |
 | Gateway returns 404 or 502 | Routes currently live in `src/ApiGateway/appsettings.Development.json`; check the environment, API status, and internal Docker hostnames |
 | Gateway is healthy but business operations fail | Check relevant API/worker health and logs; Gateway health does not check every dependency |
+| Catalog API does not start or creating a product fails at upload | Check `catalog/environments/azureblob.env`, that its account name/key match `AZURITE_ACCOUNTS`, and that the `object-storage` container is healthy. Catalog creates the `catalog-images` container on first use |
+| Product image URLs return 404 | `AzureBlobStorage:PublicBaseUrl` defaults to `http://127.0.0.1:8080/media`, but the Gateway does not route `/media` yet |
 | API rejects JWTs | Check issuer/audience, token expiry, and matching RSA keys |
 | Email or event synchronization does not work | Check the Identity worker, SMTP, RabbitMQ credentials, exchange, queues, and binding keys |
 | Gateway is configured but Web cannot establish login | Web does not handle sessions yet; see [authentication contract limitations](../src/Web/Features/Authentication/README.md#current-contracts-and-limitations) |
