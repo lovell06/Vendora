@@ -1,3 +1,5 @@
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.OpenApi;
 using Vendora.Services.Catalog.Infrastructure.Storage;
 
@@ -57,6 +59,14 @@ if (app.Environment.IsDevelopment())
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
     await db.Database.MigrateAsync();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var container = scope.ServiceProvider.GetRequiredService<BlobContainerClient>();
+
+    await container.CreateIfNotExistsAsync();
+    await container.SetAccessPolicyAsync(PublicAccessType.Blob);
 }
 
 app.UseAuthentication();
