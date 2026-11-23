@@ -4,6 +4,7 @@
 .cart-sheet-product { flex: 1; min-width: 0; }
 h2 { margin: 0 0 6px; font-size: .875rem; font-weight: 600; line-height: 1.5; overflow-wrap: anywhere; }
 .cart-sheet-product p { margin: 0; color: var(--md-primary); font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cart-sheet-product .cart-sheet-variant { margin-bottom: 4px; color: var(--md-on-surface-variant); font-weight: 400; }
 .cart-sheet-quantity { flex: 1; display: flex; align-items: center; padding-block: 16px; }
 .cart-sheet-footer { padding-top: 12px; border-top: 1px solid var(--md-outline-variant); }
 .cart-sheet-footer ::deep .cart-sheet-confirm { width: 100%; }

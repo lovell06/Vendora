@@ -17,7 +17,7 @@ namespace Vendora.Services.Catalog.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.13")
+                .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -163,6 +163,60 @@ namespace Vendora.Services.Catalog.Infrastructure.Persistence.Migrations
                     b.ToTable("products", (string)null);
                 });
 
+            modelBuilder.Entity("Vendora.Services.Catalog.Domain.Products.ProductImage", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_primary");
+
+                    b.Property<string>("ObjectKey")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)")
+                        .HasColumnName("object_key");
+
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("product_id");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint")
+                        .HasColumnName("size_bytes");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_product_images_primary")
+                        .HasFilter("is_primary = TRUE");
+
+                    b.HasIndex("ProductId", "SortOrder")
+                        .IsUnique();
+
+                    b.ToTable("product_images", (string)null);
+                });
+
             modelBuilder.Entity("Vendora.Services.Catalog.Domain.Products.ProductVariant", b =>
                 {
                     b.Property<long>("Id")
@@ -215,6 +269,49 @@ namespace Vendora.Services.Catalog.Infrastructure.Persistence.Migrations
                     b.ToTable("product_variants", (string)null);
                 });
 
+            modelBuilder.Entity("Vendora.Services.Catalog.Domain.Products.ProductVariantImage", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("IsPrimary")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_primary");
+
+                    b.Property<long>("ProductImageId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("product_image_id");
+
+                    b.Property<long>("ProductVariantId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("product_variant_id");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer")
+                        .HasColumnName("sort_order");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductImageId");
+
+                    b.HasIndex("ProductVariantId")
+                        .IsUnique()
+                        .HasDatabaseName("ux_product_variant_images_primary")
+                        .HasFilter("is_primary = TRUE");
+
+                    b.HasIndex("ProductVariantId", "ProductImageId")
+                        .IsUnique();
+
+                    b.HasIndex("ProductVariantId", "SortOrder")
+                        .IsUnique();
+
+                    b.ToTable("product_variant_images", (string)null);
+                });
+
             modelBuilder.Entity("Vendora.Services.Catalog.Domain.Products.Product", b =>
                 {
                     b.HasOne("Vendora.Services.Catalog.Domain.Categories.Category", "Category")
@@ -224,6 +321,17 @@ namespace Vendora.Services.Catalog.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Vendora.Services.Catalog.Domain.Products.ProductImage", b =>
+                {
+                    b.HasOne("Vendora.Services.Catalog.Domain.Products.Product", "Product")
+                        .WithMany("Images")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Vendora.Services.Catalog.Domain.Products.ProductVariant", b =>
@@ -237,6 +345,25 @@ namespace Vendora.Services.Catalog.Infrastructure.Persistence.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Vendora.Services.Catalog.Domain.Products.ProductVariantImage", b =>
+                {
+                    b.HasOne("Vendora.Services.Catalog.Domain.Products.ProductImage", "ProductImage")
+                        .WithMany()
+                        .HasForeignKey("ProductImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Vendora.Services.Catalog.Domain.Products.ProductVariant", "ProductVariant")
+                        .WithMany("ImageAssignments")
+                        .HasForeignKey("ProductVariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProductImage");
+
+                    b.Navigation("ProductVariant");
+                });
+
             modelBuilder.Entity("Vendora.Services.Catalog.Domain.Categories.Category", b =>
                 {
                     b.Navigation("Products");
@@ -244,7 +371,14 @@ namespace Vendora.Services.Catalog.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Vendora.Services.Catalog.Domain.Products.Product", b =>
                 {
+                    b.Navigation("Images");
+
                     b.Navigation("Variants");
+                });
+
+            modelBuilder.Entity("Vendora.Services.Catalog.Domain.Products.ProductVariant", b =>
+                {
+                    b.Navigation("ImageAssignments");
                 });
 #pragma warning restore 612, 618
         }

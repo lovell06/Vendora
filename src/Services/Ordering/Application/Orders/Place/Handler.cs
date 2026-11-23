@@ -124,7 +124,7 @@ public sealed class Handler(
                 OccurredAt = utcNow,
                 OrderId = order.Id,
                 UserId = order.UserId,
-                Items = [.. order.Items.Select(i => i.ProductId)]
+                Items = [.. order.Items.Select(i => i.VariantId)]
             }, utcNow);
             
             await unitOfWork.SaveChangesAsync(cancellationToken);

@@ -1,3 +1,5 @@
+using Vendora.Services.Inventory.Api.ExceptionHandlers;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
@@ -26,7 +28,13 @@ builder.Services
     .AddJwtBearerAuthentication(builder.Configuration)
     .AddApplicationAuthorization();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ConflictExceptionHandler>();
+builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
+
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

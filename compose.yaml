@@ -29,3 +29,5 @@ include:
     project_directory: .
   - path: composes/apigateway/api.yaml
     project_directory: .
+  - path: composes/infra/object-storage.yaml
+    project_directory: .

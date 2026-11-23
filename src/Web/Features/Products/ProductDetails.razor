@@ -1,5 +1,5 @@
 @page "/products/{Id}"
-@layout Vendora.Web.Features.Home.HomeLayout
+@layout HomeLayout
 @using Vendora.Web.Features.Home
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
@@ -17,26 +17,44 @@
         <MudButton Href="/" StartIcon="@Icons.Material.Outlined.ArrowBack" Variant="Variant.Text" Color="Color.Primary" Class="app-button back-link">All products</MudButton>
         <p class="demo-note">Demo catalog · Sample product and price</p>
         <div class="detail-layout">
-            <div class="detail-image">
-                @if (!_imageFailed)
+            <div class="detail-media">
+                <ProductGallery @key="Id" Images="VisibleImages" @bind-ActiveImageId="_activeImageId" />
+                @if (_product.Variants.Count > 0)
                 {
-                    <img src="@_product.ImageUrl" alt="@_product.Name" width="480" height="480" fetchpriority="high" @onerror="() => _imageFailed = true" />
+                    <label class="gallery-toggle"><input type="checkbox" @bind="_showAllImages" />View all product photos (@_product.Gallery.Count)</label>
                 }
-                else { <MudIcon Icon="@Icons.Material.Outlined.Inventory2" aria-label="Product image unavailable" /> }
             </div>
             <section class="detail-summary" aria-labelledby="product-title">
                 <p class="category">@_product.Category</p>
                 <h1 id="product-title">@_product.Name</h1>
                 <p class="detail-price">@_product.PriceText</p>
-                <p class="stock"><MudIcon Icon="@(_product.InStock ? Icons.Material.Outlined.CheckCircle : Icons.Material.Outlined.RemoveCircleOutline)" Size="Size.Small" aria-hidden="true" />@(_product.InStock ? "In stock" : "Out of stock")</p>
+                <p class="stock"><MudIcon Icon="@(CanPurchase ? Icons.Material.Outlined.CheckCircle : Icons.Material.Outlined.RemoveCircleOutline)" Size="Size.Small" aria-hidden="true" />@(CanPurchase ? "In stock" : "Out of stock")</p>
                 <p class="description">@_product.Description</p>
+                @if (_product.Variants.Count > 0)
+                {
+                    <fieldset class="variant-selector">
+                        <legend>Color <span>· @_selectedVariant?.Name</span></legend>
+                        <div class="variant-options">
+                            @foreach (var variant in _product.Variants)
+                            {
+                                var thumbnail = _product.Gallery.FirstOrDefault(image => image.Id == variant.PrimaryImageId);
+                                <button type="button" class="variant-option" aria-pressed="@(variant.Id == _selectedVariant?.Id ? "true" : "false")"
+                                        @onclick="() => SelectVariant(variant)">
+                                    @if (thumbnail is not null) { <img src="@thumbnail.Url" alt="" width="44" height="44" loading="lazy" /> }
+                                    <span class="variant-label">@variant.Name@if (!variant.InStock) { <small>Out of stock</small> }</span>
+                                    @if (variant.Id == _selectedVariant?.Id) { <MudIcon Icon="@Icons.Material.Outlined.Check" Size="Size.Small" aria-hidden="true" /> }
+                                </button>
+                            }
+                        </div>
+                    </fieldset>
+                }
                 <div class="purchase-controls">
-                    <div class="desktop-quantity"><QuantitySelector @bind-Value="_quantity" Min="1" Max="99" Disabled="@(!_product.InStock)" /></div>
-                    <AppButton OnClick="RequestAddToCart" Disabled="@(!_product.InStock || _openingSheet || _quantity < 1 || _quantity > 99)" Class="detail-add">@(_product.InStock ? "Add to cart" : "Out of stock")</AppButton>
+                    <div class="desktop-quantity"><QuantitySelector @bind-Value="_quantity" Min="1" Max="99" Disabled="@(!CanPurchase)" /></div>
+                    <AppButton OnClick="RequestAddToCart" Disabled="@(!CanPurchase || _openingSheet || _quantity < 1 || _quantity > 99)" Class="detail-add">@(CanPurchase ? "Add to cart" : "Out of stock")</AppButton>
                 </div>
                 <section class="product-information" aria-labelledby="information-title">
                     <h2 id="information-title">Product information</h2>
-                    <dl><div><dt>Category</dt><dd>@_product.Category</dd></div><div><dt>Product code</dt><dd>@_product.Id.ToUpperInvariant()</dd></div></dl>
+                    <dl><div><dt>Category</dt><dd>@_product.Category</dd></div><div><dt>Product code</dt><dd>@(_selectedVariant?.ProductCode ?? _product.Id.ToUpperInvariant())</dd></div></dl>
                 </section>
             </section>
         </div>
@@ -57,7 +75,15 @@
     private DemoCatalog.Product? _product;
     private int _quantity = 1;
     private bool _openingSheet;
-    private bool _imageFailed;
+    private ProductVariant? _selectedVariant;
+    private string? _activeImageId;
+    private bool _showAllImages;
+    private bool CanPurchase => _product is { InStock: true } && (_selectedVariant?.InStock ?? true);
+    private IReadOnlyList<ProductImage> VisibleImages => _product is null ? [] :
+        _showAllImages || _selectedVariant is null ? _product.Gallery :
+        _product.Gallery.Where(image => _selectedVariant.ImageIds.Contains(image.Id)).ToArray();
+    private ProductImage? RepresentativeImage => _product?.Gallery.FirstOrDefault(image =>
+        image.Id == _selectedVariant?.PrimaryImageId) ?? _product?.Gallery.FirstOrDefault();
     private IEnumerable<DemoCatalog.Product> RelatedProducts => DemoCatalog.Products
         .Where(product => product.Id != Id)
         .OrderByDescending(product => product.Category == _product?.Category).Take(4);
@@ -65,18 +91,28 @@
     {
         _product = DemoCatalog.Products.FirstOrDefault(product => product.Id == Id);
         _quantity = 1;
-        _imageFailed = false;
+        _showAllImages = false;
+        _selectedVariant = _product?.Variants.FirstOrDefault();
+        _activeImageId = RepresentativeImage?.Id;
         if (_product is null && HttpContext is { Response.HasStarted: false })
             HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
     }
+    private void SelectVariant(ProductVariant variant)
+    {
+        _selectedVariant = variant;
+        _activeImageId = variant.PrimaryImageId;
+        _showAllImages = false;
+        _quantity = 1;
+    }
     private async Task RequestAddToCart()
     {
-        if (_product is not { InStock: true } || _openingSheet) return;
+        if (_product is null || !CanPurchase || _openingSheet) return;
         _openingSheet = true;
         var productId = Id;
+        var variantId = _selectedVariant?.Id;
         try
         {
-            if (await Viewport.GetCurrentBreakpointAsync() != Breakpoint.Xs)
+            if (!await Viewport.IsMediaQueryMatchAsync("(max-width: 599px)"))
             {
                 AddToCart();
                 return;
@@ -84,7 +120,8 @@
             var parameters = new DialogParameters<AddToCartSheet>
             {
                 { sheet => sheet.Name, _product.Name },
-                { sheet => sheet.ImageUrl, _product.ImageUrl },
+                { sheet => sheet.ImageUrl, RepresentativeImage?.Url },
+                { sheet => sheet.VariantName, _selectedVariant?.Name },
                 { sheet => sheet.PriceText, _product.PriceText },
                 { sheet => sheet.InitialQuantity, _quantity }
             };
@@ -96,7 +133,7 @@
             };
             var dialog = await DialogService.ShowAsync<AddToCartSheet>("Add to cart", parameters, options);
             var result = await dialog.Result;
-            if (Id == productId && result is { Canceled: false, Data: int quantity })
+            if (Id == productId && _selectedVariant?.Id == variantId && result is { Canceled: false, Data: int quantity })
             {
                 _quantity = quantity;
                 AddToCart();
@@ -106,7 +143,7 @@
     }
     private void AddToCart()
     {
-        if (_product is not { InStock: true } || _quantity is < 1 or > 99) return;
-        Snackbar.Add($"Demo: {_quantity} × {_product.Name} selected. No order has been placed.", Severity.Info);
+        if (_product is null || !CanPurchase || _quantity is < 1 or > 99) return;
+        Snackbar.Add($"Demo: {_quantity} × {_product.Name}{(_selectedVariant is null ? "" : $" · {_selectedVariant.Name}")} selected. No order has been placed.", Severity.Info);
     }
 }

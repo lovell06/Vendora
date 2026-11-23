@@ -10,6 +10,7 @@ services:
       retries: 10
       start_period: 5s
     env_file:
+      - composes/catalog/environments/azureblob.env
       - composes/shared/environments/aspnetcore.env
       - composes/catalog/environments/jwt.env
       - composes/catalog/environments/services.env
@@ -20,6 +21,8 @@ services:
       - source: catalog_connection_string
         target: ConnectionStrings__Postgres
     depends_on:
+      object-storage:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       redis:

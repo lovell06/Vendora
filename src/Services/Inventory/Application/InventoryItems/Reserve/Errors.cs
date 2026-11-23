@@ -15,4 +15,8 @@ public static class Errors
         Message = "Inventory items must be not empty.",
         Type = ErrorType.Validation
     };
+
+    public static readonly Error ConcurrencyConflict = Error.Conflict(
+        code: "inventory_item_reserving.concurrency_conflict",
+        message: "Stock was changed by another request. Please try again.");
 }

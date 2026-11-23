@@ -10,6 +10,8 @@ public class Order
     public DateTimeOffset? PaidAt { get; private set; }
     public required string Currency { get; init; }
 
+    public uint Version { get; init; }
+
     private List<OrderItem> _items = [];
     public IReadOnlyList<OrderItem> Items => _items;
 
@@ -137,15 +139,10 @@ public class Order
 
     public Result Cancel(DateTimeOffset cancelledAt)
     {
-        if (Status is OrderStatus.Cancelled)
-            return Result.Success();
-
-        if (Status is not OrderStatus.Preparing &&
+        if (Status is OrderStatus.Cancelled || Status is not OrderStatus.Preparing &&
             Status is not OrderStatus.Confirmed &&
             Status is not OrderStatus.Pending)
-        {
             return Result.Failure(OrderErrors.CannotCancel);
-        }
 
         Status = OrderStatus.Cancelled;
         UpdatedAt = cancelledAt;
@@ -155,6 +152,10 @@ public class Order
 
     public Result MaskAsPaid(DateTimeOffset paidAt)
     {
+        if (Status is OrderStatus.Cancelled || 
+            Status is OrderStatus.Rejected)
+            return Result.Failure(OrderErrors.CannotMaskAsPaid);
+        
         PaidAt = paidAt;
         UpdatedAt = paidAt;
 

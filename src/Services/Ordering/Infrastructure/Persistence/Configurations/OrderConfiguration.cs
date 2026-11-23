@@ -37,6 +37,8 @@ public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasMaxLength(3)
             .IsRequired();
 
+        builder.Property(order => order.Version).IsRowVersion();
+
         builder.HasMany(o => o.Items)
             .WithOne()
             .HasForeignKey(i => i.OrderId)

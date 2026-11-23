@@ -6,7 +6,8 @@ public static class ReserveInventoryItemsEndpoint
     {
         public void MapReserveInventoryItemEndpoint()
         {
-            group.MapPost(ReserveInventoryItemsRequest.Pattern, Handle);
+            group.MapPost(ReserveInventoryItemsRequest.Pattern, Handle)
+                .RequireAuthorization();
         }
     }
 

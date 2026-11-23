@@ -6,6 +6,10 @@ public sealed class InventoryItemConfiguration : IEntityTypeConfiguration<Invent
     {
         builder.ToTable("inventory_items");
         builder.HasKey(item => item.Id);
+        builder.HasIndex(item => item.ProductVariantId)
+            .IsUnique();
+        builder.HasIndex(item => item.Sku)
+            .IsUnique();
 
         builder.Property(item => item.Id)
             .HasColumnName("id");
@@ -35,6 +39,8 @@ public sealed class InventoryItemConfiguration : IEntityTypeConfiguration<Invent
         builder.Property(item => item.UpdatedAt)
             .HasColumnName("updated_at")
             .IsRequired(false);
+
+        builder.Property(item => item.Version).IsRowVersion();
 
         builder.HasMany(item => item.Adjustments)
             .WithOne()

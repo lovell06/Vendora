@@ -17,6 +17,9 @@ public sealed class Handler(
 
         var cancelOrderResult = order.Cancel(utcNow);
 
+        if (cancelOrderResult.IsFailure)
+            return Result.Failure(cancelOrderResult.Error);
+
         outboxMessageRepository.Add(new OrderCancelledEvent
         {
             Id = Guid.CreateVersion7(),
@@ -25,15 +28,13 @@ public sealed class Handler(
             UserId = order.UserId,
             CancelledOrderItems = [.. order.Items.Select(i => new CancelledOrderItemDto
             {
-                ProductId = i.ProductId, 
+                ProductVariantId = i.VariantId, 
                 Quantity = i.Quantity
             })]
         }, utcNow);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return cancelOrderResult.IsFailure 
-            ? Result.Failure(cancelOrderResult.Error) 
-            : Result.Success();
+        return Result.Success();
     }
 }

@@ -14,12 +14,7 @@ public sealed class Handler(
         {
             logger.LogWarning("Inventory Item Creation rejected because product variant existed.");
 
-            return Result.Failure(new Error
-            {
-                Code = "inventory_item_creation.existed",
-                Message = "Product variant is existed.",
-                Type = ErrorType.Conflict
-            });
+            return Result.Success();
         }
 
         var result = InventoryItem.Create(

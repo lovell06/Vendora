@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Vendora.Services.Ordering.Api.ExceptionHandlers;
 using Vendora.Services.Ordering.Infrastructure.Clients;
 using Vendora.Services.Ordering.Infrastructure.Queries;
 using Vendora.Services.Ordering.Infrastructure.Repositories;
@@ -43,7 +44,13 @@ builder.Services
     .AddJwtBearerAuthentication(builder.Configuration)
     .AddApplicationAuthorization();
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ConflictExceptionHandler>();
+builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
+
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

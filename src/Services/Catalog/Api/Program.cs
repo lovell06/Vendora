@@ -1,10 +1,23 @@
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Microsoft.OpenApi;
+using Vendora.Services.Catalog.Api.ExceptionHandlers;
+using Vendora.Services.Catalog.Infrastructure.Storage;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, _, _) =>
+    {
+        document.Servers = [new OpenApiServer { Url = "/" }];
+        return Task.CompletedTask;
+    });
+});
 
 builder.Services.Configure<RouteOptions>(options =>
 {
@@ -20,6 +33,7 @@ builder.Services
     .AddServiceClients(builder.Configuration)
     .AddPersistenceServices(builder.Configuration)
     .AddQueryServices()
+    .AddStorageServices(builder.Configuration)
     .AddRepositoryServices()
     .AddEventTypeRegistry();
 
@@ -34,7 +48,13 @@ builder.Logging.AddSimpleConsole(config =>
     config.UseUtcTimestamp = true;
 });
 
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ConflictExceptionHandler>();
+builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
+
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
@@ -48,14 +68,22 @@ if (app.Environment.IsDevelopment())
     await db.Database.MigrateAsync();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var container = scope.ServiceProvider.GetRequiredService<BlobContainerClient>();
+
+    await container.CreateIfNotExistsAsync();
+    await container.SetAccessPolicyAsync(PublicAccessType.Blob);
+}
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapHealthChecks("/health").AllowAnonymous();
 
-app.MapEndpoints();
-
 app.UseHttpsRedirection();
+
+app.MapEndpoints();
 
 app.Run();

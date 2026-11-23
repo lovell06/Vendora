@@ -1,0 +1,39 @@
+<section class="product-gallery" aria-label="Product gallery">
+    <div class="gallery-image">
+        @if (ActiveImage is { } image && !_failedUrls.Contains(image.Url))
+        {
+            <img @key="image.Url" src="@image.Url" alt="@image.Alt" width="480" height="480"
+                 fetchpriority="high" @onerror="() => _failedUrls.Add(image.Url)" />
+        }
+        else
+        {
+            <div class="gallery-fallback"><MudIcon Icon="@Icons.Material.Outlined.ImageNotSupported" aria-hidden="true" /><span>Image unavailable</span></div>
+        }
+    </div>
+    <p class="gallery-caption" aria-live="polite" aria-atomic="true">@ActiveImage?.Alt · @(ActiveIndex + 1) of @Images.Count</p>
+    @if (Images.Count > 1)
+    {
+        <div class="gallery-thumbnails" role="group" aria-label="Choose product image">
+            @foreach (var thumbnail in Images)
+            {
+                <button @key="thumbnail.Id" type="button" class="gallery-thumbnail" aria-label="@($"View {thumbnail.Alt}")"
+                        aria-pressed="@(thumbnail.Id == ActiveImage?.Id ? "true" : "false")" @onclick="() => ActiveImageIdChanged.InvokeAsync(thumbnail.Id)">
+                    @if (!_failedUrls.Contains(thumbnail.Url))
+                    {
+                        <img src="@thumbnail.Url" alt="" width="64" height="64" loading="lazy" @onerror="() => _failedUrls.Add(thumbnail.Url)" />
+                    }
+                    else { <MudIcon Icon="@Icons.Material.Outlined.ImageNotSupported" aria-hidden="true" /> }
+                </button>
+            }
+        </div>
+    }
+</section>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<ProductImage> Images { get; set; } = [];
+    [Parameter] public string? ActiveImageId { get; set; }
+    [Parameter] public EventCallback<string> ActiveImageIdChanged { get; set; }
+    private readonly HashSet<string> _failedUrls = [];
+    private ProductImage? ActiveImage => Images.FirstOrDefault(image => image.Id == ActiveImageId) ?? Images.FirstOrDefault();
+    private int ActiveIndex => Images.ToList().FindIndex(image => image.Id == ActiveImage?.Id);
+}

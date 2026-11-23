@@ -2,10 +2,16 @@ using Vendora.Services.Catalog.Application.Products.Get;
 
 namespace Vendora.Services.Catalog.Infrastructure.Queries.Products;
 
-public sealed class EfCoreGetProductQueryService(ApplicationDbContext context) : IGetProductQueryService
+public sealed class EfCoreGetProductQueryService(ApplicationDbContext context, IConfiguration configuration) : IGetProductQueryService
 {
     public async Task<ProductDto?> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {
+        var publicBaseUrl = configuration["AzureBlobStorage:PublicBaseUrl"];
+        if (publicBaseUrl is null)
+            throw new InvalidOperationException("Missing AzureBlobStorage:PublicBaseUrl configuration.");
+
+        publicBaseUrl = publicBaseUrl.Trim('/');
+        
         return await context.Products
             .AsNoTracking()
             .Include(product => product.Category)
@@ -26,7 +32,14 @@ public sealed class EfCoreGetProductQueryService(ApplicationDbContext context) :
                 {
                     Name = variant.Name,
                     Sku = variant.Sku,
-                    Price = variant.Price
+                    Price = variant.Price,
+                    ImageIds = variant.ImageAssignments.Select(image => image.ProductImageId).ToList()
+                }).ToList(),
+                Images = product.Images.Select(image => new ProductImageDto
+                {
+                    Id = image.Id,
+                    SortOrder = image.SortOrder,
+                    Url = $"{publicBaseUrl}/{image.ObjectKey.Trim('/')}"
                 }).ToList()
             })
             .SingleOrDefaultAsync(product => product.Id == query.Id, cancellationToken);

@@ -1,12 +1,16 @@
 namespace Vendora.Services.Ordering.Infrastructure.Clients;
 
-public class HttpInventoryServiceClient(HttpClient client) : IInventoryServiceClient
+public class HttpInventoryServiceClient(HttpClient client, ICurrentUser user) : IInventoryServiceClient
 {
     public async Task<Result> ReserveAsync(IReadOnlyList<OrderItem> orderItems, CancellationToken ct)
     {
         using var message = new HttpRequestMessage(
             method: HttpMethod.Post,
             requestUri: "/api/inventory-items/reserve");
+
+        message.Headers.Authorization = new AuthenticationHeaderValue(
+            scheme: "bearer",
+            parameter: await user.GetAccessTokenAsync());
         
         message.Content = JsonContent.Create(new ReservedItemsDto
         {

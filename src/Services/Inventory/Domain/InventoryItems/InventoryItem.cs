@@ -17,6 +17,8 @@ public class InventoryItem
     private readonly List<InventoryAdjustment> _adjustments = [];
     public IReadOnlyList<InventoryAdjustment> Adjustments => _adjustments;
 
+    public uint Version { get; init; }
+
     private InventoryItem()
     {
     }

@@ -57,4 +57,11 @@ public static class OrderErrors
         Message = "The order cannot be cancelled in its current status.",
         Type = ErrorType.Conflict
     };
+
+    public static readonly Error CannotMaskAsPaid = new()
+    {
+        Code = "order.cannot_mask_as_paid",
+        Message = "The order cannot be masked as paid in its current status.",
+        Type = ErrorType.Conflict
+    };
 }

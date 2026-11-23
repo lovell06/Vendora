@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace Vendora.Services.Catalog.Api.Products.Create;
 
 public static class CreateProductEndpoint
@@ -5,11 +7,12 @@ public static class CreateProductEndpoint
     public static void MapCreateProductEndpoint(this RouteGroupBuilder group)
     {
         group.MapPost(CreateProductRequest.Pattern, Handle)
-            .RequireAuthorization(AuthorizationPolicies.ManageProducts);
+            .RequireAuthorization(AuthorizationPolicies.ManageProducts)
+            .DisableAntiforgery();
     }
 
     private static async Task<IResult> Handle(
-        CreateProductRequest request, 
+        [FromForm] CreateProductRequest request, 
         ISender sender,
         CancellationToken cancellationToken)
     {

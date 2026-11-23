@@ -2,10 +2,14 @@ using Vendora.Services.Catalog.Application.Products.List;
 
 namespace Vendora.Services.Catalog.Infrastructure.Queries.Products;
 
-public sealed class EfCoreListProductsQueryService(ApplicationDbContext context) : IListProductsQueryService
+public sealed class EfCoreListProductsQueryService(ApplicationDbContext context, IConfiguration configuration) : IListProductsQueryService
 {
     public async Task<Response?> ExecuteAsync(Query query, CancellationToken cancellationToken)
     {
+        var objectStorageBaseUrl = configuration["AzureBlobStorage:PublicBaseUrl"]
+                                   ?? throw new InvalidOperationException(
+                                       "Missing AzureBlobStorage:PublicBaseUrl configuration.");
+        
         CategoryDto? category = null;
 
         if (query.CategoryId is not null)
@@ -43,7 +47,8 @@ public sealed class EfCoreListProductsQueryService(ApplicationDbContext context)
                 Name = prod.Name,
                 Currency = prod.Currency,
                 MinPrice = prod.Variants.Select(variant => variant.Price).Min(),
-                MaxPrice = prod.Variants.Select(variant => variant.Price).Max()
+                MaxPrice = prod.Variants.Select(variant => variant.Price).Max(),
+                ImageUrl = $"{objectStorageBaseUrl.Trim('/')}/{prod.Images.Single(image => image.IsPrimary).ObjectKey}"
             })
             .Skip((query.Page-1) * query.Size)
             .Take(query.Size)

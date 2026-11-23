@@ -63,6 +63,10 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .WithOne(variant => variant.Product)
             .HasForeignKey(variant => variant.ProductId);
 
+        builder.HasMany(p => p.Images)
+            .WithOne(image => image.Product)
+            .HasForeignKey(image => image.ProductId);
+
         builder.HasIndex(p => new { p.CreatedAt, p.Id })
             .IsUnique()
             .IsDescending();

@@ -1,0 +1,25 @@
+services:
+  object-storage:
+    image: mcr.microsoft.com/azure-storage/azurite:3.38.0
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          require('node:net').connect(10000, '127.0.0.1')
+            .once('connect', () => process.exit(0))
+            .once('error', () => process.exit(1))
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    ports:
+      - 10000:10000
+    env_file:
+      - composes/infra/environments/object-storage.env
+    volumes:
+      - azurite_data:/data
+
+volumes:
+  azurite_data:
