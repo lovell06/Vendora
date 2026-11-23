@@ -15,13 +15,22 @@ public sealed class ProductDto
     public required string Currency { get; init; }
     public required string Status { get; init; }
     public required IReadOnlyList<ProductVariantDto> Variants { get; init; }
+    public required IReadOnlyList<ProductImageDto> Images { get; init; }
+}
+
+public sealed class ProductImageDto
+{
+    public required long Id { get; init; }
+    public required string Url { get; init; }
+    public required int SortOrder { get; init; }
 }
 
 public sealed class ProductVariantDto
 {
     public required string Sku { get; init; }
     public required string Name { get; init; }
-    public decimal Price { get; init; }
+    public required decimal Price { get; init; }
+    public required IReadOnlyList<long> ImageIds { get; init; }
 }
 
 public sealed class CategoryDto
