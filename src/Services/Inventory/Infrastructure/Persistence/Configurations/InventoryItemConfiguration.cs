@@ -8,6 +8,8 @@ public sealed class InventoryItemConfiguration : IEntityTypeConfiguration<Invent
         builder.HasKey(item => item.Id);
         builder.HasIndex(item => item.ProductVariantId)
             .IsUnique();
+        builder.HasIndex(item => item.Sku)
+            .IsUnique();
 
         builder.Property(item => item.Id)
             .HasColumnName("id");

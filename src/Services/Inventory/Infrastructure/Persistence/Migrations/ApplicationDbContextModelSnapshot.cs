@@ -102,6 +102,9 @@ namespace Vendora.Services.Inventory.Infrastructure.Persistence.Migrations
                     b.HasIndex("ProductVariantId")
                         .IsUnique();
 
+                    b.HasIndex("Sku")
+                        .IsUnique();
+
                     b.ToTable("inventory_items", (string)null);
                 });
 
