@@ -10,6 +10,8 @@ public class Order
     public DateTimeOffset? PaidAt { get; private set; }
     public required string Currency { get; init; }
 
+    public uint Version { get; init; }
+
     private List<OrderItem> _items = [];
     public IReadOnlyList<OrderItem> Items => _items;
 
