@@ -152,6 +152,10 @@ public class Order
 
     public Result MaskAsPaid(DateTimeOffset paidAt)
     {
+        if (Status is OrderStatus.Cancelled || 
+            Status is OrderStatus.Rejected)
+            return Result.Failure(OrderErrors.CannotMaskAsPaid);
+        
         PaidAt = paidAt;
         UpdatedAt = paidAt;
 
