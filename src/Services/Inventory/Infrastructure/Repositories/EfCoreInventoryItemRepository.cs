@@ -14,11 +14,11 @@ public sealed class EfCoreInventoryItemRepository(ApplicationDbContext context) 
         context.InventoryItems.Add(item);
     }
 
-    public async Task<bool> ExistsByProductVariantId(long productId, CancellationToken cancellationToken)
+    public async Task<bool> ExistsByProductVariantId(long variantId, CancellationToken cancellationToken)
     {
         return await context.InventoryItems
             .SingleOrDefaultAsync(
-                item => item.ProductId == productId, 
+                item => item.ProductVariantId == variantId, 
                 cancellationToken) is not null;
     }
 
