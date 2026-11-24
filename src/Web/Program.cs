@@ -1,4 +1,6 @@
+using Microsoft.Extensions.Options;
 using MudBlazor.Services;
+using Vendora.Web.Gateway;
 using Vendora.Web.Components.Theming;
 using Vendora.Web.Components;
 
@@ -11,8 +13,16 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 builder.Services.AddScoped<ThemeState>();
 
-builder.Services.Configure<Vendora.Web.Features.Authentication.Shared.AuthGatewayOptions>(builder.Configuration.GetSection("ApiGateway"));
-builder.Services.AddHttpClient<Vendora.Web.Features.Authentication.Shared.AuthGateway>();
+// Every backend call goes through the API Gateway.
+builder.Services.Configure<GatewayOptions>(builder.Configuration.GetSection("ApiGateway"));
+builder.Services.AddScoped<UserSession>();
+builder.Services.AddScoped<CartState>();
+builder.Services.AddHttpClient<GatewayClient>((provider, client) =>
+{
+    var options = provider.GetRequiredService<IOptions<GatewayOptions>>().Value;
+    client.BaseAddress = new Uri(options.BaseUrl, UriKind.Absolute);
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 var app = builder.Build();
 

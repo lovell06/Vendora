@@ -1,15 +1,19 @@
 @page "/"
 @page "/home"
 @layout HomeLayout
-@using Microsoft.AspNetCore.Components.Authorization
+@implements IDisposable
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IBrowserViewportService Viewport
+@inject GatewayClient Gateway
+@inject UserSession Session
+@inject CartState Cart
+@inject NavigationManager Navigation
 <PageTitle>Home | Vendora</PageTitle>
 <StoreHeader>
-        @if (_isAuthenticated)
+        @if (Session.IsAuthenticated)
         {
-            <AppButton Variant="ButtonVariant.Icon" OnClick="ToggleCart" aria-label="Open cart" aria-expanded="@_cartOpen" aria-controls="cart-panel"><AppIcon Name="bag" /><span class="desktop-action-label">Cart</span></AppButton>
+            <AppButton Variant="ButtonVariant.Icon" OnClick="ToggleCart" aria-label="@($"Open cart, {Cart.Count} items")" aria-expanded="@_cartOpen" aria-controls="cart-panel"><AppIcon Name="bag" /><span class="desktop-action-label">Cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</span></AppButton>
             <AppButton Variant="ButtonVariant.Icon" OnClick="ToggleAccount" aria-label="Your account" aria-expanded="@_accountOpen" aria-controls="account-panel"><AppIcon Name="user" /><span class="desktop-action-label">Account</span></AppButton>
         }
         else
@@ -19,19 +23,48 @@
 </StoreHeader>
 <main id="home-content" class="store-content" tabindex="-1">
     <div class="catalog-intro"><PageHeading Title="Explore products" Eyebrow="CATALOG" /></div>
-    <p class="demo-notice">Demo catalog · Sample products and prices</p>
-    @if (_isAuthenticated && _accountOpen)
+    @if (Session.IsAuthenticated && _accountOpen)
     {
         <section id="account-panel" class="cart-panel" aria-labelledby="account-title">
             <div class="section-heading"><h2 id="account-title">Your account</h2><AppButton Variant="ButtonVariant.Text" OnClick="ToggleAccount">Close</AppButton></div>
-            <p>@_accountName</p>
+            <p>@Session.DisplayName</p>
+            <AppButton Variant="ButtonVariant.Text" OnClick="SignOut" Busy="@_signingOut" BusyText="Signing out…">Sign out</AppButton>
         </section>
     }
-    @if (_isAuthenticated && _cartOpen)
+    @if (Session.IsAuthenticated && _cartOpen)
     {
         <section id="cart-panel" class="cart-panel" aria-labelledby="cart-title">
             <div class="section-heading"><h2 id="cart-title">Your cart</h2><AppButton Variant="ButtonVariant.Text" OnClick="ToggleCart">Close</AppButton></div>
-            <p>Your cart is empty.</p>
+            @if (Cart.Loading && Cart.Lines.Count == 0)
+            {
+                <p role="status">Loading your cart…</p>
+            }
+            else if (Cart.Error is not null)
+            {
+                <p role="alert">@Cart.Error</p>
+                <AppButton Variant="ButtonVariant.Text" OnClick="Cart.RefreshAsync">Try again</AppButton>
+            }
+            else if (Cart.Lines.Count == 0)
+            {
+                <p>Your cart is empty.</p>
+            }
+            else
+            {
+                <ul class="cart-lines">
+                    @foreach (var line in Cart.Lines)
+                    {
+                        <li @key="line.VariantId" class="cart-line">
+                            <div class="cart-line-info">
+                                @if (line.ProductId is { } productId) { <a href="@($"/products/{productId}")">@line.ProductName</a> } else { <span>@line.ProductName</span> }
+                                @if (!string.IsNullOrWhiteSpace(line.VariantName)) { <small>@line.VariantName</small> }
+                            </div>
+                            <QuantitySelector Value="line.Quantity" ValueChanged="@(quantity => ChangeQuantity(line.VariantId, quantity))" Min="1" Max="99" />
+                            <span class="cart-line-price">@line.PriceText</span>
+                            <AppButton Variant="ButtonVariant.Text" OnClick="@(() => RemoveLine(line.VariantId))" aria-label="@($"Remove {line.ProductName} from cart")">Remove</AppButton>
+                        </li>
+                    }
+                </ul>
+            }
         </section>
     }
     <form class="store-search" @onsubmit="Search" @onsubmit:preventDefault role="search">
@@ -42,29 +75,45 @@
         <aside class="catalog-filters" aria-labelledby="category-title">
             <h2 id="category-title">Categories</h2>
             <div class="category-options">
-                <MudChipSet T="string" @bind-SelectedValue="_selectedCategory" SelectionMode="SelectionMode.SingleSelection" CheckMark="true" Size="Size.Small" Label="true" aria-label="Product category">
+                <MudChipSet T="string" SelectedValue="_selectedCategory" SelectedValueChanged="OnCategoryChanged" SelectionMode="SelectionMode.SingleSelection" CheckMark="true" Size="Size.Small" Label="true" aria-label="Product category">
                     <MudChip T="string" Value="@("all")">All products</MudChip>
-                    @foreach (var category in DemoCatalog.Products.Select(product => product.Category).Distinct())
+                    @foreach (var category in _categories)
                     {
-                        <MudChip T="string" Value="@category">@category</MudChip>
+                        <MudChip T="string" Value="@category.Id.ToString()">@category.Name</MudChip>
                     }
                 </MudChipSet>
             </div>
         </aside>
         <section class="catalog-results" aria-labelledby="products-title">
-            <div class="section-heading results-heading"><h2 id="products-title">@(_submittedQuery.Length == 0 ? "All products" : "Search results")</h2><span class="product-count" aria-live="polite">@VisibleProducts.Length products</span></div>
+            <div class="section-heading results-heading"><h2 id="products-title">@(_submittedQuery.Length == 0 ? "All products" : "Search results")</h2><span class="product-count" aria-live="polite">@_totalCount products</span></div>
             @if (_submittedQuery.Length > 0)
             {
                 <div class="search-summary"><span>Results for “@_submittedQuery”</span><AppButton Variant="ButtonVariant.Text" OnClick="ClearSearch">Clear search</AppButton></div>
             }
-            @if (VisibleProducts.Length > 0)
+            @if (_loading && _products.Count == 0)
+            {
+                <div class="catalog-empty" role="status"><MudProgressCircular Indeterminate="true" Size="Size.Medium" aria-label="Loading products" /></div>
+            }
+            else if (_error is not null)
+            {
+                <div class="catalog-empty" role="alert">
+                    <h3>We couldn’t load products</h3>
+                    <p>@_error</p>
+                    <AppButton Variant="ButtonVariant.Text" OnClick="Reload">Try again</AppButton>
+                </div>
+            }
+            else if (_products.Count > 0)
             {
                 <ProductGrid>
-                    @foreach (var product in VisibleProducts)
+                    @foreach (var product in _products)
                     {
-                        <ProductCard @key="product.Id" Name="@product.Name" Category="@product.Category" PriceText="@product.PriceText" ImageUrl="@product.ImageUrl" DetailsHref="@($"/products/{product.Id}")" InStock="@product.InStock" OnAddToCart="@(() => PreviewAdd(product.Name))" />
+                        <ProductCard @key="product.Id" Name="@product.Name" Category="@SelectedCategoryName" PriceText="@PriceFormatter.FormatRange(product.MinPrice, product.MaxPrice, product.Currency)" ImageUrl="@product.ImageUrl" DetailsHref="@($"/products/{product.Id}")" Busy="@(_busyProductId == product.Id)" OnAddToCart="@(() => AddToCart(product))" />
                     }
                 </ProductGrid>
+                @if (_products.Count < _totalCount)
+                {
+                    <div class="load-more"><AppButton Variant="ButtonVariant.Text" OnClick="LoadMore" Busy="@_loading" BusyText="Loading…">Load more</AppButton></div>
+                }
             }
             else
             {
@@ -78,28 +127,136 @@
     </div>
 </main>
 @code {
-    private DemoCatalog.Product[] VisibleProducts => DemoCatalog.Products
-        .Where(product => (_selectedCategory == "all" || product.Category == _selectedCategory)
-            && (product.Name.Contains(_submittedQuery, StringComparison.OrdinalIgnoreCase)
-                || product.Category.Contains(_submittedQuery, StringComparison.OrdinalIgnoreCase)))
-        .ToArray();
-    private bool _openingSheet;
-    private async Task PreviewAdd(string name)
+    private const int PageSize = 24;
+
+    [Parameter, SupplyParameterFromQuery(Name = "panel")] public string? Panel { get; set; }
+
+    private IReadOnlyList<CategoryDto> _categories = [];
+    private readonly List<ProductSummaryDto> _products = [];
+    private int _totalCount;
+    private int _page;
+    private bool _loading;
+    private string? _error;
+    private long? _busyProductId;
+    private bool _signingOut;
+    private string _selectedCategory = "all";
+    private string _query = "";
+    private string _submittedQuery = "";
+    private bool _cartOpen;
+    private bool _accountOpen;
+
+    private int? SelectedCategoryId => int.TryParse(_selectedCategory, out var id) ? id : null;
+    private string? SelectedCategoryName => _categories.FirstOrDefault(category => category.Id == SelectedCategoryId)?.Name;
+
+    protected override async Task OnInitializedAsync()
     {
-        if (_openingSheet) return;
-        var product = DemoCatalog.Products.FirstOrDefault(item => item.Name == name);
-        if (product is not { InStock: true }) return;
-        _openingSheet = true;
+        Session.Changed += OnSessionChanged;
+        Cart.Changed += OnCartChanged;
+        await Session.EnsureLoadedAsync();
+
+        var categories = await Gateway.ListCategoriesAsync();
+        if (categories.Ok && categories.Value is not null) _categories = categories.Value.Categories;
+
+        var loadProducts = LoadProductsAsync(reset: true);
+        if (Session.IsAuthenticated)
+        {
+            _cartOpen = Panel == "cart";
+            await Cart.RefreshAsync();
+        }
+        await loadProducts;
+    }
+
+    private async Task LoadProductsAsync(bool reset)
+    {
+        if (_loading) return;
+        _loading = true;
+        _error = null;
         try
         {
+            var page = reset ? 1 : _page + 1;
+            var result = await Gateway.ListProductsAsync(SelectedCategoryId, _submittedQuery, page, PageSize);
+            if (!result.Ok || result.Value is null)
+            {
+                if (reset) { _products.Clear(); _totalCount = 0; }
+                _error = result.Error;
+                return;
+            }
+            if (reset) _products.Clear();
+            _products.AddRange(result.Value.Products);
+            _totalCount = result.Value.TotalCount;
+            _page = page;
+        }
+        finally { _loading = false; }
+    }
+
+    private Task Reload() => LoadProductsAsync(reset: true);
+    private Task LoadMore() => LoadProductsAsync(reset: false);
+
+    private async Task OnCategoryChanged(string? value)
+    {
+        _selectedCategory = string.IsNullOrEmpty(value) ? "all" : value;
+        await LoadProductsAsync(reset: true);
+    }
+
+    private async Task Search()
+    {
+        _submittedQuery = _query.Trim();
+        await LoadProductsAsync(reset: true);
+    }
+
+    private async Task ClearSearch()
+    {
+        _query = "";
+        _submittedQuery = "";
+        await LoadProductsAsync(reset: true);
+    }
+
+    private async Task ResetFilters()
+    {
+        _selectedCategory = "all";
+        await ClearSearch();
+    }
+
+    private async Task AddToCart(ProductSummaryDto summary)
+    {
+        if (_busyProductId is not null) return;
+        if (!Session.IsAuthenticated)
+        {
+            Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString("/")}");
+            return;
+        }
+        _busyProductId = summary.Id;
+        try
+        {
+            // The list does not carry variants, so load the product to know what can be added.
+            var detail = await Gateway.GetProductAsync(summary.Id);
+            if (!detail.Ok || detail.Value is null)
+            {
+                Snackbar.Add(detail.Error ?? "Unable to add this product.", Severity.Error);
+                return;
+            }
+            var variants = detail.Value.Variants;
+            if (variants.Count != 1)
+            {
+                Snackbar.Add("Choose an option for this product first.", Severity.Info);
+                Navigation.NavigateTo($"/products/{summary.Id}");
+                return;
+            }
+            var variant = variants[0];
+            if (!variant.InStock)
+            {
+                Snackbar.Add("This product is out of stock.", Severity.Warning);
+                return;
+            }
+
             var quantity = 1;
             if (await Viewport.GetCurrentBreakpointAsync() == Breakpoint.Xs)
             {
                 var parameters = new DialogParameters<AddToCartSheet>
                 {
-                    { sheet => sheet.Name, product.Name },
-                    { sheet => sheet.ImageUrl, product.ImageUrl },
-                    { sheet => sheet.PriceText, product.PriceText }
+                    { sheet => sheet.Name, summary.Name },
+                    { sheet => sheet.ImageUrl, summary.ImageUrl },
+                    { sheet => sheet.PriceText, PriceFormatter.Format(variant.Price, summary.Currency) }
                 };
                 var options = new DialogOptions
                 {
@@ -112,29 +269,54 @@
                 if (result is not { Canceled: false, Data: int selected }) return;
                 quantity = selected;
             }
-            Snackbar.Add($"Demo: {quantity} × {name} selected. No order has been placed.", Severity.Info);
-        }
-        finally { _openingSheet = false; }
-    }
-    private void ResetFilters() { _selectedCategory = "all"; ClearSearch(); }
-    private string _selectedCategory = "all";
-    private string _query = "";
-    private string _submittedQuery = "";
-    [CascadingParameter] private Task<AuthenticationState>? AuthenticationStateTask { get; set; }
-    private bool _cartOpen;
-    private bool _accountOpen;
-    private bool _isAuthenticated;
-    private string _accountName = "";
 
-    protected override async Task OnParametersSetAsync()
-    {
-        var state = AuthenticationStateTask is null ? null : await AuthenticationStateTask;
-        _isAuthenticated = state?.User.Identity?.IsAuthenticated == true;
-        _accountName = state?.User.Identity?.Name ?? "";
-        if (!_isAuthenticated) { _cartOpen = false; _accountOpen = false; }
+            var added = await Cart.AddAsync(variant.Id, quantity);
+            if (added.Ok) Snackbar.Add($"{quantity} × {summary.Name} added to your cart.", Severity.Success);
+            else Snackbar.Add(added.Error ?? "Unable to add this product.", Severity.Error);
+        }
+        finally { _busyProductId = null; }
     }
-    private void Search() => _submittedQuery = _query.Trim();
-    private void ClearSearch() { _query = ""; _submittedQuery = ""; }
-    private void ToggleCart() { if (!_isAuthenticated) return; _cartOpen = !_cartOpen; _accountOpen = false; }
-    private void ToggleAccount() { if (!_isAuthenticated) return; _accountOpen = !_accountOpen; _cartOpen = false; }
+
+    private async Task ChangeQuantity(long variantId, int quantity)
+    {
+        var result = await Cart.SetQuantityAsync(variantId, quantity);
+        if (!result.Ok) Snackbar.Add(result.Error ?? "Unable to update your cart.", Severity.Error);
+    }
+
+    private async Task RemoveLine(long variantId)
+    {
+        var result = await Cart.RemoveAsync(variantId);
+        if (!result.Ok) Snackbar.Add(result.Error ?? "Unable to update your cart.", Severity.Error);
+    }
+
+    private async Task SignOut()
+    {
+        if (_signingOut) return;
+        _signingOut = true;
+        try
+        {
+            await Gateway.LogoutAsync(); // Best effort: the local session ends either way.
+            Cart.Clear();
+            await Session.SignOutAsync();
+            _cartOpen = false;
+            _accountOpen = false;
+        }
+        finally { _signingOut = false; }
+    }
+
+    private void ToggleCart() { if (!Session.IsAuthenticated) return; _cartOpen = !_cartOpen; _accountOpen = false; }
+    private void ToggleAccount() { if (!Session.IsAuthenticated) return; _accountOpen = !_accountOpen; _cartOpen = false; }
+
+    private void OnSessionChanged() => _ = InvokeAsync(() =>
+    {
+        if (!Session.IsAuthenticated) { _cartOpen = false; _accountOpen = false; }
+        StateHasChanged();
+    });
+    private void OnCartChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Session.Changed -= OnSessionChanged;
+        Cart.Changed -= OnCartChanged;
+    }
 }

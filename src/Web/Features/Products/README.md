@@ -1,47 +1,39 @@
 # Products
 
-The product detail page at `/products/{Id}` shares Home's sample data. This feature demonstrates variant selection, image galleries, and quantity selection; it does not retrieve backend prices/stock or persist a cart.
+The product detail page at `/products/{Id}` (numeric Catalog product id) loads `GET /api/products/{id}` through the Gateway: name, brand, category, description, images, and variants with price and availability.
 
 ## Try it
 
-Follow the [Web instructions](../../README.md#run-and-explore), then open `http://localhost:5111/products/headphones`.
-
-Select `Graphite` to change the representative image and product code; enable `View all product photos` to browse the entire gallery without changing the selected variant. Select `Sand` to inspect the sample out-of-stock state and disabled purchase action.
-
-Other sample IDs are `speaker`, `backpack`, `keyboard`, `bottle`, and `lamp`. The quantity range of 1–99 is a UI limit, not a statement of available stock.
+Start the backend, follow the [Web instructions](../../README.md#run-and-explore), open a product from the homepage (for example `http://localhost:5111/products/1`).
 
 ## Current behavior
 
 | Action or state | Result |
 | --- | --- |
-| Select a variant | Resets quantity to 1, selects its representative image, and filters its images |
-| View all photos | Opens the product gallery while keeping the purchase variant selected |
-| Image failure | Displays a fallback; thumbnails retain navigation labels |
-| Out-of-stock product/variant | Allows inspection but disables purchasing |
-| Add to cart on desktop | Displays a demo snackbar with quantity and variant name, when present |
-| Add to cart at widths up to 599px | Opens a quantity sheet; confirmation displays demo feedback |
-| Change product route | Resets quantity, variant, and gallery state |
-| Unknown ID | Displays recovery content and sets HTTP 404 if the server response has not started |
+| Open a product | Loads from the API; shows a loading indicator, then details. Unknown or invalid id shows the 404 recovery page; other failures show an error page |
+| Variants | Every variant is selectable; the first in-stock one is preselected. Price and product code (SKU) follow the selected variant; stock comes from Inventory (`InStock`) |
+| Images | The variant's own images are shown; `View all product photos` shows the whole gallery. A variant with no assigned images shows the whole gallery |
+| Add to cart | Guests are sent to `/login?returnUrl=…`. Signed-in users add `POST /api/carts/add-item` with the variant id; compact screens first open the quantity sheet. Success or the backend error is shown in a snackbar |
+| Related products | Up to four other products of the same category from `GET /api/products?categoryId=…` |
+| Change product route | Reloads data and resets quantity, variant, and gallery state |
 
-Related products exclude the current product, prioritize its category, and include at most four samples. Browsing another image does not change the representative image supplied to the cart sheet.
+The quantity range of 1–99 is a UI limit; the backend (Inventory/Cart) decides what is really available.
 
 ## Image and variant models
 
-[ProductMedia.cs](ProductMedia.cs) defines the presentation models:
+[ProductMedia.cs](ProductMedia.cs) defines presentation models mapped from the API response: `ProductImage` (`Id`, `Url`, `Alt`) and `ProductVariant` (`Id`, `Name`, `ProductCode`, `ImageIds`, `PrimaryImageId`, `InStock`). Ids are the numeric Catalog ids as strings. A variant's primary image is its first assigned image.
 
-- `ProductImage`: `Id`, `Url`, `Alt`.
-- `ProductVariant`: `Id`, `Name`, `ProductCode`, `ImageIds`, `PrimaryImageId`, `InStock`.
+[ProductDetails.razor](ProductDetails.razor) coordinates loading, selection and cart feedback. [ProductGallery.razor](ProductGallery.razor) renders images/thumbnails and image-error states. `QuantitySelector` and `AddToCartSheet` belong to [Shared UI](../../Components/UI/README.md).
 
-Each product owns a shared gallery; variants reference images by ID. When adding sample data, keep `PrimaryImageId` within `ImageIds` and ensure every referenced ID exists in the gallery. This is a presentation-data convention, not the Catalog API contract.
+## Backend changes made for this screen
 
-[ProductDetails.razor](ProductDetails.razor) coordinates selection and feedback. [ProductGallery.razor](ProductGallery.razor) renders images/thumbnails, labels, and image-error states; it does not auto-rotate images. `QuantitySelector` and `AddToCartSheet` belong to [Shared UI](../../Components/UI/README.md).
-
-Image uploads, editing variant/image assignments, variant pricing, real inventory data, and cart persistence require further integration. This feature does not provide those administration workflows.
+- `GET /api/products/{id}`: each variant now includes `id`, `inStock`, and `availableQuantity`; availability is checked per variant (`GET /api/inventory-items/{variantId}/availability`). A variant without an inventory record is treated as out of stock. Previously the product id was sent to the variant route.
+- `GET /api/products`: new optional `search` parameter (name contains, case-insensitive).
 
 ## Verification when making changes
 
-Build using the [Web instructions](../../README.md#verification-when-making-changes). Manually check variant changes, representative images, the full gallery, quantity limits, out-of-stock products, canceling/confirming the sheet, route changes, and unknown IDs. Check keyboard operation, image errors, themes, and compact/wide layouts.
+Build using the [Web instructions](../../README.md#verification-when-making-changes). Manually check variant changes, the gallery, out-of-stock variants, adding as guest vs signed in, canceling/confirming the sheet, route changes, unknown ids, and a stopped Gateway or Inventory service.
 
-Content was checked against source code; builds and browser checks were not run during this documentation update.
+These behaviors were written against the source; builds and browser checks have not been run.
 
 [Home](../Home/README.md) · [Web](../../README.md).

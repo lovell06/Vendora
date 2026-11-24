@@ -1,16 +1,18 @@
 @page "/login"
 @page "/dang-nhap"
 @layout AuthLayout
-@inject AuthGateway Gateway
+@inject GatewayClient Gateway
+@inject UserSession Session
+@inject NavigationManager Navigation
 <PageTitle>Sign in | Vendora</PageTitle>
 <PageHeading Title="Sign in" Eyebrow="VENDORA ACCOUNT" />
 <EditForm Model="_model" OnValidSubmit="Submit" FormName="login" aria-busy="@_busy">
     <DataAnnotationsValidator />
     <AppTextField Id="email" Label="Email address" Type="email" @bind-Value="_model.Email" Autocomplete="username" />
     <AppTextField Id="password" Label="Password" @bind-Value="_model.Password" Autocomplete="current-password" RevealPassword="true" />
-    @if (_result is not null)
+    @if (_error is not null)
     {
-        <InlineFeedback Message="@_result.Message" Success="@_result.Success"></InlineFeedback>
+        <InlineFeedback Message="@_error" Success="false"></InlineFeedback>
     }
     <AppButton Type="submit" Busy="@_busy" BusyText="Signing in…" Class="auth-submit">Sign in</AppButton>
 </EditForm>
@@ -18,8 +20,29 @@
 @code {
     private readonly LoginModel _model = new();
     private bool _busy;
-    private AuthResult? _result;
-    private async Task Submit() { if (_busy) return; _busy = true; _result = null; try { _result = await Gateway.SubmitAsync(new { email = _model.Email, password = _model.Password }, false); } finally { _busy = false; } }
+    private string? _error;
+    [Parameter, SupplyParameterFromQuery(Name = "returnUrl")] public string? ReturnUrl { get; set; }
+    private async Task Submit()
+    {
+        if (_busy) return;
+        _busy = true;
+        _error = null;
+        try
+        {
+            var result = await Gateway.LoginAsync(_model.Email, _model.Password);
+            if (!result.Ok || result.Value is null)
+            {
+                _error = result.Unauthorized ? "Incorrect email or password. Please try again." : result.Error;
+                return;
+            }
+            await Session.SignInAsync(result.Value);
+            Navigation.NavigateTo(IsLocal(ReturnUrl) ? ReturnUrl! : "/");
+        }
+        finally { _busy = false; }
+    }
+    // Only follow return URLs that stay on this site.
+    private static bool IsLocal(string? url) =>
+        !string.IsNullOrEmpty(url) && url[0] == '/' && (url.Length == 1 || (url[1] != '/' && url[1] != '\\'));
     private sealed class LoginModel {
         [Required(ErrorMessage = "Enter your email address."), EmailAddress(ErrorMessage = "Enter a valid email address.")] public string Email { get; set; } = "";
         [Required(ErrorMessage = "Enter your password.")] public string Password { get; set; } = "";

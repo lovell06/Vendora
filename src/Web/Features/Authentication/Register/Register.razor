@@ -1,19 +1,20 @@
 @page "/register"
 @page "/dang-ky"
 @layout AuthLayout
-@inject AuthGateway Gateway
+@inject GatewayClient Gateway
 <PageTitle>Create account | Vendora</PageTitle>
 <PageHeading Title="Create account" Eyebrow="VENDORA ACCOUNT" />
 <EditForm Model="_model" OnValidSubmit="Submit" FormName="register" aria-busy="@_busy">
     <DataAnnotationsValidator />
     <AppTextField Id="name" Label="Full name" @bind-Value="_model.FullName" Autocomplete="name" />
     <AppTextField Id="email" Label="Email address" Type="email" @bind-Value="_model.Email" Autocomplete="username" />
+    <AppTextField Id="phone" Label="Phone number" Type="tel" @bind-Value="_model.PhoneNumber" Autocomplete="tel" />
     <AppTextField Id="password" Label="Password" @bind-Value="_model.Password" Autocomplete="new-password" RevealPassword="true" Hint="Use at least 8 characters." />
     <AppTextField Id="confirmation" Label="Confirm password" Type="password" @bind-Value="_model.Confirmation" Autocomplete="new-password" />
-    @if (_result is not null)
+    @if (_message is not null)
     {
-        <InlineFeedback Message="@_result.Message" Success="@_result.Success">
-            @if (_result.Success) { <a href="/login">Sign in</a> }
+        <InlineFeedback Message="@_message" Success="@_success">
+            @if (_success) { <a href="/login">Sign in</a> }
         </InlineFeedback>
     }
     <AppButton Type="submit" Busy="@_busy" BusyText="Creating account…" Class="auth-submit">Create account</AppButton>
@@ -22,11 +23,29 @@
 @code {
     private readonly RegisterModel _model = new();
     private bool _busy;
-    private AuthResult? _result;
-    private async Task Submit() { if (_busy) return; _busy = true; _result = null; try { _result = await Gateway.SubmitAsync(new { fullName = _model.FullName, email = _model.Email, password = _model.Password }, true); } finally { _busy = false; } }
+    private string? _message;
+    private bool _success;
+    private async Task Submit()
+    {
+        if (_busy) return;
+        _busy = true;
+        _message = null;
+        try
+        {
+            var result = await Gateway.RegisterAsync(_model.FullName, _model.Email, _model.Password, _model.PhoneNumber);
+            _success = result.Ok;
+            _message = result.Ok
+                ? "Account created. Check your email for a verification link, then sign in."
+                : result.Status == System.Net.HttpStatusCode.Conflict
+                    ? "This email is already in use. Sign in or use another email."
+                    : result.Error;
+        }
+        finally { _busy = false; }
+    }
     private sealed class RegisterModel {
         [Required(ErrorMessage = "Enter your full name."), StringLength(100, ErrorMessage = "Full name must be 100 characters or fewer.")] public string FullName { get; set; } = "";
         [Required(ErrorMessage = "Enter your email address."), EmailAddress(ErrorMessage = "Enter a valid email address.")] public string Email { get; set; } = "";
+        [Required(ErrorMessage = "Enter your phone number."), Phone(ErrorMessage = "Enter a valid phone number.")] public string PhoneNumber { get; set; } = "";
         [Required(ErrorMessage = "Create a password."), MinLength(8, ErrorMessage = "Password must be at least 8 characters.")] public string Password { get; set; } = "";
         [Required(ErrorMessage = "Confirm your password."), Compare(nameof(Password), ErrorMessage = "Passwords do not match.")] public string Confirmation { get; set; } = "";
     }

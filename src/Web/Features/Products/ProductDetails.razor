@@ -1,43 +1,63 @@
 @page "/products/{Id}"
 @layout HomeLayout
-@using Vendora.Web.Features.Home
+@implements IDisposable
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @inject IBrowserViewportService Viewport
+@inject GatewayClient Gateway
+@inject UserSession Session
+@inject CartState Cart
+@inject NavigationManager Navigation
 
-<PageTitle>@(_product is null ? "Product not found" : _product.Name) | Vendora</PageTitle>
-<StoreHeader />
+<PageTitle>@(_product is null ? (_loading ? "Loading product" : "Product not found") : _product.Name) | Vendora</PageTitle>
+<StoreHeader>
+    @if (Session.IsAuthenticated)
+    {
+        <AppButton Variant="ButtonVariant.Icon" OnClick="@(() => Navigation.NavigateTo("/?panel=cart"))" aria-label="@($"Open cart, {Cart.Count} items")"><AppIcon Name="bag" /><span class="desktop-action-label">Cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</span></AppButton>
+    }
+    else
+    {
+        <MudButton Href="@($"/login?returnUrl={Uri.EscapeDataString(Navigation.ToBaseRelativePath(Navigation.Uri).Insert(0, "/"))}")" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button sign-in-link">Sign in</MudButton>
+    }
+</StoreHeader>
 <main id="home-content" class="product-detail-page" tabindex="-1">
-    @if (_product is null)
+    @if (_loading)
+    {
+        <div role="status" style="display:grid;place-items:center;min-height:240px"><MudProgressCircular Indeterminate="true" Size="Size.Medium" aria-label="Loading product" /></div>
+    }
+    else if (_product is null && _notFound)
     {
         <StatusPage Code="404" Title="Product not found" Description="This product is unavailable. Return home to explore other products." Icon="@Icons.Material.Outlined.SearchOff" MinimalOnMobile="true" />
+    }
+    else if (_product is null)
+    {
+        <StatusPage Code="503" Title="We couldn’t load this product" Description="@(_error ?? "Please try again later.")" Icon="@Icons.Material.Outlined.CloudOff" MinimalOnMobile="true" />
     }
     else
     {
         <MudButton Href="/" StartIcon="@Icons.Material.Outlined.ArrowBack" Variant="Variant.Text" Color="Color.Primary" Class="app-button back-link">All products</MudButton>
-        <p class="demo-note">Demo catalog · Sample product and price</p>
         <div class="detail-layout">
             <div class="detail-media">
                 <ProductGallery @key="Id" Images="VisibleImages" @bind-ActiveImageId="_activeImageId" />
-                @if (_product.Variants.Count > 0)
+                @if (_product.Variants.Count > 0 && _gallery.Count > VisibleImages.Count)
                 {
-                    <label class="gallery-toggle"><input type="checkbox" @bind="_showAllImages" />View all product photos (@_product.Gallery.Count)</label>
+                    <label class="gallery-toggle"><input type="checkbox" @bind="_showAllImages" />View all product photos (@_gallery.Count)</label>
                 }
             </div>
             <section class="detail-summary" aria-labelledby="product-title">
-                <p class="category">@_product.Category</p>
+                <p class="category">@_product.Category.Name</p>
                 <h1 id="product-title">@_product.Name</h1>
-                <p class="detail-price">@_product.PriceText</p>
+                <p class="detail-price">@PriceText</p>
                 <p class="stock"><MudIcon Icon="@(CanPurchase ? Icons.Material.Outlined.CheckCircle : Icons.Material.Outlined.RemoveCircleOutline)" Size="Size.Small" aria-hidden="true" />@(CanPurchase ? "In stock" : "Out of stock")</p>
-                <p class="description">@_product.Description</p>
-                @if (_product.Variants.Count > 0)
+                @if (!string.IsNullOrWhiteSpace(_product.Description)) { <p class="description">@_product.Description</p> }
+                @if (_variants.Count > 0)
                 {
                     <fieldset class="variant-selector">
-                        <legend>Color <span>· @_selectedVariant?.Name</span></legend>
+                        <legend>Option <span>· @_selectedVariant?.Name</span></legend>
                         <div class="variant-options">
-                            @foreach (var variant in _product.Variants)
+                            @foreach (var variant in _variants)
                             {
-                                var thumbnail = _product.Gallery.FirstOrDefault(image => image.Id == variant.PrimaryImageId);
+                                var thumbnail = _gallery.FirstOrDefault(image => image.Id == variant.PrimaryImageId);
                                 <button type="button" class="variant-option" aria-pressed="@(variant.Id == _selectedVariant?.Id ? "true" : "false")"
                                         @onclick="() => SelectVariant(variant)">
                                     @if (thumbnail is not null) { <img src="@thumbnail.Url" alt="" width="44" height="44" loading="lazy" /> }
@@ -50,53 +70,136 @@
                 }
                 <div class="purchase-controls">
                     <div class="desktop-quantity"><QuantitySelector @bind-Value="_quantity" Min="1" Max="99" Disabled="@(!CanPurchase)" /></div>
-                    <AppButton OnClick="RequestAddToCart" Disabled="@(!CanPurchase || _openingSheet || _quantity < 1 || _quantity > 99)" Class="detail-add">@(CanPurchase ? "Add to cart" : "Out of stock")</AppButton>
+                    <AppButton OnClick="RequestAddToCart" Busy="@_adding" BusyText="Adding…" Disabled="@(!CanPurchase || _openingSheet || _quantity < 1 || _quantity > 99)" Class="detail-add">@(CanPurchase ? "Add to cart" : "Out of stock")</AppButton>
                 </div>
                 <section class="product-information" aria-labelledby="information-title">
                     <h2 id="information-title">Product information</h2>
-                    <dl><div><dt>Category</dt><dd>@_product.Category</dd></div><div><dt>Product code</dt><dd>@(_selectedVariant?.ProductCode ?? _product.Id.ToUpperInvariant())</dd></div></dl>
+                    <dl><div><dt>Category</dt><dd>@_product.Category.Name</dd></div><div><dt>Brand</dt><dd>@_product.Brand</dd></div><div><dt>Product code</dt><dd>@(_selectedVariant?.ProductCode ?? _product.Id.ToString())</dd></div></dl>
                 </section>
             </section>
         </div>
-        <section class="related" aria-labelledby="related-title">
-            <h2 id="related-title">You may also like</h2>
-            <ProductGrid>
-                @foreach (var product in RelatedProducts)
-                {
-                    <ProductCard @key="product.Id" Name="@product.Name" Category="@product.Category" PriceText="@product.PriceText" ImageUrl="@product.ImageUrl" InStock="@product.InStock" DetailsHref="@($"/products/{product.Id}")" />
-                }
-            </ProductGrid>
-        </section>
+        @if (_related.Count > 0)
+        {
+            <section class="related" aria-labelledby="related-title">
+                <h2 id="related-title">You may also like</h2>
+                <ProductGrid>
+                    @foreach (var product in _related)
+                    {
+                        <ProductCard @key="product.Id" Name="@product.Name" Category="@_product.Category.Name" PriceText="@PriceFormatter.FormatRange(product.MinPrice, product.MaxPrice, product.Currency)" ImageUrl="@product.ImageUrl" DetailsHref="@($"/products/{product.Id}")" />
+                    }
+                </ProductGrid>
+            </section>
+        }
     }
 </main>
 @code {
     [Parameter] public string Id { get; set; } = "";
     [CascadingParameter] private HttpContext? HttpContext { get; set; }
-    private DemoCatalog.Product? _product;
+    private ProductDetailDto? _product;
+    private IReadOnlyList<ProductImage> _gallery = [];
+    private IReadOnlyList<ProductVariant> _variants = [];
+    private readonly Dictionary<string, decimal> _prices = [];
+    private IReadOnlyList<ProductSummaryDto> _related = [];
+    private bool _loading;
+    private bool _notFound;
+    private string? _error;
     private int _quantity = 1;
     private bool _openingSheet;
+    private bool _adding;
     private ProductVariant? _selectedVariant;
     private string? _activeImageId;
     private bool _showAllImages;
-    private bool CanPurchase => _product is { InStock: true } && (_selectedVariant?.InStock ?? true);
-    private IReadOnlyList<ProductImage> VisibleImages => _product is null ? [] :
-        _showAllImages || _selectedVariant is null ? _product.Gallery :
-        _product.Gallery.Where(image => _selectedVariant.ImageIds.Contains(image.Id)).ToArray();
-    private ProductImage? RepresentativeImage => _product?.Gallery.FirstOrDefault(image =>
-        image.Id == _selectedVariant?.PrimaryImageId) ?? _product?.Gallery.FirstOrDefault();
-    private IEnumerable<DemoCatalog.Product> RelatedProducts => DemoCatalog.Products
-        .Where(product => product.Id != Id)
-        .OrderByDescending(product => product.Category == _product?.Category).Take(4);
-    protected override void OnParametersSet()
+    private string? _loadedId;
+
+    private bool CanPurchase => _product is not null && (_selectedVariant?.InStock ?? false);
+    private string PriceText => _product is null ? "" :
+        _selectedVariant is not null && _prices.TryGetValue(_selectedVariant.Id, out var price)
+            ? PriceFormatter.Format(price, _product.Currency)
+            : _product.Variants.Count == 0 ? "" :
+              PriceFormatter.FormatRange(_product.Variants.Min(v => v.Price), _product.Variants.Max(v => v.Price), _product.Currency);
+    private IReadOnlyList<ProductImage> VisibleImages
     {
-        _product = DemoCatalog.Products.FirstOrDefault(product => product.Id == Id);
+        get
+        {
+            if (_showAllImages || _selectedVariant is null) return _gallery;
+            var own = _gallery.Where(image => _selectedVariant.ImageIds.Contains(image.Id)).ToArray();
+            return own.Length > 0 ? own : _gallery;
+        }
+    }
+    private ProductImage? RepresentativeImage => _gallery.FirstOrDefault(image =>
+        image.Id == _selectedVariant?.PrimaryImageId) ?? _gallery.FirstOrDefault();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_loadedId == Id) return;
+        _loadedId = Id;
+        await LoadAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Session.Changed += OnStateChanged;
+        Cart.Changed += OnStateChanged;
+        await Session.EnsureLoadedAsync();
+        if (Session.IsAuthenticated) _ = Cart.RefreshAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        _notFound = false;
+        _error = null;
+        _product = null;
+        _related = [];
         _quantity = 1;
         _showAllImages = false;
-        _selectedVariant = _product?.Variants.FirstOrDefault();
-        _activeImageId = RepresentativeImage?.Id;
-        if (_product is null && HttpContext is { Response.HasStarted: false })
-            HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+        try
+        {
+            if (!long.TryParse(Id, out var productId)) { _notFound = true; return; }
+
+            var result = await Gateway.GetProductAsync(productId);
+            if (_loadedId != Id) return; // navigated to another product while loading
+            if (!result.Ok || result.Value is null)
+            {
+                _notFound = result.NotFound;
+                _error = result.Error;
+                return;
+            }
+
+            _product = result.Value;
+            var product = _product;
+            _gallery = product.Images.OrderBy(image => image.SortOrder)
+                .Select((image, index) => new ProductImage(image.Id.ToString(), image.Url, $"{product.Name} · photo {index + 1}"))
+                .ToList();
+            _prices.Clear();
+            foreach (var variant in product.Variants) _prices[variant.Id.ToString()] = variant.Price;
+            _variants = product.Variants.Select(variant =>
+            {
+                var imageIds = variant.ImageIds.Select(imageId => imageId.ToString()).ToList();
+                var primary = imageIds.FirstOrDefault() ?? _gallery.FirstOrDefault()?.Id ?? "";
+                return new ProductVariant(variant.Id.ToString(), variant.Name, variant.Sku, imageIds, primary, variant.InStock);
+            }).ToList();
+            _selectedVariant = _variants.FirstOrDefault(variant => variant.InStock) ?? _variants.FirstOrDefault();
+            _activeImageId = RepresentativeImage?.Id;
+        }
+        finally
+        {
+            _loading = false;
+            if (_product is null && _notFound && HttpContext is { Response.HasStarted: false })
+                HttpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+        }
+
+        if (_product is not null) _ = LoadRelatedAsync(_product);
     }
+
+    private async Task LoadRelatedAsync(ProductDetailDto product)
+    {
+        var result = await Gateway.ListProductsAsync(product.Category.Id, null, 1, 5);
+        if (_product?.Id != product.Id || !result.Ok || result.Value is null) return;
+        _related = result.Value.Products.Where(item => item.Id != product.Id).Take(4).ToList();
+        await InvokeAsync(StateHasChanged);
+    }
+
     private void SelectVariant(ProductVariant variant)
     {
         _selectedVariant = variant;
@@ -104,9 +207,15 @@
         _showAllImages = false;
         _quantity = 1;
     }
+
     private async Task RequestAddToCart()
     {
         if (_product is null || !CanPurchase || _openingSheet) return;
+        if (!Session.IsAuthenticated)
+        {
+            Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString($"/products/{Id}")}");
+            return;
+        }
         _openingSheet = true;
         var productId = Id;
         var variantId = _selectedVariant?.Id;
@@ -114,7 +223,7 @@
         {
             if (!await Viewport.IsMediaQueryMatchAsync("(max-width: 599px)"))
             {
-                AddToCart();
+                await AddToCartAsync();
                 return;
             }
             var parameters = new DialogParameters<AddToCartSheet>
@@ -122,7 +231,7 @@
                 { sheet => sheet.Name, _product.Name },
                 { sheet => sheet.ImageUrl, RepresentativeImage?.Url },
                 { sheet => sheet.VariantName, _selectedVariant?.Name },
-                { sheet => sheet.PriceText, _product.PriceText },
+                { sheet => sheet.PriceText, PriceText },
                 { sheet => sheet.InitialQuantity, _quantity }
             };
             var options = new DialogOptions
@@ -136,14 +245,32 @@
             if (Id == productId && _selectedVariant?.Id == variantId && result is { Canceled: false, Data: int quantity })
             {
                 _quantity = quantity;
-                AddToCart();
+                await AddToCartAsync();
             }
         }
         finally { _openingSheet = false; }
     }
-    private void AddToCart()
+
+    private async Task AddToCartAsync()
     {
-        if (_product is null || !CanPurchase || _quantity is < 1 or > 99) return;
-        Snackbar.Add($"Demo: {_quantity} × {_product.Name}{(_selectedVariant is null ? "" : $" · {_selectedVariant.Name}")} selected. No order has been placed.", Severity.Info);
+        if (_product is null || !CanPurchase || _selectedVariant is null || _quantity is < 1 or > 99 || _adding) return;
+        _adding = true;
+        try
+        {
+            var result = await Cart.AddAsync(long.Parse(_selectedVariant.Id), _quantity);
+            if (result.Ok)
+                Snackbar.Add($"{_quantity} × {_product.Name} · {_selectedVariant.Name} added to your cart.", Severity.Success);
+            else
+                Snackbar.Add(result.Error ?? "Unable to add this product.", Severity.Error);
+        }
+        finally { _adding = false; }
+    }
+
+    private void OnStateChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Session.Changed -= OnStateChanged;
+        Cart.Changed -= OnStateChanged;
     }
 }
