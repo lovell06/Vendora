@@ -35,6 +35,8 @@ The backend uses ASP.NET Core Minimal APIs, Entity Framework Core 10, and Postgr
 
 Each service contains `Api`, `Application`, `Domain`, `Infrastructure`, and `Worker` projects. Api handles HTTP, Application coordinates use cases, Domain holds business rules, and Infrastructure handles persistence and external integrations. Workers publish outbox events or process events received from RabbitMQ.
 
+Each use case lives in one file in `Application` as a static class with nested `Command` or `Query`, `Handler`, `Response`, and related types; the matching Api folder holds the endpoint and its request class (for example `GetProductEndpoint` and `GetProductRequest`).
+
 An outbox stores events in the same transaction as business data before a worker publishes them asynchronously. Services also call each other directly over HTTP; for example, Ordering has clients for Cart, Catalog, and Inventory.
 
 ```mermaid
@@ -87,7 +89,7 @@ src/
 
 ## Project status
 
-Last updated 2026-11-24, against `main` at commit `8b3ad04` (after merging pull request #2).
+Last updated 2026-11-24, against `main` at commit `0a81a98`.
 
 **Recently completed**
 
@@ -95,13 +97,15 @@ Last updated 2026-11-24, against `main` at commit `8b3ad04` (after merging pull 
 - API Gateway: `/media/{**key}` serves product images from Azurite (Development configuration). Catalog creates the `catalog-images` container at startup with public read access for blobs.
 - Inventory: initializing an inventory item is idempotent for a repeated `catalog.product-variant.added` event; `product_variant_id` and `sku` are unique; `InventoryItem` has a concurrency token; reservations require authentication and Ordering forwards the user's token.
 - Ordering: events use `VariantId`; cancelling an already cancelled order is rejected, so stock is not released twice; `Order` has a concurrency token; marking a cancelled or rejected order as paid is rejected.
-- Error handling: Catalog, Inventory, and Ordering APIs map concurrency conflicts and unique-constraint violations to HTTP 409 and log other unhandled exceptions as HTTP 500 with a generic error body. Inventory reserve and stock release retry up to 3 times on a concurrency conflict.
+- Use case structure: every use case in Identity, Catalog, Inventory, Cart, and Ordering is a static class in `Application` (for example `GetProduct`, `PlaceOrder`, `ReserveInventoryItems`) with nested `Command` or `Query`, `Response`, DTOs, `IQueryService`, `Errors`, and `Handler`. Commands, queries, responses, and DTOs are records with constructor parameters, except `CreateProduct.ProductVariantDto`, which ASP.NET binds from the multipart form. Api request classes build these records, and each Api `Program.cs` sets `CreateSchemaReferenceId` so OpenAPI schema ids are `<UseCase><Type>` (for example `ListOrdersResponse`) instead of colliding on `Response`.
+- Catalog: creating a product now requires at least one image (`product_creation.images_empty`).
+- Error handling: all five APIs (Identity, Catalog, Inventory, Cart, and Ordering) map concurrency conflicts and unique-constraint violations to HTTP 409 and log other unhandled exceptions as HTTP 500 with a generic error body. Inventory reserve and stock release retry up to 3 times on a concurrency conflict.
 
 **Known gaps (not yet fixed)**
 
 | Area | Gap |
 | --- | --- |
-| Error handling | Identity and Cart APIs do not have the 409/500 exception handlers yet; the 500 body shape differs from the 409 body shape |
+| Error handling | The 500 handler writes the `Error` object directly while the 409 handler writes `error.ToResponse()`; the two bodies may have different JSON shapes |
 | Inventory reservation | Any authenticated user can call `/api/inventory-items/reserve` through the Gateway; there is no service-to-service policy |
 | Placing orders | Stock is reserved over HTTP inside the Ordering database transaction, with no compensation or idempotency key |
 | Messaging | Catalog/Identity outbox workers stop on the first publish error; the RabbitMQ consumer requeues failures forever (no dead-letter queue) and does not reconnect |
