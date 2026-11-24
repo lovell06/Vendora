@@ -46,17 +46,19 @@ public static class AddCartItem
                     cmd.ProductVariantId,
                     cmd.UserId);
 
-                itemInCart.SetQuantity(cmd.Quantity, utcNow);
+                itemInCart.IncreaseQuantity(itemInCart.Quantity + cmd.Quantity, utcNow);
             }
             else
             {
-                var item = CartItem.Create(
-                    cartId: cart.Id,
+                var createItemResult = CartItem.Create(
                     productVariantId: cmd.ProductVariantId,
                     quantity: cmd.Quantity,
                     createdAt: utcNow);
 
-                cart.AddItem(item, utcNow);
+                if (createItemResult.IsFailure)
+                    return Result.Failure(createItemResult.Error);
+
+                cart.AddItem(createItemResult.Value, utcNow);
             }
 
             await unitOfWork.SaveChangesAsync(cancellationToken);

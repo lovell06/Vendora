@@ -15,4 +15,8 @@ public static class CartErrors
         Message = "Product not exists in cart.",
         Type = ErrorType.NotFound
     };
+
+    public static Error InvalidProductVariantId = Error.Validation(
+        code: "cart_item.invalid_product_Variant_id",
+        message: "Invalid product variant ID.");
 }

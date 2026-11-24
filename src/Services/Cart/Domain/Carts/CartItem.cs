@@ -12,27 +12,42 @@ public class CartItem
     {
     }
 
-    public static CartItem Create(
-        long cartId,
+    public static Result<CartItem> Create(
         long productVariantId,
         int quantity,
         DateTimeOffset createdAt)
     {
-        return new CartItem
+        if (productVariantId < 1)
+            return Result<CartItem>.Failure(CartErrors.InvalidProductVariantId);
+        
+        if (quantity < 1)
+            return Result<CartItem>.Failure(CartErrors.QuantityMustBePositive);
+        
+        return Result<CartItem>.Success(new CartItem
         {
-            CartId = cartId,
+            CartId = 0,
             ProductVariantId = productVariantId,
             Quantity = quantity,
             CreatedAt = createdAt
-        };
+        });
     }
 
     public Result SetQuantity(int quantity, DateTimeOffset updatedAt)
     {
-        if (quantity <= 0)
+        if (quantity < 1)
             return Result.Failure(CartErrors.QuantityMustBePositive);
         
         Quantity = quantity;
+        UpdatedAt = updatedAt;
+        return Result.Success();
+    }
+
+    public Result IncreaseQuantity(int quantity, DateTimeOffset updatedAt)
+    {
+        if (quantity < 1)
+            return Result.Failure(CartErrors.QuantityMustBePositive);
+        
+        Quantity += quantity;
         UpdatedAt = updatedAt;
         return Result.Success();
     }
