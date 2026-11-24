@@ -4,7 +4,7 @@ global using Vendora.BuildingBlocks.Messaging.Abstractions;
 global using Vendora.BuildingBlocks.Messaging.TypeRegistry;
 global using Vendora.Services.Inventory.Application;
 global using Vendora.Services.Inventory.Application.IntegrationEvents;
-global using Vendora.Services.Inventory.Application.InventoryItems.ReleaseStock;
+global using Vendora.Services.Inventory.Application.InventoryItems;
 global using Vendora.Services.Inventory.Infrastructure.Persistence;
 global using Vendora.Services.Inventory.Infrastructure.Queries;
 global using Vendora.Services.Inventory.Infrastructure.Repositories;

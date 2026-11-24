@@ -1,20 +1,15 @@
-using Vendora.Services.Inventory.Application.InventoryItems.CheckAvailability;
-
 namespace Vendora.Services.Inventory.Infrastructure.Queries;
 
-public sealed class EfCoreCheckAvailabilityQueryService(ApplicationDbContext context) : ICheckAvailabilityQueryService
+public sealed class EfCoreCheckAvailabilityQueryService(ApplicationDbContext context) : CheckInventoryAvailability.IQueryService
 {
-    public async Task<Response?> ExecuteAsync(Query query, CancellationToken cancellationToken)
+    public async Task<CheckInventoryAvailability.Response?> ExecuteAsync(CheckInventoryAvailability.Query query, CancellationToken cancellationToken)
     {
         return await context.InventoryItems
-            .Select(item => new Response()
-            {
-                ProductVariantId = item.ProductVariantId,
-                IsAvailable = item.IsAvailable,
-                AvailableQuantity = item.AvailableQuantity
-            })
-            .SingleOrDefaultAsync(
-                item => item.ProductVariantId == query.ProductVariantId, 
-                cancellationToken);
+            .Where(item => item.ProductVariantId == query.ProductVariantId)
+            .Select(item => new CheckInventoryAvailability.Response(
+                item.ProductVariantId,
+                item.IsAvailable,
+                item.AvailableQuantity))
+            .SingleOrDefaultAsync(cancellationToken);
     }
 }

@@ -1,21 +1,17 @@
-using Vendora.Services.Inventory.Application.InventoryItems.List;
-
 namespace Vendora.Services.Inventory.Infrastructure.Queries;
 
-public sealed class EfCoreListInventoryItemsQueryService(ApplicationDbContext context) : IListInventoryItemsQueryService
+public sealed class EfCoreListInventoryItemsQueryService(ApplicationDbContext context) : ListInventoryItems.IQueryService
 {
-    public async Task<Response> ExecuteAsync(Query query, CancellationToken cancellationToken)
+    public async Task<ListInventoryItems.Response> ExecuteAsync(ListInventoryItems.Query query, CancellationToken cancellationToken)
     {
         var efCoreQuery = context.InventoryItems
             .AsNoTracking()
-            .Select(item => new InventoryItemDto
-            {
-                ProductId = item.ProductId,
-                ProductVariantId = item.ProductVariantId,
-                Sku = item.Sku,
-                OnHandQuantity = item.OnHandQuantity,
-                ReservedQuantity = item.ReservedQuantity
-            });
+            .Select(item => new ListInventoryItems.InventoryItemDto(
+                item.ProductId,
+                item.ProductVariantId,
+                item.Sku,
+                item.OnHandQuantity,
+                item.ReservedQuantity));
 
         var totalCount = await efCoreQuery.CountAsync(cancellationToken);
 
@@ -24,11 +20,9 @@ public sealed class EfCoreListInventoryItemsQueryService(ApplicationDbContext co
             .Take(query.Size)
             .ToListAsync(cancellationToken);
 
-        return new Response
-        {
-            Page = query.Page,
-            TotalCount = totalCount,
-            InventoryItems = inventoryItems
-        };
+        return new ListInventoryItems.Response(
+            inventoryItems,
+            query.Page,
+            totalCount);
     }
 }

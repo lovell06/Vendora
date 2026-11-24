@@ -1,17 +1,15 @@
-using Vendora.Services.Inventory.Application.InventoryItems.Reserve;
+using Vendora.Services.Inventory.Application.InventoryItems;
 
 namespace Vendora.Services.Inventory.Api.InventoryItems.Reserve;
 
 public sealed class ReserveInventoryItemsRequest
 {
     public const string Pattern = "/reserve";
-    public required List<ReservedItemDto> Items { get; init; }
+    public required List<ReserveInventoryItems.ReservedItemDto> Items { get; init; }
 
-    public Command ToCommand()
+    public ReserveInventoryItems.Command ToCommand()
     {
-        return new Command
-        {
-            Items = [.. Items.DistinctBy(i => i.ProductVariantId)]
-        };
+        return new ReserveInventoryItems.Command(
+            [.. Items.DistinctBy(i => i.ProductVariantId)]);
     }
 }

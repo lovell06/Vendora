@@ -1,7 +1,3 @@
-using Vendora.Services.Inventory.Application.InventoryItems.CheckAvailability;
-using Vendora.Services.Inventory.Application.InventoryItems.Get;
-using Vendora.Services.Inventory.Application.InventoryItems.List;
-
 namespace Vendora.Services.Inventory.Infrastructure.Queries;
 
 public static class DependencyInjection
@@ -10,9 +6,9 @@ public static class DependencyInjection
     {
         public IServiceCollection AddQueryServices()
         {
-            services.AddScoped<IGetInventoryItemQueryService, EfCoreGetInventoryItemQueryService>();
-            services.AddScoped<IListInventoryItemsQueryService, EfCoreListInventoryItemsQueryService>();
-            services.AddScoped<ICheckAvailabilityQueryService, EfCoreCheckAvailabilityQueryService>();
+            services.AddScoped<GetInventoryItem.IQueryService, EfCoreGetInventoryItemQueryService>();
+            services.AddScoped<ListInventoryItems.IQueryService, EfCoreListInventoryItemsQueryService>();
+            services.AddScoped<CheckInventoryAvailability.IQueryService, EfCoreCheckAvailabilityQueryService>();
         
             return services;
         }

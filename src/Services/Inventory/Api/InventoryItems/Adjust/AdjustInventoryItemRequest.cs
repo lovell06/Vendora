@@ -1,4 +1,4 @@
-using Vendora.Services.Inventory.Application.InventoryItems.Adjust;
+using Vendora.Services.Inventory.Application.InventoryItems;
 
 namespace Vendora.Services.Inventory.Api.InventoryItems.Adjust;
 
@@ -10,14 +10,12 @@ public sealed class AdjustInventoryItemRequest
     public int QuantityChange { get; init; }
     public required string Reason { get; init; }
 
-    public Command ToCommand(Guid createdBy)
+    public AdjustInventoryItem.Command ToCommand(Guid createdBy)
     {
-        return new Command
-        {
-            InventoryItemId = InventoryItemId,
-            QuantityChange = QuantityChange,
-            Reason = Reason,
-            CreatedBy = createdBy
-        };
+        return new AdjustInventoryItem.Command(
+            InventoryItemId,
+            QuantityChange,
+            Reason,
+            createdBy);
     }
 }

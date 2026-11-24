@@ -1,20 +1,17 @@
-using Vendora.Services.Inventory.Application.InventoryItems.Get;
-
 namespace Vendora.Services.Inventory.Infrastructure.Queries;
 
-public sealed class EfCoreGetInventoryItemQueryService(ApplicationDbContext context) : IGetInventoryItemQueryService
+public sealed class EfCoreGetInventoryItemQueryService(ApplicationDbContext context) : GetInventoryItem.IQueryService
 {
-    public async Task<Response?> ExecuteAsync(Query query, CancellationToken cancellationToken)
+    public async Task<GetInventoryItem.Response?> ExecuteAsync(GetInventoryItem.Query query, CancellationToken cancellationToken)
     {
         return await context.InventoryItems
-            .Select(item => new Response
-            {
-                ProductVariantId = item.ProductVariantId,
-                OnHandQuantity = item.OnHandQuantity,
-                ReservedQuantity = item.ReservedQuantity,
-                CreatedAt = item.CreatedAt,
-                UpdatedAt = item.UpdatedAt
-            })
-            .SingleOrDefaultAsync(item => item.ProductVariantId == query.ProductVariantId, cancellationToken);
+            .Where(item => item.ProductVariantId == query.ProductVariantId)
+            .Select(item => new GetInventoryItem.Response(
+                item.ProductVariantId,
+                item.OnHandQuantity,
+                item.ReservedQuantity,
+                item.CreatedAt,
+                item.UpdatedAt))
+            .SingleOrDefaultAsync(cancellationToken);
     }
 }

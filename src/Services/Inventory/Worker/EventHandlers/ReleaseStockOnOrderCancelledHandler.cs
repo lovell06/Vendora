@@ -1,5 +1,3 @@
-using ReleaseStockCommand = Vendora.Services.Inventory.Application.InventoryItems.ReleaseStock.Command;
-
 namespace Vendora.Services.Inventory.Worker.EventHandlers;
 
 public sealed class ReleaseStockOnOrderCancelledHandler(ISender sender) 
@@ -7,17 +5,12 @@ public sealed class ReleaseStockOnOrderCancelledHandler(ISender sender)
 {
     public async Task HandleAsync(OrderCancelledEvent @event, CancellationToken ct)
     {
-        var cmd = new ReleaseStockCommand
-        {
-            Items =
+        var cmd = new ReleaseStock.Command(
             [
-                .. @event.CancelledOrderItems.Select(i => new ItemDto
-                {
-                    ProductVariantId = i.ProductVariantId,
-                    Quantity = i.Quantity
-                })
-            ]
-        };
+                .. @event.CancelledOrderItems.Select(i => new ReleaseStock.ItemDto(
+                    i.ProductVariantId,
+                    i.Quantity))
+            ]);
 
         var result = await sender.Send(cmd, ct);
 

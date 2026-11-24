@@ -3,5 +3,6 @@ global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.DependencyInjection;
 global using Vendora.Services.Inventory.Application.Abstractions.Persistence;
+global using Vendora.Services.Inventory.Application.InventoryItems;
 global using Vendora.Services.Inventory.Domain.InventoryItems;
 global using Vendora.Services.Inventory.Infrastructure.Persistence;

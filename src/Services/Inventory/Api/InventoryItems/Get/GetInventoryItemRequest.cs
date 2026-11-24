@@ -1,4 +1,4 @@
-using Vendora.Services.Inventory.Application.InventoryItems.Get;
+using Vendora.Services.Inventory.Application.InventoryItems;
 
 namespace Vendora.Services.Inventory.Api.InventoryItems.Get;
 
@@ -8,11 +8,9 @@ public sealed class GetInventoryItemRequest
 
     public long ProductVariantId { get; init; }
 
-    public Query ToQuery()
+    public GetInventoryItem.Query ToQuery()
     {
-        return new Query
-        {
-            ProductVariantId = ProductVariantId
-        };
+        return new GetInventoryItem.Query(
+            ProductVariantId);
     }
 }
