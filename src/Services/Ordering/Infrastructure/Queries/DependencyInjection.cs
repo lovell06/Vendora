@@ -6,8 +6,8 @@ public static class DependencyInjection
     {
         public IServiceCollection AddQueryServices()
         {
-            services.AddScoped<IGetOrderQueryService, EfCoreGetOrderQueryService>();
-            services.AddScoped<IListOrdersQueryService, EfCoreListOrdersQueryService>();
+            services.AddScoped<GetOrder.IQueryService, EfCoreGetOrderQueryService>();
+            services.AddScoped<ListOrders.IQueryService, EfCoreListOrdersQueryService>();
             return services;
         }
     }

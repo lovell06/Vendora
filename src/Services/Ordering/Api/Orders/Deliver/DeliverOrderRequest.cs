@@ -1,4 +1,4 @@
-using Vendora.Services.Ordering.Application.Orders.Deliver;
+using Vendora.Services.Ordering.Application.Orders;
 
 namespace Vendora.Services.Ordering.Api.Orders.Deliver;
 
@@ -8,8 +8,8 @@ public sealed class DeliverOrderRequest
 
     public long OrderId { get; init; }
 
-    public Command ToCommand()
+    public DeliverOrder.Command ToCommand()
     {
-        return new Command { OrderId = OrderId };
+        return new DeliverOrder.Command(OrderId);
     }
 }

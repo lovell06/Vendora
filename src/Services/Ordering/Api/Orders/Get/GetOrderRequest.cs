@@ -1,4 +1,4 @@
-using Vendora.Services.Ordering.Application.Orders.Get;
+using Vendora.Services.Ordering.Application.Orders;
 
 namespace Vendora.Services.Ordering.Api.Orders.Get;
 
@@ -8,8 +8,8 @@ public sealed class GetOrderRequest
 
     public long OrderId { get; init; }
 
-    public Query ToQuery(Guid userId)
+    public GetOrder.Query ToQuery(Guid userId)
     {
-        return new Query { UserId = userId, OrderId = OrderId };
+        return new GetOrder.Query(userId, OrderId);
     }
 }

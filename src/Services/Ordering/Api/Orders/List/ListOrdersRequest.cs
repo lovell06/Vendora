@@ -1,4 +1,4 @@
-using Vendora.Services.Ordering.Application.Orders.List;
+using Vendora.Services.Ordering.Application.Orders;
 
 namespace Vendora.Services.Ordering.Api.Orders.List;
 
@@ -9,8 +9,8 @@ public sealed class ListOrdersRequest
     public int Page { get; init; }
     public int Size { get; init; }
 
-    public Query ToQuery(Guid userId)
+    public ListOrders.Query ToQuery(Guid userId)
     {
-        return new Query { UserId = userId, Page = Page, Size = Size };
+        return new ListOrders.Query(userId, Page, Size);
     }
 }

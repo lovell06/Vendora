@@ -1,4 +1,4 @@
-using Vendora.Services.Ordering.Application.Orders.Prepare;
+using Vendora.Services.Ordering.Application.Orders;
 
 namespace Vendora.Services.Ordering.Api.Orders.Prepare;
 
@@ -8,8 +8,8 @@ public sealed class PrepareOrderRequest
 
     public long OrderId { get; init; }
 
-    public Command ToCommand()
+    public PrepareOrder.Command ToCommand()
     {
-        return new Command { OrderId = OrderId };
+        return new PrepareOrder.Command(OrderId);
     }
 }

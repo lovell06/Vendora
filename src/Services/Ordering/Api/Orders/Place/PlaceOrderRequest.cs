@@ -1,4 +1,4 @@
-using Vendora.Services.Ordering.Application.Orders.Place;
+using Vendora.Services.Ordering.Application.Orders;
 
 namespace Vendora.Services.Ordering.Api.Orders.Place;
 
@@ -8,12 +8,10 @@ public sealed class PlaceOrderRequest
 
     public required IReadOnlyList<long> ProductVariantIds { get; init; }
 
-    public Command ToCommand(Guid userId)
+    public PlaceOrder.Command ToCommand(Guid userId)
     {
-        return new Command
-        {
-            UserId = userId,
-            ProductVariantIds = ProductVariantIds
-        };
+        return new PlaceOrder.Command(
+            userId,
+            ProductVariantIds);
     }
 }

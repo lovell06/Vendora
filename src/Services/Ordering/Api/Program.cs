@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Vendora.Services.Ordering.Api.ExceptionHandlers;
 using Vendora.Services.Ordering.Infrastructure.Clients;
@@ -11,7 +12,12 @@ builder.Services.AddHealthChecks()
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.CreateSchemaReferenceId = info => info.Type.DeclaringType is { } parent
+        ? parent.Name + info.Type.Name
+        : OpenApiOptions.CreateDefaultSchemaReferenceId(info);
+});
 
 builder.Configuration.AddKeyPerFile("/run/secrets/", optional: true);
 

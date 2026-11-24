@@ -1,4 +1,4 @@
-using Vendora.Services.Ordering.Application.Orders.Cancel;
+using Vendora.Services.Ordering.Application.Orders;
 
 namespace Vendora.Services.Ordering.Api.Orders.Cancel;
 
@@ -8,8 +8,8 @@ public sealed class CancelOrderRequest
 
     public long OrderId { get; init; }
 
-    public Command ToCommand(Guid userId)
+    public CancelOrder.Command ToCommand(Guid userId)
     {
-        return new Command { UserId = userId, OrderId = OrderId };
+        return new CancelOrder.Command(userId, OrderId);
     }
 }

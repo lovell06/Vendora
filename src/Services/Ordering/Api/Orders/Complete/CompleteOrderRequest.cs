@@ -1,4 +1,4 @@
-using Vendora.Services.Ordering.Application.Orders.Complete;
+using Vendora.Services.Ordering.Application.Orders;
 
 namespace Vendora.Services.Ordering.Api.Orders.Complete;
 
@@ -8,8 +8,8 @@ public sealed class CompleteOrderRequest
 
     public long OrderId { get; init; }
 
-    public Command ToCommand()
+    public CompleteOrder.Command ToCommand()
     {
-        return new Command { OrderId = OrderId };
+        return new CompleteOrder.Command(OrderId);
     }
 }
