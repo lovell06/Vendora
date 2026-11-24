@@ -1,5 +1,5 @@
 using MediatR;
-using Vendora.Services.Cart.Application.Carts.Initialize;
+using Vendora.Services.Cart.Application.Carts;
 using Vendora.Services.Cart.Application.IntegrationEvents;
 
 namespace Vendora.Services.Cart.Worker.EventHandlers;
@@ -9,7 +9,7 @@ public sealed class InitializeCartOnUserRegisteredHandler(ISender sender)
 {
     public async Task HandleAsync(UserRegisteredEvent @event, CancellationToken ct)
     {
-        var cmd = new Command { UserId = @event.UserId };
+        var cmd = new InitializeCart.Command(@event.UserId);
 
         var result = await sender.Send(cmd, ct);
 

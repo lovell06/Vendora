@@ -5,3 +5,4 @@ global using Vendora.BuildingBlocks.Messaging.Abstractions;
 global using Vendora.BuildingBlocks.Results;
 global using Vendora.Services.Cart.Application.Abstractions.Persistence;
 global using Vendora.Services.Cart.Domain.Carts;
+global using CartAggregate = Vendora.Services.Cart.Domain.Carts.Cart;

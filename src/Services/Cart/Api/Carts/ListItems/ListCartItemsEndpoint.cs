@@ -1,13 +1,16 @@
-using Vendora.Services.Cart.Application.Carts.ListItems;
+using Vendora.Services.Cart.Application.Carts;
 
 namespace Vendora.Services.Cart.Api.Carts.ListItems;
 
-public static class ListItemsEndpoint
+public static class ListCartItemsEndpoint
 {
-    public static void MapListItemsEndpoint(this RouteGroupBuilder carts)
+    extension(RouteGroupBuilder carts)
     {
-        carts.MapGet(ListItemsRequest.Pattern, Handle)
-            .RequireAuthorization();
+        public void MapListCartItemsEndpoint()
+        {
+            carts.MapGet(ListCartItemsRequest.Pattern, Handle)
+                .RequireAuthorization();
+        }
     }
 
     private static async Task<IResult> Handle(
@@ -15,7 +18,7 @@ public static class ListItemsEndpoint
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var query = new Query { UserId = user.UserId };
+        var query = new ListCartItems.Query(user.UserId);
 
         var result = await sender.Send(query, cancellationToken);
 

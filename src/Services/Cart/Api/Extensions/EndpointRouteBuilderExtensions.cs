@@ -6,7 +6,7 @@ public static class EndpointRouteBuilderExtensions
     {
         var api = app.MapGroup("/api");
 
-        api.MapCarts();
+        api.MapCartEndpoints();
         
         return app;
     }

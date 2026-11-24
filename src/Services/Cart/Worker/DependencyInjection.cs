@@ -15,7 +15,7 @@ public static class DependencyInjection
 
             services.AddTransient<
                 IIntegrationEventHandler<OrderPlacedEvent>,
-                RemoveItemsOnOrderPlacedHandler>();
+                RemoveCartItemsOnOrderPlacedHandler>();
             
             return services;
         }
