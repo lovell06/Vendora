@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.OpenApi;
 using Vendora.Services.Identity.Api.ExceptionHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,7 +7,12 @@ builder.Configuration.AddKeyPerFile("/run/secrets", optional: true);
 builder.Services.AddHealthChecks()
     .AddDbContextCheck<ApplicationDbContext>();
 
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.CreateSchemaReferenceId = info => info.Type.DeclaringType is { } parent
+        ? parent.Name + info.Type.Name
+        : OpenApiOptions.CreateDefaultSchemaReferenceId(info);
+});
 
 builder.Services
     .AddTimeProvider()
