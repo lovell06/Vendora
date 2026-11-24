@@ -2,7 +2,7 @@
 
 Vendora is an e-commerce project for developers building commerce services and a storefront. It uses **.NET 10**, separates business capabilities into five microservices, exposes APIs through a Gateway, and provides a **Blazor Interactive Server** frontend.
 
-> **Under development:** The Web frontend uses sample data. Authentication, cart, and ordering workflows are not yet fully integrated between Web and the backend.
+> **Under development:** The Web frontend now calls the backend through the API Gateway (catalog, categories, sign-in/registration, cart); it has not been built or run against the stack yet. The ordering workflow has no Web screens.
 
 ## Start with the demo storefront
 
@@ -27,7 +27,7 @@ To run the backend, follow the [Docker Compose guide](composes/README.md): prepa
 | Cart | Adding, removing, updating quantities, and querying cart items |
 | Ordering | Placing, canceling, preparing, delivering, and completing orders |
 | API Gateway | HTTP routing through YARP and aggregated API documentation in Development |
-| Web | Searching/filtering sample data, product details, variant selection, image galleries, and authentication forms |
+| Web | Catalog browsing/search through the Gateway, product details with variants and stock, cart, and sign-in/registration |
 
 The backend uses ASP.NET Core Minimal APIs, Entity Framework Core 10, and PostgreSQL 18. Redis supports Identity; RabbitMQ carries events between services; Catalog stores product images in Azure Blob Storage, emulated locally by Azurite. `InventoryItem` and `Order` use PostgreSQL `xmin` as an optimistic concurrency token. API authentication uses JSON Web Tokens (JWTs) signed with RSA keys. Web uses MudBlazor and locally hosted Inter fonts, supports light/dark/system themes, and displays its interface in English.
 
@@ -42,7 +42,7 @@ An outbox stores events in the same transaction as business data before a worker
 ```mermaid
 flowchart LR
     Client["HTTP client"] --> Gateway["API Gateway / YARP"]
-    Web["Blazor Web"] -.->|Authentication when configured| Gateway
+    Web["Blazor Web"] -.->|Catalog, authentication, cart| Gateway
 
     subgraph APIs["Business APIs"]
         Identity["Identity"]
@@ -72,7 +72,7 @@ flowchart LR
     Consumers -->|Update business data| Postgres
 ```
 
-This diagram summarizes groups of connections. The Web catalog and cart do not currently call the Gateway.
+This diagram summarizes groups of connections. Web reaches every service only through the Gateway.
 
 ```text
 Vendora.slnx             # .NET solution
@@ -133,9 +133,9 @@ Documented commands have been checked against source code and configuration. `do
 | --- | --- |
 | [Backend and Docker Compose](composes/README.md) | Prerequisites, environment files/secrets, migrations, API addresses, and troubleshooting |
 | [Web](src/Web/README.md) | Running Blazor, routes, frontend structure, and integration limits |
-| [Home](src/Web/Features/Home/README.md) | Sample catalog, search, categories, and navigation |
-| [Products](src/Web/Features/Products/README.md) | Details, variants, images, and quantity selection |
-| [Authentication](src/Web/Features/Authentication/README.md) | Forms, Gateway configuration, and API contracts |
+| [Home](src/Web/Features/Home/README.md) | Catalog listing, search, categories, and cart panel |
+| [Products](src/Web/Features/Products/README.md) | Details, variants, stock, images, and add to cart |
+| [Authentication](src/Web/Features/Authentication/README.md) | Sign-in/registration, session, and Gateway configuration |
 | [Shared UI](src/Web/Components/UI/README.md) | Components, usage examples, themes, and integration conventions |
 
 ## License
