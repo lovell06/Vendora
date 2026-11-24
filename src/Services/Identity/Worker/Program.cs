@@ -18,6 +18,7 @@ builder.Services
 
 builder.Services
     .AddSmtpOptions()
+    .AddWebOptions()
     .AddEmailSender()
     .AddEmailVerificationTokenProvider();
 

@@ -6,5 +6,6 @@ public interface IEmailSender
         string recepient, 
         string subject, 
         string body, 
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken,
+        string? htmlBody = null);
 }

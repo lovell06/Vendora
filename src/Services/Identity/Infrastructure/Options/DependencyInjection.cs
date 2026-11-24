@@ -21,6 +21,19 @@ public static class DependencyInjection
             return services;
         }
 
+        public IServiceCollection AddWebOptions()
+        {
+            services.AddOptions<WebOptions>()
+                .BindConfiguration(WebOptions.SectionName)
+                .Validate(
+                    options => Uri.TryCreate(options.BaseUrl, UriKind.Absolute, out var uri)
+                               && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps),
+                    "Web:BaseUrl must be an absolute http(s) URL.")
+                .ValidateOnStart();
+
+            return services;
+        }
+
         public IServiceCollection AddJwtOptions()
         {
             services.AddOptions<JwtOptions>()
