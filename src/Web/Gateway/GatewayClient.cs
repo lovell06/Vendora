@@ -44,6 +44,9 @@ public sealed class GatewayClient(HttpClient http, UserSession session)
         SendAsync<NoContent>(HttpMethod.Post, "api/auth/register",
             new { email, password, fullName, phoneNumber }, ct: ct);
 
+    public Task<ApiResult<NoContent>> VerifyEmailAsync(Guid userId, string token, CancellationToken ct = default) =>
+        SendAsync<NoContent>(HttpMethod.Post, "api/auth/verify-email", new { userId, token }, ct: ct);
+
     public async Task<ApiResult<NoContent>> LogoutAsync(CancellationToken ct = default)
     {
         await session.EnsureLoadedAsync();

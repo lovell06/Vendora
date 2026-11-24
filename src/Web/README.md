@@ -25,6 +25,7 @@ The `http` profile sets the environment to `Development`. The `https` profile in
 | `/products/{Id}` | Details, variants, image gallery, and quantity selection | [Products](Features/Products/README.md) |
 | `/login`, `/dang-nhap` | Login form; creates the session | [Authentication](Features/Authentication/README.md) |
 | `/register`, `/dang-ky` | Registration form (name, email, phone, password) | [Authentication](Features/Authentication/README.md) |
+| `/verify-email?userId=…&token=…` | Opened from the verification email; a "Verify email" button confirms the address | [Authentication](Features/Authentication/README.md) |
 | `/preview/product-cards` | Product card component samples in Development (static, no API) | [Shared UI](Components/UI/README.md) |
 | `/not-found`, `/Error` | Recovery pages for 404/500 errors | [Shared UI](Components/UI/README.md) |
 
