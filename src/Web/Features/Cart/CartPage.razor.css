@@ -1,0 +1,10 @@
+.cart-page { animation: cart-page-enter 260ms cubic-bezier(.2, 0, 0, 1) both; max-width: 720px; margin: auto; padding: 32px 24px 48px; }
+.cart-page-title { margin: 0 0 16px; font-size: 1.75rem; font-weight: 600; }
+.cart-topbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 4px; height: 56px; padding: 0 8px; background: var(--md-surface); border-bottom: 1px solid var(--md-outline-variant); }
+.cart-topbar h1 { margin: 0; font-size: 1.125rem; font-weight: 600; }
+.cart-back { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: var(--shape-full); background: transparent; color: var(--md-on-surface); cursor: pointer; }
+.cart-back:hover { background: var(--md-surface-container); }
+.cart-back:focus-visible { outline: 2px solid var(--md-primary); outline-offset: 2px; }
+@media (max-width: 599px) { .cart-page { padding: 0; } }
+@keyframes cart-page-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .cart-page { animation: none; } }

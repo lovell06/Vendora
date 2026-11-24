@@ -17,10 +17,17 @@ builder.Services.AddRazorComponents()
 builder.Services.AddMudServices();
 builder.Services.AddScoped<ThemeState>();
 
+// Role checks for /admin: the principal is built from the signed-in UserSession.
+builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<AuthenticationStateProvider, SessionAuthenticationStateProvider>();
+
 // Every backend call goes through the API Gateway.
 builder.Services.Configure<GatewayOptions>(builder.Configuration.GetSection("ApiGateway"));
 builder.Services.AddScoped<UserSession>();
 builder.Services.AddScoped<CartState>();
+builder.Services.AddScoped<ViewportState>();
+builder.Services.AddScoped<CartUiState>();
 builder.Services.AddHttpClient<GatewayClient>((provider, client) =>
 {
     var options = provider.GetRequiredService<IOptions<GatewayOptions>>().Value;

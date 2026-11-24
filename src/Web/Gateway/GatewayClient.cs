@@ -1,6 +1,5 @@
 using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace Vendora.Web.Gateway;
@@ -68,6 +67,13 @@ public sealed class GatewayClient(HttpClient http, UserSession session)
 
     public Task<ApiResult<NoContent>> RemoveFromCartAsync(long variantId, CancellationToken ct = default) =>
         SendAsync<NoContent>(HttpMethod.Delete, $"api/carts/remove-item/{variantId}", auth: true, ct: ct);
+
+    // ---- Ordering ----
+
+    // Places an order for the given cart items (the backend reads them from the signed-in user's cart).
+    public Task<ApiResult<NoContent>> PlaceOrderAsync(IEnumerable<long> variantIds, CancellationToken ct = default) =>
+        SendAsync<NoContent>(HttpMethod.Post, "api/orders/place",
+            new { productVariantIds = variantIds.Distinct().ToList() }, auth: true, ct: ct);
 
     // ---- Plumbing ----
 

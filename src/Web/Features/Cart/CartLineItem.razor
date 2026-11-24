@@ -1,0 +1,27 @@
+<li class="cart-line @(Selected ? "" : "cart-line--unselected")" aria-labelledby="@_nameId">
+    <input type="checkbox" class="cart-line-check" checked="@Selected" disabled="@(!Line.HasPrice)"
+           @onchange="@(e => OnSelect.InvokeAsync((bool)(e.Value ?? false)))"
+           aria-label="@($"Select {Line.ProductName}{(string.IsNullOrWhiteSpace(Line.VariantName) ? "" : $", {Line.VariantName}")}")" />
+    <div class="cart-line-main">
+        <div class="cart-line-info">
+            @if (Line.ProductId is { } productId) { <a id="@_nameId" class="cart-line-name" href="@($"/products/{productId}")">@Line.ProductName</a> }
+            else { <span id="@_nameId" class="cart-line-name">@Line.ProductName</span> }
+            @if (!string.IsNullOrWhiteSpace(Line.VariantName)) { <small>@Line.VariantName</small> }
+            @if (Line.HasPrice) { <small class="cart-line-unit">@Line.UnitPriceText</small> }
+            else { <small class="cart-line-warning">Price unavailable</small> }
+        </div>
+        <div class="cart-line-controls">
+            <QuantitySelector Class="cart-line-quantity" Label="@($"Quantity of {Line.ProductName}")" Value="Line.Quantity" ValueChanged="OnQuantity" Min="1" Max="99" />
+            <span class="cart-line-price">@Line.PriceText</span>
+            <AppButton Variant="ButtonVariant.Text" OnClick="OnRemove" aria-label="@($"Remove {Line.ProductName} from cart")">Remove</AppButton>
+        </div>
+    </div>
+</li>
+@code {
+    private readonly string _nameId = $"cart-line-{Guid.NewGuid():N}";
+    [Parameter, EditorRequired] public CartLine Line { get; set; } = default!;
+    [Parameter] public bool Selected { get; set; }
+    [Parameter] public EventCallback<bool> OnSelect { get; set; }
+    [Parameter] public EventCallback<int> OnQuantity { get; set; }
+    [Parameter] public EventCallback OnRemove { get; set; }
+}

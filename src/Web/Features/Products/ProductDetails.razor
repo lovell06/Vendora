@@ -14,7 +14,7 @@
 <StoreHeader>
     @if (Session.IsAuthenticated)
     {
-        <AppButton Variant="ButtonVariant.Icon" OnClick="@(() => Navigation.NavigateTo("/?panel=cart"))" aria-label="@($"Open cart, {Cart.Count} items")"><AppIcon Name="bag" /><span class="desktop-action-label">Cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</span></AppButton>
+        <CartButton />
     }
     else
     {

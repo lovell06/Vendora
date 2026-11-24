@@ -1,0 +1,133 @@
+@implements IDisposable
+@inject CartState Cart
+@inject ViewportState Viewport
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+
+<div class="cart-view cart-view--@(Mode == CartViewMode.Overlay ? "overlay" : "page")">
+    <div class="cart-view-body">
+        @if (Cart.Loading && Cart.Lines.Count == 0)
+        {
+            <CartSkeleton />
+        }
+        else if (Cart.Error is not null && Cart.Lines.Count == 0)
+        {
+            <div class="cart-state" role="alert">
+                <h2>We couldn’t load your cart</h2>
+                <p>@Cart.Error</p>
+                <AppButton Variant="ButtonVariant.Text" OnClick="Cart.RefreshAsync">Try again</AppButton>
+            </div>
+        }
+        else if (Cart.Lines.Count == 0)
+        {
+            <CartEmptyState OnContinueShopping="OnContinueShopping" />
+        }
+        else
+        {
+            @if (Cart.Loading) { <MudProgressLinear Indeterminate="true" Size="Size.Small" Class="cart-progress" aria-label="Updating your cart" /> }
+            @if (Cart.Error is not null) { <p class="cart-inline-error" role="alert">@Cart.Error <AppButton Variant="ButtonVariant.Text" OnClick="Cart.RefreshAsync">Try again</AppButton></p> }
+            <div class="cart-toolbar">
+                <label class="cart-select-all">
+                    <input type="checkbox" @ref="_selectAll" checked="@Cart.AllSelected" @onchange="@(e => Cart.SelectAll((bool)(e.Value ?? false)))" aria-label="Select all items" />
+                    <span>Select all</span>
+                </label>
+                <AppButton Variant="ButtonVariant.Text" Disabled="@(Cart.SelectedCount == 0 || Cart.IsAnyBusy)" OnClick="RemoveSelected">Remove selected@(Cart.SelectedCount > 0 ? $" ({Cart.SelectedCount})" : "")</AppButton>
+            </div>
+            <ul class="cart-lines" aria-label="Items in your cart">
+                @foreach (var line in Cart.Lines)
+                {
+                    <CartLineItem @key="line.VariantId" Line="line" Selected="Cart.IsSelected(line.VariantId)"
+                                  OnSelect="@(selected => OnSelectChanged(line.VariantId, selected))"
+                                  OnQuantity="@(quantity => OnQuantityChanged(line.VariantId, quantity))"
+                                  OnRemove="@(() => RemoveOne(line))" />
+                }
+            </ul>
+        }
+    </div>
+    @if (Cart.Lines.Count > 0)
+    {
+        <div class="cart-view-footer">
+            <CartSummary Bar="@(Mode == CartViewMode.Page && Viewport.IsCompact)" OnCheckout="Checkout" />
+        </div>
+    }
+</div>
+
+@code {
+    private ElementReference _selectAll;
+
+    [Parameter] public CartViewMode Mode { get; set; } = CartViewMode.Overlay;
+    // Called after a successful checkout so the overlay can close itself.
+    [Parameter] public EventCallback OnCheckedOut { get; set; }
+    [Parameter] public EventCallback OnContinueShopping { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Cart.Changed += OnCartChanged;
+        Cart.OperationFailed += OnOperationFailed;
+        Viewport.Changed += OnCartChanged;
+        await Viewport.EnsureInitializedAsync();
+        // Show fresh data when the cart opens. In the floating panel, wait until its opening animation is over
+        // so that loading work does not compete with it for frames.
+        if (Mode == CartViewMode.Overlay && Cart.Lines.Count > 0) await Task.Delay(550);
+        await Cart.RefreshAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // The "some selected" (indeterminate) state of a checkbox can only be set from script.
+        if (Cart.Lines.Count == 0) return;
+        try { await JS.InvokeVoidAsync("vendoraCart.setIndeterminate", _selectAll, Cart.SomeSelected); }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or InvalidOperationException) { }
+    }
+
+    private void OnCartChanged() => _ = InvokeAsync(StateHasChanged);
+    private void OnOperationFailed(string message) => _ = InvokeAsync(() => Snackbar.Add(message, Severity.Error));
+    private void OnSelectChanged(long variantId, bool selected) => Cart.SetSelected(variantId, selected);
+    private void OnQuantityChanged(long variantId, int quantity) => Cart.ChangeQuantity(variantId, quantity);
+
+    private async Task RemoveOne(CartLine line) => await RemoveAsync([line.VariantId]);
+    private async Task RemoveSelected() => await RemoveAsync(Cart.SelectedLines.Select(l => l.VariantId).ToList());
+
+    private async Task RemoveAsync(IReadOnlyList<long> ids)
+    {
+        var removed = await Cart.RemoveLinesAsync(ids);
+        if (removed.Count == 0) return;
+        var message = removed.Count == 1 ? $"Removed {removed[0].ProductName}" : $"Removed {removed.Count} items";
+        Snackbar.Add(message, Severity.Normal, options =>
+        {
+            options.Action = "Undo";
+            options.VisibleStateDuration = 5000;
+            options.OnClick = async _ =>
+            {
+                foreach (var line in removed) await Cart.AddAsync(line.VariantId, line.Quantity);
+            };
+        });
+    }
+
+    private async Task Checkout()
+    {
+        if (Cart.SelectedCount == 0 || Cart.HasMixedCurrency) return;
+        var total = PriceFormatter.Format(Cart.SelectedTotal, Cart.SelectedCurrency!);
+        var confirmed = await DialogService.ShowMessageBoxAsync(
+            "Place order",
+            $"Place an order for {Cart.SelectedCount} {(Cart.SelectedCount == 1 ? "item" : "items")}, total {total}?",
+            yesText: "Place order", cancelText: "Cancel");
+        if (confirmed != true) return;
+
+        var result = await Cart.CheckoutAsync();
+        if (result.Ok)
+        {
+            Snackbar.Add("Order placed.", Severity.Success);
+            await OnCheckedOut.InvokeAsync();
+        }
+        else Snackbar.Add(result.Error ?? "Unable to place your order.", Severity.Error);
+    }
+
+    public void Dispose()
+    {
+        Cart.Changed -= OnCartChanged;
+        Cart.OperationFailed -= OnOperationFailed;
+        Viewport.Changed -= OnCartChanged;
+    }
+}

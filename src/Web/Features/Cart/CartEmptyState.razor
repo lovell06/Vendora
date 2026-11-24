@@ -1,0 +1,9 @@
+<div class="cart-empty">
+    <div class="cart-empty-icon"><AppIcon Name="bag" /></div>
+    <h2>Your cart is empty</h2>
+    <p>Items you add will show up here.</p>
+    <AppButton OnClick="OnContinueShopping">Continue shopping</AppButton>
+</div>
+@code {
+    [Parameter] public EventCallback OnContinueShopping { get; set; }
+}

@@ -8,12 +8,13 @@
 @inject GatewayClient Gateway
 @inject UserSession Session
 @inject CartState Cart
+@inject CartUiState CartUi
 @inject NavigationManager Navigation
 <PageTitle>Home | Vendora</PageTitle>
 <StoreHeader>
         @if (Session.IsAuthenticated)
         {
-            <AppButton Variant="ButtonVariant.Icon" OnClick="ToggleCart" aria-label="@($"Open cart, {Cart.Count} items")" aria-expanded="@_cartOpen" aria-controls="cart-panel"><AppIcon Name="bag" /><span class="desktop-action-label">Cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</span></AppButton>
+            <CartButton />
             <AppButton Variant="ButtonVariant.Icon" OnClick="ToggleAccount" aria-label="Your account" aria-expanded="@_accountOpen" aria-controls="account-panel"><AppIcon Name="user" /><span class="desktop-action-label">Account</span></AppButton>
         }
         else
@@ -29,42 +30,6 @@
             <div class="section-heading"><h2 id="account-title">Your account</h2><AppButton Variant="ButtonVariant.Text" OnClick="ToggleAccount">Close</AppButton></div>
             <p>@Session.DisplayName</p>
             <AppButton Variant="ButtonVariant.Text" OnClick="SignOut" Busy="@_signingOut" BusyText="Signing out…">Sign out</AppButton>
-        </section>
-    }
-    @if (Session.IsAuthenticated && _cartOpen)
-    {
-        <section id="cart-panel" class="cart-panel" aria-labelledby="cart-title">
-            <div class="section-heading"><h2 id="cart-title">Your cart</h2><AppButton Variant="ButtonVariant.Text" OnClick="ToggleCart">Close</AppButton></div>
-            @if (Cart.Loading && Cart.Lines.Count == 0)
-            {
-                <p role="status">Loading your cart…</p>
-            }
-            else if (Cart.Error is not null)
-            {
-                <p role="alert">@Cart.Error</p>
-                <AppButton Variant="ButtonVariant.Text" OnClick="Cart.RefreshAsync">Try again</AppButton>
-            }
-            else if (Cart.Lines.Count == 0)
-            {
-                <p>Your cart is empty.</p>
-            }
-            else
-            {
-                <ul class="cart-lines">
-                    @foreach (var line in Cart.Lines)
-                    {
-                        <li @key="line.VariantId" class="cart-line">
-                            <div class="cart-line-info">
-                                @if (line.ProductId is { } productId) { <a href="@($"/products/{productId}")">@line.ProductName</a> } else { <span>@line.ProductName</span> }
-                                @if (!string.IsNullOrWhiteSpace(line.VariantName)) { <small>@line.VariantName</small> }
-                            </div>
-                            <QuantitySelector Value="line.Quantity" ValueChanged="@(quantity => ChangeQuantity(line.VariantId, quantity))" Min="1" Max="99" />
-                            <span class="cart-line-price">@line.PriceText</span>
-                            <AppButton Variant="ButtonVariant.Text" OnClick="@(() => RemoveLine(line.VariantId))" aria-label="@($"Remove {line.ProductName} from cart")">Remove</AppButton>
-                        </li>
-                    }
-                </ul>
-            }
         </section>
     }
     <form class="store-search" @onsubmit="Search" @onsubmit:preventDefault role="search">
@@ -142,7 +107,6 @@
     private string _selectedCategory = "all";
     private string _query = "";
     private string _submittedQuery = "";
-    private bool _cartOpen;
     private bool _accountOpen;
 
     private int? SelectedCategoryId => int.TryParse(_selectedCategory, out var id) ? id : null;
@@ -151,7 +115,6 @@
     protected override async Task OnInitializedAsync()
     {
         Session.Changed += OnSessionChanged;
-        Cart.Changed += OnCartChanged;
         await Session.EnsureLoadedAsync();
 
         var categories = await Gateway.ListCategoriesAsync();
@@ -160,10 +123,15 @@
         var loadProducts = LoadProductsAsync(reset: true);
         if (Session.IsAuthenticated)
         {
-            _cartOpen = Panel == "cart";
             await Cart.RefreshAsync();
         }
         await loadProducts;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Old deep link /?panel=cart: floating panel on wide screens, the /cart page on phones.
+        if (firstRender && Panel == "cart" && Session.IsAuthenticated) await CartUi.OpenAsync();
     }
 
     private async Task LoadProductsAsync(bool reset)
@@ -277,18 +245,6 @@
         finally { _busyProductId = null; }
     }
 
-    private async Task ChangeQuantity(long variantId, int quantity)
-    {
-        var result = await Cart.SetQuantityAsync(variantId, quantity);
-        if (!result.Ok) Snackbar.Add(result.Error ?? "Unable to update your cart.", Severity.Error);
-    }
-
-    private async Task RemoveLine(long variantId)
-    {
-        var result = await Cart.RemoveAsync(variantId);
-        if (!result.Ok) Snackbar.Add(result.Error ?? "Unable to update your cart.", Severity.Error);
-    }
-
     private async Task SignOut()
     {
         if (_signingOut) return;
@@ -298,25 +254,21 @@
             await Gateway.LogoutAsync(); // Best effort: the local session ends either way.
             Cart.Clear();
             await Session.SignOutAsync();
-            _cartOpen = false;
             _accountOpen = false;
         }
         finally { _signingOut = false; }
     }
 
-    private void ToggleCart() { if (!Session.IsAuthenticated) return; _cartOpen = !_cartOpen; _accountOpen = false; }
-    private void ToggleAccount() { if (!Session.IsAuthenticated) return; _accountOpen = !_accountOpen; _cartOpen = false; }
+    private void ToggleAccount() { if (!Session.IsAuthenticated) return; _accountOpen = !_accountOpen; }
 
     private void OnSessionChanged() => _ = InvokeAsync(() =>
     {
-        if (!Session.IsAuthenticated) { _cartOpen = false; _accountOpen = false; }
+        if (!Session.IsAuthenticated) { _accountOpen = false; }
         StateHasChanged();
     });
-    private void OnCartChanged() => _ = InvokeAsync(StateHasChanged);
 
     public void Dispose()
     {
         Session.Changed -= OnSessionChanged;
-        Cart.Changed -= OnCartChanged;
     }
 }

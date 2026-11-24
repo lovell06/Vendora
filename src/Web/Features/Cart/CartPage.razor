@@ -1,0 +1,73 @@
+@page "/cart"
+@layout HomeLayout
+@using Vendora.Web.Features.Home
+@implements IDisposable
+@inject UserSession Session
+@inject CartState Cart
+@inject CartUiState CartUi
+@inject ViewportState Viewport
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<PageTitle>Your cart | Vendora</PageTitle>
+@if (Viewport.IsCompact)
+{
+    <header class="cart-topbar">
+        <button type="button" class="cart-back" @onclick="GoBack" aria-label="Back"><MudIcon Icon="@Icons.Material.Outlined.ArrowBack" aria-hidden="true" /></button>
+        <h1>Your cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</h1>
+    </header>
+}
+else
+{
+    <StoreHeader>
+        <MudButton Href="/" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button">Continue shopping</MudButton>
+    </StoreHeader>
+}
+<main id="home-content" class="cart-page" tabindex="-1">
+    @if (!Viewport.IsCompact) { <h1 class="cart-page-title">Your cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</h1> }
+    @if (_ready) { <CartView Mode="CartViewMode.Page" OnContinueShopping="ContinueShopping" OnCheckedOut="OnCheckedOut" /> }
+</main>
+@code {
+    private bool _ready;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Cart.Changed += OnChanged;
+        Viewport.Changed += OnChanged;
+        Session.Changed += OnSessionChanged;
+        await Session.EnsureLoadedAsync();
+        if (!Session.IsAuthenticated)
+        {
+            Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString("/cart")}", replace: true);
+            return;
+        }
+        await Viewport.EnsureInitializedAsync();
+        _ready = true;
+    }
+
+    // Back follows browser history when we arrived from inside the app, otherwise it goes home.
+    private async Task GoBack()
+    {
+        if (CartUi.CameFromInApp)
+        {
+            CartUi.CameFromInApp = false;
+            await JS.InvokeVoidAsync("history.back");
+        }
+        else Navigation.NavigateTo("/", replace: true);
+    }
+
+    private void ContinueShopping() => Navigation.NavigateTo("/");
+    private void OnCheckedOut() { /* The cart view keeps showing what is left (usually the empty state). */ }
+    private void OnChanged() => _ = InvokeAsync(StateHasChanged);
+    private void OnSessionChanged() => _ = InvokeAsync(() =>
+    {
+        if (!Session.IsAuthenticated) Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString("/cart")}", replace: true);
+    });
+
+    public void Dispose()
+    {
+        Cart.Changed -= OnChanged;
+        Viewport.Changed -= OnChanged;
+        Session.Changed -= OnSessionChanged;
+    }
+}

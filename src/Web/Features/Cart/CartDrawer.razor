@@ -1,0 +1,65 @@
+@implements IAsyncDisposable
+@inject NavigationManager Navigation
+@inject CartState Cart
+@inject IJSRuntime JS
+
+<MudDialog Class="cart-drawer" AriaLabel="Your cart">
+    <DialogContent>
+        <div class="cart-drawer-root">
+        <header class="cart-drawer-header">
+            <h2 id="cart-drawer-title">Your cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</h2>
+            <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small" data-cart-close aria-label="Close cart" />
+        </header>
+        <CartView Mode="CartViewMode.Overlay" OnContinueShopping="Close" OnCheckedOut="Close" />
+        <a class="cart-drawer-link" href="/cart" @onclick="OpenFullPage" @onclick:preventDefault>View full cart</a>
+        </div>
+    </DialogContent>
+</MudDialog>
+@code {
+    [CascadingParameter] private IMudDialogInstance Dialog { get; set; } = default!;
+
+    private DotNetObjectReference<CartDrawer>? _self;
+
+    protected override void OnInitialized() => Cart.Changed += OnCartChanged;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        _self = DotNetObjectReference.Create(this);
+        try { await JS.InvokeVoidAsync("vendoraCart.register", _self); }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException) { }
+    }
+
+    // The browser has already played the exit animation (✕, Esc, backdrop): just remove the dialog.
+    [JSInvokable] public Task CloseNow() => InvokeAsync(() =>
+    {
+        if (_closing) return;
+        _closing = true;
+        Dialog.Close();
+    });
+    private void OnCartChanged() => _ = InvokeAsync(StateHasChanged);
+    private bool _closing;
+
+    // Server-side close paths (checkout, continue shopping, full page): play the exit, then close.
+    private async Task Close()
+    {
+        if (_closing) return;
+        _closing = true;
+        try { await JS.InvokeVoidAsync("vendoraCart.playExit"); }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException) { }
+        Dialog.Close();
+    }
+
+    private async Task OpenFullPage()
+    {
+        await Close();
+        Navigation.NavigateTo("/cart");
+    }
+    public async ValueTask DisposeAsync()
+    {
+        Cart.Changed -= OnCartChanged;
+        try { await JS.InvokeVoidAsync("vendoraCart.unregister"); }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException) { }
+        _self?.Dispose();
+    }
+}

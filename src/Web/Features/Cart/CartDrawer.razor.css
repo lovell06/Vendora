@@ -1,0 +1,4 @@
+.cart-drawer-root { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.cart-drawer-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 12px 12px 20px; border-bottom: 1px solid var(--md-outline-variant); }
+.cart-drawer-header h2 { margin: 0; font-size: var(--type-title); font-weight: 600; }
+.cart-drawer-link { display: block; padding: 10px 20px 14px; text-align: center; font-size: .875rem; font-weight: 500; }

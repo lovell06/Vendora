@@ -122,6 +122,7 @@ h1 { font-size: var(--type-headline); line-height: 1.25; font-weight: 600; lette
 .app-button .mud-button-label { gap: 8px; }
 .app-button--icon.mud-button-root { min-width: var(--button-height); padding-inline: 8px; }
 .auth-submit { width: 100%; margin-top: 8px; }
+.verify-email-text { margin: 0 0 16px; color: var(--md-on-surface-variant); }
 .switch-form { text-align: center; font-size: var(--type-label); color: var(--md-on-surface-variant); margin-top: 24px; }
 .switch-form a { font-weight: 600; display: inline-flex; align-items: center; min-height: 48px; margin-left: 4px; }
 .feedback { margin: 16px 0; border-radius: var(--shape-small); font-size: var(--type-label); overflow-wrap: anywhere; }
@@ -182,3 +183,37 @@ html { scroll-behavior: smooth; scroll-padding-top: 80px; scroll-padding-bottom:
 .mud-dialog.cart-sheet { width: 100%; max-width: 600px; margin: 0; border-radius: 16px 16px 0 0; background: var(--md-surface-container-lowest); animation: cart-sheet-enter 220ms cubic-bezier(.2, 0, 0, 1); }
 .cart-sheet .mud-dialog-content { display: flex; flex-direction: column; height: 40dvh; min-height: min(300px, calc(100dvh - 24px)); max-height: calc(100dvh - 24px); padding: 20px 16px max(16px, env(safe-area-inset-bottom)); overflow-y: auto; }
 @keyframes cart-sheet-enter { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* Floating cart panel (wide screens): blurred, dimmed page behind a right-hand panel. */
+
+/* MudBlazor locks page scroll while a dialog is open by putting overflow:hidden + a fixed padding-right on <body>.
+   The padding rarely equals the real scrollbar width, so the whole page behind the blur jumped sideways (and
+   re-laid out) at the exact moment the panel started to animate, and again on close. Reserving the scrollbar
+   gutter permanently and dropping that padding keeps the page still. */
+html { scrollbar-gutter: stable; }
+body.scroll-locked, body.scroll-locked-no-padding { padding-right: 0 !important; }
+
+/* Blur and tint live on one layer whose opacity animates: opacity is composited, so the blur fades in and out
+   smoothly instead of appearing or disappearing in a single frame. */
+.overlay-blur-backdrop { background-color: rgb(0 0 0 / 32%) !important; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); will-change: opacity; animation: overlay-backdrop-enter 360ms cubic-bezier(.2, 0, 0, 1) both; }
+.overlay-blur-backdrop .mud-overlay-scrim { animation: none; }
+@supports not (backdrop-filter: blur(1px)) { .overlay-blur-backdrop { background-color: rgb(0 0 0 / 55%) !important; } }
+@media (prefers-reduced-transparency: reduce) { .overlay-blur-backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; background-color: rgb(0 0 0 / 55%) !important; } }
+body:has(.cart-drawer--closing) .overlay-blur-backdrop { animation: overlay-backdrop-exit 260ms cubic-bezier(.4, 0, .2, 1) both; }
+@keyframes overlay-backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes overlay-backdrop-exit { from { opacity: 1; } to { opacity: 0; } }
+
+/* MudBlazor's centre-right container adds 32px padding and caps the dialog at 100dvh minus the app-bar height with
+   its own scrollbar; both fought the panel's size and put it away from the cart icon it grows out of. */
+.mud-dialog-container:has(> .mud-dialog.cart-drawer), .mud-dialog-container:has(.mud-dialog.cart-drawer) { padding: 0; }
+.mud-dialog.cart-drawer { display: flex; flex-direction: column; width: min(440px, calc(100vw - 32px)); max-width: none; height: calc(100dvh - 32px); max-height: none; margin: 16px; border-radius: var(--shape-large); background: var(--md-surface-container-lowest); overflow: hidden; transform-origin: var(--cart-origin, 100% 0); will-change: transform, opacity; backface-visibility: hidden; contain: layout paint; animation: cart-drawer-enter 440ms cubic-bezier(.3, 1.15, .45, 1) both; }
+.cart-drawer .mud-dialog-content { display: flex; flex-direction: column; flex: 1; min-height: 0; padding: 0; overflow: hidden; }
+.mud-dialog.cart-drawer.cart-drawer--closing { animation: cart-drawer-exit 260ms cubic-bezier(.5, 0, .2, 1) both; }
+@keyframes cart-drawer-enter { from { transform: scale(.2); opacity: 0; } 30% { opacity: 1; } to { transform: scale(1); opacity: 1; } }
+@keyframes cart-drawer-exit { from { transform: scale(1); opacity: 1; } 70% { opacity: 1; } to { transform: scale(.2); opacity: 0; } }
+/* Rows do not animate while the panel itself is animating; two motions at once look jerky. */
+.mud-dialog.cart-drawer .cart-line { animation: none !important; }
+@media (prefers-reduced-motion: reduce) { .mud-dialog.cart-drawer, .mud-dialog.cart-drawer.cart-drawer--closing, .overlay-blur-backdrop { animation: none !important; } }
+
+/* The /cart page has its own bottom bar on phones, so the floating back-to-top button would overlap it. */
+body:has(.cart-page) .back-to-top { display: none; }

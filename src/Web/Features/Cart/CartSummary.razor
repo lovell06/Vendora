@@ -1,0 +1,20 @@
+@inject CartState Cart
+
+<div class="cart-summary @(Bar ? "cart-summary--bar" : "")">
+    <div class="cart-summary-totals" aria-live="polite" aria-atomic="true">
+        <span class="cart-summary-count">@(Cart.SelectedCount == 0 ? "No items selected" : $"{Cart.SelectedCount} {(Cart.SelectedCount == 1 ? "item" : "items")} selected")</span>
+        <span class="cart-summary-total"><span class="cart-summary-label">Subtotal</span> @TotalText</span>
+    </div>
+    @if (Cart.HasMixedCurrency) { <p class="cart-summary-note" role="alert">Selected items use different currencies. Select items with one currency to check out.</p> }
+    else if (!Bar) { <p class="cart-summary-note">Shipping is calculated at checkout.</p> }
+    <AppButton Class="cart-summary-checkout" OnClick="OnCheckout" Disabled="@(Cart.SelectedCount == 0 || Cart.HasMixedCurrency || Cart.IsAnyBusy)" Busy="@Cart.PlacingOrder" BusyText="Placing order…">Checkout@(Cart.SelectedCount > 0 ? $" ({Cart.SelectedCount})" : "")</AppButton>
+</div>
+@code {
+    // Bar = compact layout used by the fixed bottom bar of the /cart page on phones.
+    [Parameter] public bool Bar { get; set; }
+    [Parameter] public EventCallback OnCheckout { get; set; }
+
+    private string TotalText => Cart.SelectedCount == 0 || Cart.SelectedCurrency is null || Cart.HasMixedCurrency
+        ? "–"
+        : PriceFormatter.Format(Cart.SelectedTotal, Cart.SelectedCurrency);
+}
