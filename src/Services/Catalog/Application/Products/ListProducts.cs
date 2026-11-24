@@ -18,7 +18,7 @@ public static class ListProducts
         decimal MinPrice,
         decimal MaxPrice,
         string Currency,
-        string ImageUrl);
+        string? ImageUrl);
 
     public interface IQueryService
     {

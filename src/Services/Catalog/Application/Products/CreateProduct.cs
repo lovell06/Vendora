@@ -12,7 +12,14 @@ public static class CreateProduct
         string Currency,
         bool IsVisible,
         IReadOnlyList<ProductVariantDto> ProductVariants,
-        IReadOnlyList<ProductImageUploadDto> ProductImageUploads) : ICommand;
+        IReadOnlyList<ProductImageUploadDto> ProductImageUploads) : ICommand<Response>;
+
+    public sealed record Response(long ProductId);
+
+    public const int MaxImageCount = 10;
+    public const long MaxImageSizeBytes = 5 * 1024 * 1024;
+    public static readonly IReadOnlySet<string> AllowedImageContentTypes =
+        new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "image/jpeg", "image/png", "image/webp" };
 
     public sealed record ProductImageUploadDto(
         Func<Stream> OpenReadStream,
@@ -35,22 +42,26 @@ public static class CreateProduct
         IObjectStorage objectStorage,
         IUnitOfWork unitOfWork,
         ILogger<Handler> logger,
-        TimeProvider clock) : ICommandHandler<Command>
+        TimeProvider clock) : ICommandHandler<Command, Response>
     {
-        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result<Response>> Handle(Command command, CancellationToken cancellationToken)
         {
             var utcNow = clock.GetUtcNow();
 
-            if (command.ProductImageUploads.Count == 0)
-                return Result.Failure(Error.Validation(
-                    code: "product_creation.images_empty",
-                    message: "The product require has least one image."));
+            // All input checks run before anything is written to the database or
+            // uploaded to storage, so a bad request never leaves orphan blobs behind.
+            var validationError = Validate(command);
+            if (validationError is not null)
+            {
+                logger.LogWarning("Product creation rejected: {ErrorCode}", validationError.Code);
+                return Result<Response>.Failure(validationError);
+            }
 
             if (!await categoryRepository.ExistsByIdAsync(command.CategoryId, cancellationToken))
             {
                 logger.LogWarning("Product creation rejected because category not existed.");
 
-                return Result.Failure(new Error
+                return Result<Response>.Failure(new Error
                 {
                     Code = "product_creation.category_is_not_exists",
                     Message = "Category is not exists.",
@@ -73,7 +84,7 @@ public static class CreateProduct
                     "Create product failed: {ErrorCode}", 
                     createdProductResult.Error.Code);
 
-                return Result.Failure(createdProductResult.Error);
+                return Result<Response>.Failure(createdProductResult.Error);
             }
 
             await using var transaction = await unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -113,12 +124,12 @@ public static class CreateProduct
                     );
 
                     if (createProductImageResult.IsFailure)
-                        return Result.Failure(createProductImageResult.Error);
+                        return Result<Response>.Failure(createProductImageResult.Error);
 
                     var addImageResult = product.AddImage(createProductImageResult.Value, utcNow);
 
                     if (addImageResult.IsFailure)
-                        return Result.Failure(addImageResult.Error);
+                        return Result<Response>.Failure(addImageResult.Error);
                 }
 
                 try
@@ -144,7 +155,7 @@ public static class CreateProduct
                         if (createVariantResult.IsFailure)
                         {
                             await transaction.RollbackAsync(cancellationToken);
-                            return Result.Failure(createVariantResult.Error);
+                            return Result<Response>.Failure(createVariantResult.Error);
                         }
 
                         var variant = createVariantResult.Value;
@@ -161,14 +172,14 @@ public static class CreateProduct
                                 updatedAt: utcNow);
 
                             if (assignImageResult.IsFailure)
-                                return Result.Failure(assignImageResult.Error);
+                                return Result<Response>.Failure(assignImageResult.Error);
                         }
 
                         var addVariantResult = product.AddVariant(variant, utcNow);
 
                         if (!addVariantResult.IsFailure) continue;
                         await transaction.RollbackAsync(cancellationToken);
-                        return Result.Failure(addVariantResult.Error);
+                        return Result<Response>.Failure(addVariantResult.Error);
                     }
 
                     await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -218,7 +229,62 @@ public static class CreateProduct
 
             }
 
-            return Result.Success();
+            return Result<Response>.Success(new Response(product.Id));
+        }
+
+        private static Error? Validate(Command command)
+        {
+            var images = command.ProductImageUploads;
+
+            if (images.Count == 0)
+                return Error.Validation(
+                    code: "product_creation.images_empty",
+                    message: "The product requires at least one image.");
+
+            if (images.Count > MaxImageCount)
+                return Error.Validation(
+                    code: "product_creation.too_many_images",
+                    message: $"A product can have at most {MaxImageCount} images.");
+
+            for (var index = 0; index < images.Count; index++)
+            {
+                var image = images[index];
+
+                if (!AllowedImageContentTypes.Contains(image.ContentType.Trim()))
+                    return Error.Validation(
+                        code: "product_creation.image_type_not_allowed",
+                        message: $"Image {index} has type '{image.ContentType}'. Allowed types: {string.Join(", ", AllowedImageContentTypes)}.");
+
+                if (image.SizeBytes <= 0)
+                    return Error.Validation(
+                        code: "product_creation.image_empty",
+                        message: $"Image {index} is empty.");
+
+                if (image.SizeBytes > MaxImageSizeBytes)
+                    return Error.Validation(
+                        code: "product_creation.image_too_large",
+                        message: $"Image {index} is larger than {MaxImageSizeBytes / (1024 * 1024)} MB.");
+            }
+
+            foreach (var variant in command.ProductVariants)
+            {
+                var indexes = variant.ImageIndexes;
+
+                foreach (var imageIndex in indexes)
+                {
+                    if (imageIndex < 0 || imageIndex >= images.Count)
+                        return Error.Validation(
+                            code: "product_creation.image_index_out_of_range",
+                            message: $"Variant '{variant.Sku}' references image index {imageIndex}, but only indexes 0 to {images.Count - 1} exist.");
+                }
+
+                if (indexes.Distinct().Count() != indexes.Count)
+                    return Error.Validation(
+                        code: "product_creation.image_index_duplicated",
+                        message: $"Variant '{variant.Sku}' references the same image more than once.");
+            }
+
+            return null;
         }
     }
 }

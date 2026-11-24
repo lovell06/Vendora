@@ -22,6 +22,8 @@ public static class CreateProductEndpoint
         if (result.IsFailure)
             return result.Error.ToHttpResult();
 
-        return TypedResults.Created();
+        var productId = result.Value.ProductId;
+
+        return TypedResults.Created($"/api/products/{productId}", new { id = productId });
     }
 }
