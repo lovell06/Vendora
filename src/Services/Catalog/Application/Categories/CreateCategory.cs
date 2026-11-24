@@ -1,6 +1,10 @@
-namespace Vendora.Services.Catalog.Application.Categories.Create
+namespace Vendora.Services.Catalog.Application.Categories;
+
+public static class CreateCategory
 {
-    public class Handler(
+    public sealed record Command(string Name) : ICommand;
+
+    public sealed class Handler(
         ICategoryRepository categoryRepository,
         IUnitOfWork unitOfWork,
         ILogger<Handler> logger,

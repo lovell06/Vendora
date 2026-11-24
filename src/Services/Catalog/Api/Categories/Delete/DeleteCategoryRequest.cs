@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Categories.Delete;
+using Vendora.Services.Catalog.Application.Categories;
 
 namespace Vendora.Services.Catalog.Api.Categories.Delete;
 
@@ -8,11 +8,8 @@ public sealed class DeleteCategoryRequest
 
     public int Id { get; init; }
 
-    public Command ToCommand()
+    public DeleteCategory.Command ToCommand()
     {
-        return new Command
-        {
-            Id = Id
-        };
+        return new DeleteCategory.Command(Id);
     }
 }

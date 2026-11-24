@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Categories.Restore;
+using Vendora.Services.Catalog.Application.Categories;
 
 namespace Vendora.Services.Catalog.Api.Categories.Restore;
 
@@ -8,11 +8,8 @@ public sealed class RestoreCategoryRequest
 
     public int Id { get; init; }
 
-    public Command ToCommand()
+    public RestoreCategory.Command ToCommand()
     {
-        return new Command
-        {
-            Id = Id
-        };
+        return new RestoreCategory.Command(Id);
     }
 }

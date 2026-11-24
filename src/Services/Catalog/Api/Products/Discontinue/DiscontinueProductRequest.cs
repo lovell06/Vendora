@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Products.Discontinue;
+using Vendora.Services.Catalog.Application.Products;
 
 namespace Vendora.Services.Catalog.Api.Products.Discontinue;
 
@@ -8,11 +8,8 @@ public sealed class DiscontinueProductRequest
 
     public long Id { get; init; }
 
-    public Command ToCommand()
+    public DiscontinueProduct.Command ToCommand()
     {
-        return new Command
-        {
-            Id = Id
-        };
+        return new DiscontinueProduct.Command(Id);
     }
 }

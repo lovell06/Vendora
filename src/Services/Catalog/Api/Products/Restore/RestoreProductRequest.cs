@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Products.Restore;
+using Vendora.Services.Catalog.Application.Products;
 
 namespace Vendora.Services.Catalog.Api.Products.Restore;
 
@@ -8,11 +8,8 @@ public class RestoreProductRequest
 
     public long Id { get; init; }
 
-    public Command ToCommand()
+    public RestoreProduct.Command ToCommand()
     {
-        return new Command
-        {
-            Id = Id
-        };
+        return new RestoreProduct.Command(Id);
     }
 }

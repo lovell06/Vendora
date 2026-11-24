@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Products.Reactivate;
+using Vendora.Services.Catalog.Application.Products;
 
 namespace Vendora.Services.Catalog.Api.Products.Reactivate;
 
@@ -8,11 +8,8 @@ public sealed class ReactivateProductRequest
 
     public long Id { get; init; }
 
-    public Command ToCommand()
+    public ReactivateProduct.Command ToCommand()
     {
-        return new Command
-        {
-            Id = Id
-        };
+        return new ReactivateProduct.Command(Id);
     }
 }

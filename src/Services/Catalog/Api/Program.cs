@@ -1,5 +1,6 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 using Vendora.Services.Catalog.Api.ExceptionHandlers;
 using Vendora.Services.Catalog.Infrastructure.Storage;
@@ -17,6 +18,10 @@ builder.Services.AddOpenApi(options =>
         document.Servers = [new OpenApiServer { Url = "/" }];
         return Task.CompletedTask;
     });
+
+    options.CreateSchemaReferenceId = info => info.Type.DeclaringType is { } parent
+        ? parent.Name + info.Type.Name
+        : OpenApiOptions.CreateDefaultSchemaReferenceId(info);
 });
 
 builder.Services.Configure<RouteOptions>(options =>

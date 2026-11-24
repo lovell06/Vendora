@@ -1,26 +1,23 @@
-using Vendora.Services.Catalog.Application.Products.List;
-
 namespace Vendora.Services.Catalog.Infrastructure.Queries.Products;
 
-public sealed class EfCoreListProductsQueryService(ApplicationDbContext context, IConfiguration configuration) : IListProductsQueryService
+public sealed class EfCoreListProductsQueryService(ApplicationDbContext context, IConfiguration configuration) : ListProducts.IQueryService
 {
-    public async Task<Response?> ExecuteAsync(Query query, CancellationToken cancellationToken)
+    public async Task<ListProducts.Response?> ExecuteAsync(ListProducts.Query query, CancellationToken cancellationToken)
     {
         var objectStorageBaseUrl = configuration["AzureBlobStorage:PublicBaseUrl"]
                                    ?? throw new InvalidOperationException(
                                        "Missing AzureBlobStorage:PublicBaseUrl configuration.");
         
-        CategoryDto? category = null;
+        ListProducts.CategoryDto? category = null;
 
         if (query.CategoryId is not null)
         {
             category = await context.Categories
-                .Select(cat => new CategoryDto
-                {
-                    Id = cat.Id,
-                    Name = cat.Name
-                })
-                .SingleOrDefaultAsync(cat => cat.Id == query.CategoryId, cancellationToken);
+                .Where(cat => cat.Id == query.CategoryId)
+                .Select(cat => new ListProducts.CategoryDto(
+                    cat.Id,
+                    cat.Name))
+                .SingleOrDefaultAsync(cancellationToken);
 
             if (category is null)
                 return null;
@@ -41,25 +38,21 @@ public sealed class EfCoreListProductsQueryService(ApplicationDbContext context,
         var count = await productQuery.CountAsync(cancellationToken);
 
         var products = await productQuery
-            .Select(prod => new ProductDto
-            {
-                Id = prod.Id,
-                Name = prod.Name,
-                Currency = prod.Currency,
-                MinPrice = prod.Variants.Select(variant => variant.Price).Min(),
-                MaxPrice = prod.Variants.Select(variant => variant.Price).Max(),
-                ImageUrl = $"{objectStorageBaseUrl.Trim('/')}/{prod.Images.Single(image => image.IsPrimary).ObjectKey}"
-            })
+            .Select(prod => new ListProducts.ProductDto(
+                prod.Id,
+                prod.Name,
+                prod.Variants.Select(variant => variant.Price).Min(),
+                prod.Variants.Select(variant => variant.Price).Max(),
+                prod.Currency,
+                $"{objectStorageBaseUrl.Trim('/')}/{prod.Images.Single(image => image.IsPrimary).ObjectKey}"))
             .Skip((query.Page-1) * query.Size)
             .Take(query.Size)
             .ToListAsync(cancellationToken);
 
-        return new Response
-        {
-            Category = category,
-            Page = query.Page,
-            TotalCount = count,
-            Products = products
-        };
+        return new ListProducts.Response(
+            category,
+            query.Page,
+            count,
+            products);
     }
 }

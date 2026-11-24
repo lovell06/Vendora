@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Products.ListByIds;
+using Vendora.Services.Catalog.Application.Products;
 
 namespace Vendora.Services.Catalog.Api.Products.ListByIds;
 
@@ -8,8 +8,8 @@ public sealed class ListProductsByIdsRequest
 
     public required List<long> ProductVariantIds { get; init; }
 
-    public Query ToQuery()
+    public ListProductsByIds.Query ToQuery()
     {
-        return new Query { ProductVariantReferences = ProductVariantIds };
+        return new ListProductsByIds.Query(ProductVariantIds);
     }
 }

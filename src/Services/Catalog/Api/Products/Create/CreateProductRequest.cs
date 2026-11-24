@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Products.Create;
+using Vendora.Services.Catalog.Application.Products;
 
 namespace Vendora.Services.Catalog.Api.Products.Create;
 
@@ -11,30 +11,25 @@ public sealed class CreateProductRequest
     public int CategoryId { get; init; }
     public required string Currency { get; init; }
     public bool IsVisible { get; init; }
-    public required IReadOnlyList<ProductVariantDto> ProductVariants { get; init; }
+    public required IReadOnlyList<CreateProduct.ProductVariantDto> ProductVariants { get; init; }
     public required IReadOnlyList<IFormFile> Images { get; init; }
 
-    public Command ToCommand()
+    public CreateProduct.Command ToCommand()
     {
-        return new Command
-        {
-            Name = Name,
-            Description = Description,
-            Brand = Brand,
-            CategoryId = CategoryId,
-            Currency = Currency,
-            IsVisible = IsVisible,
-            ProductVariants = ProductVariants,
-            ProductImageUploads =
+        return new CreateProduct.Command(
+            Name,
+            Description,
+            Brand,
+            CategoryId,
+            Currency,
+            IsVisible,
+            ProductVariants,
             [
-                .. Images.Select((file, index) => new ProductImageUploadDto()
-                {
-                    OpenReadStream = file.OpenReadStream,
-                    ContentType = file.ContentType,
-                    SizeBytes = file.Length,
-                    IsPrimary = index == 0
-                })
-            ]
-        };
+                .. Images.Select((file, index) => new CreateProduct.ProductImageUploadDto(
+                    file.OpenReadStream,
+                    file.ContentType,
+                    file.Length,
+                    index == 0))
+            ]);
     }
 }

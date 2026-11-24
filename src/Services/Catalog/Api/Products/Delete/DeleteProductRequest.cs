@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Products.Delete;
+using Vendora.Services.Catalog.Application.Products;
 
 namespace Vendora.Services.Catalog.Api.Products.Delete;
 
@@ -8,11 +8,8 @@ public sealed class DeleteProductRequest
 
     public long Id { get; init; }
 
-    public Command ToCommand()
+    public DeleteProduct.Command ToCommand()
     {
-        return new Command
-        {
-            Id = Id
-        };
+        return new DeleteProduct.Command(Id);
     }
 }

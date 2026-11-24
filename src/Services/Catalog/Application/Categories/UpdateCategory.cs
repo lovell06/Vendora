@@ -1,0 +1,38 @@
+namespace Vendora.Services.Catalog.Application.Categories;
+
+public static class UpdateCategory
+{
+    public sealed record Command(int Id, string Name) : ICommand;
+
+    public sealed class Handler(
+        ICategoryRepository categoryRepository,
+        IUnitOfWork unitOfWork,
+        ILogger<Handler> logger,
+        TimeProvider clock) : ICommandHandler<Command>
+    {
+        public async Task<Result> Handle(Command cmd, CancellationToken cancellationToken)
+        {
+            var utcNow = clock.GetUtcNow();
+
+            var category = await categoryRepository.GetByIdAsync(cmd.Id, cancellationToken);
+
+            if (category is null)
+            {
+                logger.LogWarning("Cateogory update rejected because category does not exist.");
+
+                return Result.Failure(new Error
+                {
+                    Code = "category_update.failed",
+                    Message = "Category is not found.",
+                    Type = ErrorType.NotFound
+                });
+            }
+
+            category.Rename(cmd.Name, utcNow);
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
+        }
+    }
+}

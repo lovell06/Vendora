@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Categories.Update;
+using Vendora.Services.Catalog.Application.Categories;
 
 namespace Vendora.Services.Catalog.Api.Categories.Update;
 
@@ -9,12 +9,8 @@ public sealed class UpdateCategoryRequest
     public int Id { get; init; }
     public required string Name { get; init; }
 
-    public Command ToCommand()
+    public UpdateCategory.Command ToCommand()
     {
-        return new Command
-        {
-            Id = Id,
-            Name = Name
-        };
+        return new UpdateCategory.Command(Id, Name);
     }
 }

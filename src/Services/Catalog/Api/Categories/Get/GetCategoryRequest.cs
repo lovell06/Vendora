@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Categories.Get;
+using Vendora.Services.Catalog.Application.Categories;
 
 namespace Vendora.Services.Catalog.Api.Categories.Get;
 
@@ -8,11 +8,8 @@ public sealed class GetCategoryRequest
 
     public int Id { get; init; }
 
-    public Query ToQuery()
+    public GetCategory.Query ToQuery()
     {
-        return new Query
-        {
-            Id = Id
-        };
+        return new GetCategory.Query(Id);
     }
 }

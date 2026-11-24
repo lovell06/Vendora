@@ -1,27 +1,21 @@
-using Vendora.Services.Catalog.Application.Products.ListByIds;
-
 namespace Vendora.Services.Catalog.Infrastructure.Queries.Products;
 
-public sealed class EfCoreListProductsByIdsQueryService(ApplicationDbContext context) : IListProductsByIdsQueryService
+public sealed class EfCoreListProductsByIdsQueryService(ApplicationDbContext context) : ListProductsByIds.IQueryService
 {
-    public async Task<Response> ExecuteAsync(Query query, CancellationToken ct)
+    public async Task<ListProductsByIds.Response> ExecuteAsync(ListProductsByIds.Query query, CancellationToken ct)
     {
-        return new Response
-        {
-            ProductVariants = await context.ProductVariants
+        return new ListProductsByIds.Response(
+            await context.ProductVariants
                 .AsNoTracking()
                 .Where(variant => query.ProductVariantReferences.Contains(variant.Id))
-                .Select(variant => new ProductVariantDto
-                {
-                    ProductId = variant.Product!.Id,
-                    VariantId = variant.Id,
-                    Sku = variant.Sku,
-                    ProductName = variant.Product!.Name,
-                    VariantName = variant.Name,
-                    Price = variant.Price,
-                    Currency = variant.Product!.Currency
-                })
-                .ToListAsync(ct)
-        };
+                .Select(variant => new ListProductsByIds.ProductVariantDto(
+                    variant.Product!.Id,
+                    variant.Id,
+                    variant.Product!.Name,
+                    variant.Name,
+                    variant.Sku,
+                    variant.Price,
+                    variant.Product!.Currency))
+                .ToListAsync(ct));
     }
 }

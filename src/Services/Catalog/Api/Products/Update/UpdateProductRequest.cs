@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Products.Update;
+using Vendora.Services.Catalog.Application.Products;
 
 namespace Vendora.Services.Catalog.Api.Products.Update;
 
@@ -11,15 +11,8 @@ public sealed class UpdateProductRequest
     public required string Brand { get; init; }
     public int CategoryId { get; init; }
 
-    public Command ToCommand()
+    public UpdateProduct.Command ToCommand()
     {
-        return new Command
-        {
-            Id = Id,
-            Name = Name,
-            Description = Description,
-            Brand = Brand,
-            CategoryId = CategoryId,
-        };
+        return new UpdateProduct.Command(Id, Name, Description, Brand, CategoryId);
     }
 }

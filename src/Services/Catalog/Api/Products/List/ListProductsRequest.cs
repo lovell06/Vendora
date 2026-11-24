@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Products.List;
+using Vendora.Services.Catalog.Application.Products;
 
 namespace Vendora.Services.Catalog.Api.Products.List;
 
@@ -9,13 +9,8 @@ public sealed class ListProductsRequest
     public int Page { get; init; }
     public int Size { get; init; }
 
-    public Query ToQuery()
+    public ListProducts.Query ToQuery()
     {
-        return new Query
-        {
-            CategoryId = CategoryId,
-            Page = Page,
-            Size = Size
-        };
+        return new ListProducts.Query(CategoryId, Page, Size);
     }
 }

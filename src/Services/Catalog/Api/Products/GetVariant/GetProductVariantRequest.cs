@@ -1,4 +1,4 @@
-using Vendora.Services.Catalog.Application.Products.GetVariant;
+using Vendora.Services.Catalog.Application.Products;
 
 namespace Vendora.Services.Catalog.Api.Products.GetVariant;
 
@@ -8,8 +8,8 @@ public sealed class GetProductVariantRequest
 
     public required long ProductVariantId { get; init; }
 
-    public Query ToQuery()
+    public GetProductVariant.Query ToQuery()
     {
-        return new Query { ProductVariantId = ProductVariantId };
+        return new GetProductVariant.Query(ProductVariantId);
     }
 }

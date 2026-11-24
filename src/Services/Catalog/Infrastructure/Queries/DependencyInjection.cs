@@ -6,12 +6,12 @@ public static class DependencyInjection
     {
         public IServiceCollection AddQueryServices()
         {
-            services.AddScoped<IListProductsQueryService, EfCoreListProductsQueryService>();
-            services.AddScoped<IGetProductQueryService, EfCoreGetProductQueryService>();
-            services.AddScoped<IListCategoriesQueryService, EfCoreListCategoriesQuerySerivce>();
-            services.AddScoped<IGetCategoryQueryService, EfCoreGetCategoryQueryService>();
-            services.AddScoped<IListProductsByIdsQueryService, EfCoreListProductsByIdsQueryService>();
-            services.AddScoped<IGetProductVariantQueryService, EfCoreGetVariantQueryService>();
+            services.AddScoped<ListProducts.IQueryService, EfCoreListProductsQueryService>();
+            services.AddScoped<GetProduct.IQueryService, EfCoreGetProductQueryService>();
+            services.AddScoped<ListCategories.IQueryService, EfCoreListCategoriesQuerySerivce>();
+            services.AddScoped<GetCategory.IQueryService, EfCoreGetCategoryQueryService>();
+            services.AddScoped<ListProductsByIds.IQueryService, EfCoreListProductsByIdsQueryService>();
+            services.AddScoped<GetProductVariant.IQueryService, EfCoreGetVariantQueryService>();
         
             return services;
         }

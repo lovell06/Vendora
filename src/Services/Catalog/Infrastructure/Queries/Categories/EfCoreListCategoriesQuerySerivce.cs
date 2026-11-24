@@ -1,10 +1,8 @@
-using Vendora.Services.Catalog.Application.Categories.List;
-
 namespace Vendora.Services.Catalog.Infrastructure.Queries.Categories;
 
-public sealed class EfCoreListCategoriesQuerySerivce(ApplicationDbContext context) : IQueryService
+public sealed class EfCoreListCategoriesQuerySerivce(ApplicationDbContext context) : ListCategories.IQueryService
 {
-    public async Task<Response> ExecuteAsync(Query query, CancellationToken cancellationToken)
+    public async Task<ListCategories.Response> ExecuteAsync(ListCategories.Query query, CancellationToken cancellationToken)
     {
         var categoryQuery = context.Categories
             .AsNoTracking()
@@ -15,18 +13,14 @@ public sealed class EfCoreListCategoriesQuerySerivce(ApplicationDbContext contex
         var categories = await categoryQuery
             .Skip((query.Page-1) * query.Size)
             .Take(query.Size)
-            .Select(category => new CategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name
-            })
+            .Select(category => new ListCategories.CategoryDto(
+                category.Id,
+                category.Name))
             .ToListAsync(cancellationToken);
 
-        return new Response
-        {
-            Page = query.Page,
-            TotalCount = totalCount,
-            Categories = categories
-        };
+        return new ListCategories.Response(
+            query.Page,
+            totalCount,
+            categories);
     }
 }
