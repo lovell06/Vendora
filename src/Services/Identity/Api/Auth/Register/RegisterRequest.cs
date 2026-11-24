@@ -1,4 +1,4 @@
-using Vendora.Services.Identity.Application.Authentication.Register;
+using Vendora.Services.Identity.Application.Authentication;
 
 namespace Vendora.Services.Identity.Api.Auth.Register;
 
@@ -11,14 +11,12 @@ public sealed class RegisterRequest
     public required string FullName { get; init; }
     public required string PhoneNumber { get; init; }
 
-    public Command ToCommand()
+    public RegisterUser.Command ToCommand()
     {
-        return new Command
-        {
-            Email = Email,
-            FullName = FullName,
-            Password = Password,
-            PhoneNumber = PhoneNumber
-        };
+        return new RegisterUser.Command(
+            Email,
+            Password,
+            FullName,
+            PhoneNumber);
     }
 }

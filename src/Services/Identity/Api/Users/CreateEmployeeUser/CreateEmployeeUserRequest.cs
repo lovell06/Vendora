@@ -1,4 +1,4 @@
-using Vendora.Services.Identity.Application.Users.CreateEmployeeUser;
+using Vendora.Services.Identity.Application.Users;
 
 namespace Vendora.Services.Identity.Api.Users.CreateEmployeeUser;
 
@@ -11,14 +11,12 @@ public sealed class CreateEmployeeUserRequest
     public required string FullName { get; init; }
     public required string PhoneNumber { get; init; }
 
-    public Command ToCommand()
+    public CreateEmployee.Command ToCommand()
     {
-        return new Command
-        {
-            Email = Email,
-            Password = Password,
-            FullName = FullName,
-            PhoneNumber = PhoneNumber
-        };
+        return new CreateEmployee.Command(
+            Email,
+            Password,
+            FullName,
+            PhoneNumber);
     }
 }

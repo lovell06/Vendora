@@ -1,0 +1,82 @@
+namespace Vendora.Services.Identity.Application.Authentication;
+
+public static class VerifyUserEmail
+{
+    public sealed record Command(Guid UserId, string Token) : ICommand;
+
+    public class Handler(
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
+        IEmailVerificationTokenProvider tokenProvider,
+        ILogger<Handler> logger,
+        TimeProvider clock) : ICommandHandler<Command>
+    {
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
+        {
+            var now = clock.GetUtcNow();
+
+            if (command.UserId == Guid.Empty)
+            {
+                return Result.Failure(new Error
+                {
+                    Code = "email_verification.user_id_empty",
+                    Message = "User id required.",
+                    Type = ErrorType.Validation
+                });
+            }
+
+            if (string.IsNullOrWhiteSpace(command.Token))
+            {
+                return Result.Failure(new Error
+                {
+                    Code = "email_verification.token_empty",
+                    Message = "Email verification token is required.",
+                    Type = ErrorType.Validation
+                });
+            }
+
+            var user = await userRepository.GetByIdAsync(command.UserId, cancellationToken);
+
+            if (user is null)
+            {
+                logger.LogWarning(
+                    "Email verification rejected because user: {userId} is not registered.",
+                    command.UserId);
+
+                return Result.Failure(new Error
+                {
+                    Code = "email_verification.failed",
+                    Message = "The email verification token is invalid or expired.",
+                    Type = ErrorType.Unauthorized
+                });
+            }
+
+            var isValid = await tokenProvider.ValidateAsync(
+                userId: user.Id, 
+                token: command.Token, 
+                cancellationToken: cancellationToken);
+
+            if (!isValid)
+            {
+                logger.LogWarning(
+                    "Email verification rejected for user: {userId}.", 
+                    user.Id);
+
+                return Result.Failure(new Error
+                {
+                    Code = "email_verification.failed",
+                    Message = "The email verification token is invalid or expired.",
+                    Type = ErrorType.Unauthorized
+                });
+            }
+
+            user.VerifyEmail(now);
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await tokenProvider.RevokeAsync(user.Id, cancellationToken);
+
+            return Result.Success();
+        }
+    }
+}

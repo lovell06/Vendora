@@ -1,4 +1,4 @@
-using Vendora.Services.Identity.Application.Authentication.Login;
+using Vendora.Services.Identity.Application.Authentication;
 
 namespace Vendora.Services.Identity.Api.Auth.Login;
 
@@ -9,12 +9,10 @@ public sealed class LoginRequest
     public required string Email { get; init; }
     public required string Password { get; init; }
 
-    public Command ToCommand()
+    public LoginUser.Command ToCommand()
     {
-        return new Command
-        {
-            Email = Email,
-            Password = Password
-        };
+        return new LoginUser.Command(
+            Email,
+            Password);
     }
 }
