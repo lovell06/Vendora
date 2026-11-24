@@ -25,10 +25,13 @@ public sealed class EfCoreGetProductQueryService(ApplicationDbContext context, I
                 product.Currency,
                 product.Status.ToString(),
                 product.Variants.Select(variant => new GetProduct.ProductVariantDto(
+                    variant.Id,
                     variant.Sku,
                     variant.Name,
                     variant.Price,
-                    variant.ImageAssignments.Select(image => image.ProductImageId).ToList())).ToList(),
+                    variant.ImageAssignments.Select(image => image.ProductImageId).ToList(),
+                    false,
+                    0)).ToList(),
                 product.Images.Select(image => new GetProduct.ProductImageDto(
                     image.Id,
                     $"{publicBaseUrl}/{image.ObjectKey.Trim('/')}",

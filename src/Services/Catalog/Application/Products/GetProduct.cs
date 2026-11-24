@@ -22,10 +22,13 @@ public static class GetProduct
     public sealed record ProductImageDto(long Id, string Url, int SortOrder);
 
     public sealed record ProductVariantDto(
+        long Id,
         string Sku,
         string Name,
         decimal Price,
-        IReadOnlyList<long> ImageIds);
+        IReadOnlyList<long> ImageIds,
+        bool InStock = false,
+        int AvailableQuantity = 0);
 
     public sealed record CategoryDto(int Id, string Name);
 
@@ -55,12 +58,33 @@ public static class GetProduct
                 });
             }
 
-            var availabilityResult = await inventoryClient.CheckAvailabilityAsync(product.Id, cancellationToken);
+            var variants = new List<ProductVariantDto>(product.Variants.Count);
 
-            if (availabilityResult.IsFailure)
+            foreach (var variant in product.Variants)
+            {
+                var availabilityResult = await inventoryClient.CheckAvailabilityAsync(variant.Id, cancellationToken);
+
+                if (availabilityResult.IsSuccess)
+                {
+                    variants.Add(variant with
+                    {
+                        InStock = availabilityResult.Value.IsAvailable,
+                        AvailableQuantity = availabilityResult.Value.AvailableQuantity
+                    });
+                    continue;
+                }
+
+                // Variant has no inventory record yet: treat as out of stock.
+                if (availabilityResult.Error.Type == ErrorType.NotFound)
+                {
+                    variants.Add(variant);
+                    continue;
+                }
+
                 return Result<Response>.Failure(availabilityResult.Error);
+            }
 
-            return Result<Response>.Success(new Response(product));
+            return Result<Response>.Success(new Response(product with { Variants = variants }));
         }
     }
 }

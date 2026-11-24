@@ -35,6 +35,13 @@ public sealed class EfCoreListProductsQueryService(ApplicationDbContext context,
                 .Where(prod => prod.CategoryId == query.CategoryId);
         }
 
+        if (!string.IsNullOrWhiteSpace(query.Search))
+        {
+            var term = query.Search.Trim().ToLower();
+            productQuery = productQuery
+                .Where(prod => prod.Name.ToLower().Contains(term));
+        }
+
         var count = await productQuery.CountAsync(cancellationToken);
 
         var products = await productQuery

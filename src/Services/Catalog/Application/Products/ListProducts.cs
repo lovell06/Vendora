@@ -2,7 +2,7 @@ namespace Vendora.Services.Catalog.Application.Products;
 
 public static class ListProducts
 {
-    public sealed record Query(int? CategoryId, int Page, int Size) : IQuery<Response>;
+    public sealed record Query(int? CategoryId, int Page, int Size, string? Search = null) : IQuery<Response>;
 
     public sealed record Response(
         CategoryDto? Category,

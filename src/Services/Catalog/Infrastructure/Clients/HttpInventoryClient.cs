@@ -2,10 +2,10 @@ namespace Vendora.Services.Catalog.Infrastructure.Clients;
 
 public sealed class HttpInventoryClient(HttpClient client) : IInventoryClient
 {
-    public async Task<Result<CheckAvailabilityResult>> CheckAvailabilityAsync(long productId, CancellationToken cancellationToken)
+    public async Task<Result<CheckAvailabilityResult>> CheckAvailabilityAsync(long productVariantId, CancellationToken cancellationToken)
     {
         var response = await client.GetAsync(
-            $"/api/inventory-items/{productId}/availability",
+            $"/api/inventory-items/{productVariantId}/availability",
             cancellationToken);
         
         if (!response.IsSuccessStatusCode)
