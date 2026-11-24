@@ -1,0 +1,39 @@
+@inherits LayoutComponentBase
+@inject UserSession Session
+@inject GatewayClient Gateway
+@inject NavigationManager Navigation
+
+<MudLayout>
+    <MudAppBar Elevation="1" Dense="true">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                       OnClick="ToggleDrawer" aria-label="Mở hoặc đóng menu" />
+        <MudText Typo="Typo.h6" Class="ms-2">Vendora Admin</MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.body2" Class="me-3 d-none d-sm-flex">@Session.DisplayName</MudText>
+        <MudButton Href="/" Variant="Variant.Text" Color="Color.Inherit" Class="me-2">Cửa hàng</MudButton>
+        <MudButton Variant="Variant.Outlined" Color="Color.Inherit" OnClick="SignOutAsync">Đăng xuất</MudButton>
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" ClipMode="DrawerClipMode.Docked">
+        <AdminNavMenu />
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6 px-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+
+    private async Task SignOutAsync()
+    {
+        await Gateway.LogoutAsync();
+        await Session.SignOutAsync();
+        Navigation.NavigateTo("/");
+    }
+}

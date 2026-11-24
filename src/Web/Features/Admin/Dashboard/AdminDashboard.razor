@@ -1,0 +1,10 @@
+@page "/admin"
+@inject UserSession Session
+
+<PageTitle>Tổng quan · Vendora Admin</PageTitle>
+
+<AdminPageHeader Title="Tổng quan" />
+
+<MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+    Số liệu tổng quan sẽ được thêm ở giai đoạn G4. Bạn đang đăng nhập với vai trò @(Session.Current?.Role ?? "").
+</MudAlert>

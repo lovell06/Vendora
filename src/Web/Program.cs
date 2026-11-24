@@ -1,8 +1,12 @@
 using Microsoft.Extensions.Options;
 using MudBlazor.Services;
+using Microsoft.AspNetCore.Components.Authorization;
+using Vendora.Web.Authentication;
 using Vendora.Web.Gateway;
 using Vendora.Web.Components.Theming;
 using Vendora.Web.Components;
+using Vendora.Web.Components.UI.Layout;
+using Vendora.Web.Features.Cart;
 
 var builder = WebApplication.CreateBuilder(args);
 

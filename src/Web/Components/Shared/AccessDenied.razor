@@ -1,0 +1,21 @@
+@using Vendora.Web.Gateway
+@inject UserSession Session
+@inject NavigationManager Navigation
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="py-12">
+    @if (Session.IsAuthenticated)
+    {
+        <h1 class="mud-typography mud-typography-h5 mb-4">Bạn không có quyền truy cập trang này</h1>
+        <MudButton Href="/" Variant="Variant.Outlined" Color="Color.Primary">Về cửa hàng</MudButton>
+    }
+    else
+    {
+        <h1 class="mud-typography mud-typography-h5 mb-4">Vui lòng đăng nhập để tiếp tục</h1>
+        <MudButton Href="@LoginUrl" Variant="Variant.Filled" Color="Color.Primary">Đăng nhập</MudButton>
+    }
+</MudContainer>
+
+@code {
+    private string LoginUrl =>
+        "/login?returnUrl=" + Uri.EscapeDataString("/" + Navigation.ToBaseRelativePath(Navigation.Uri));
+}

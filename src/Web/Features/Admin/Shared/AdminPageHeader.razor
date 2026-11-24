@@ -1,0 +1,12 @@
+<div class="d-flex align-center justify-space-between flex-wrap gap-3 mb-6">
+    <h1 class="mud-typography mud-typography-h4 ma-0">@Title</h1>
+    @if (Actions is not null)
+    {
+        <div class="d-flex gap-2">@Actions</div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment? Actions { get; set; }
+}
