@@ -5,12 +5,16 @@ services:
       dockerfile: src/ApiGateway/Dockerfile
     env_file:
       - composes/shared/environments/aspnetcore.env
+      - composes/apigateway/environments/jwt.env
+      - composes/apigateway/environments/redis.env
     healthcheck:
       test: curl -sSL http://localhost:8080/health/
       interval: 5s
       timeout: 5s
       retries: 10
       start_period: 5s
+    secrets:
+      - jwt_public_key
     depends_on:
       identity-api:
         condition: service_healthy
