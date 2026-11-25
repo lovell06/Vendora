@@ -9,8 +9,15 @@ public static class DependencyInjection
             services.AddPasswordHashProvider();
             services.AddAccessTokenProvider();
             services.AddRefreshTokenProvider();
+            services.AddCurrentUserService();
         
             return services;
+        }
+
+        public IServiceCollection AddCurrentUserService()
+        {
+            services.AddHttpContextAccessor();
+            return services.AddScoped<ICurrentUser, CurrentUser>();
         }
 
         public IServiceCollection AddPasswordHashProvider()

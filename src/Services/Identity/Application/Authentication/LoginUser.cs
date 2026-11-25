@@ -4,7 +4,7 @@ public static class LoginUser
 {
     public sealed record Command(string Email, string Password) : ICommand<Response>;
 
-    public sealed record Response(Guid UserId, string AccessToken, string RefreshToken);
+    public sealed record Response(Guid UserId, string AccessToken, RefreshToken RefreshToken);
 
     public class Handler(
         IUserRepository userRepository,
@@ -15,6 +15,9 @@ public static class LoginUser
     {
         public async Task<Result<Response>> Handle(Command command, CancellationToken cancellationToken)
         {
+            if (!await userRepository.IsEmailVerification(command.Email, cancellationToken))
+                return Result<Response>.Failure(Error.Unauthorized());
+            
             var user = await userRepository.GetByEmailAsync(command.Email, cancellationToken);
 
             if (user is null)

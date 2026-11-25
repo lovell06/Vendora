@@ -2,9 +2,12 @@ namespace Vendora.Services.Identity.Infrastructure.Authentication;
 
 public class JsonWebTokenProvider(
     IOptions<JwtOptions> options,
+    ICurrentUser currentUserService,
+    IConnectionMultiplexer multiplexer,
     TimeProvider clock) : IAccessTokenProvider
 {
     private readonly JwtOptions _jwt = options.Value;
+    private readonly IDatabase _database = multiplexer.GetDatabase();
     public string Issue(User user)
     {
         var utcNow = clock.GetUtcNow().UtcDateTime;
@@ -38,5 +41,18 @@ public class JsonWebTokenProvider(
         };
 
         return new JsonWebTokenHandler().CreateToken(descriptor);
+    }
+
+    public async Task RevokeAsync(Guid tokenId, CancellationToken ct)
+    {
+        var ttl = currentUserService.GetExpirationDateTime() - clock.GetUtcNow();
+
+        if (ttl < TimeSpan.Zero)
+            return;
+
+        await _database.StringSetAsync(
+            key: RedisKeys.AccessTokenBlackList(tokenId),
+            value: "1",
+            expiry: ttl);
     }
 }

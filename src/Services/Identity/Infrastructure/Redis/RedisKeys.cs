@@ -7,6 +7,9 @@ public static class RedisKeys
     public static string EmailVerification(Guid userId)
         => $"{Prefix}:email-verification:{userId}";
 
-    public static string RefreshToken(Guid userId)
-        => $"{Prefix}:refresh-token:{userId}";
+    public static string RefreshToken(Guid userId, Guid refreshTokenId)
+        => $"{Prefix}:refresh-token:{userId}:{refreshTokenId}";
+
+    public static string AccessTokenBlackList(Guid tokenId) 
+        => $"{Prefix}:access-token:black-list:{tokenId}";
 }
