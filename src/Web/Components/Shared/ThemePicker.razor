@@ -1,14 +1,14 @@
 @implements IDisposable
 @inject ThemeState ThemeState
 
-<MudMenu Label="@Label" StartIcon="@ThemeIcon" EndIcon="@Icons.Material.Outlined.ExpandMore" AriaLabel="Color theme" Size="Size.Small" Variant="Variant.Text" Color="Color.Inherit" Dense="true" Class="theme-picker" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
-    <MudMenuItem Icon="@Icons.Material.Outlined.SettingsBrightness" OnClick="@(() => SelectTheme("system"))">System @Selected("system")</MudMenuItem>
-    <MudMenuItem Icon="@Icons.Material.Outlined.LightMode" OnClick="@(() => SelectTheme("light"))">Light @Selected("light")</MudMenuItem>
-    <MudMenuItem Icon="@Icons.Material.Outlined.DarkMode" OnClick="@(() => SelectTheme("dark"))">Dark @Selected("dark")</MudMenuItem>
+<MudMenu Label="@Label" StartIcon="@ThemeIcon" EndIcon="@Icons.Material.Outlined.ExpandMore" AriaLabel="@L["Color theme"]" Size="Size.Small" Variant="Variant.Text" Color="Color.Inherit" Dense="true" Class="theme-picker" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+    <MudMenuItem Icon="@Icons.Material.Outlined.SettingsBrightness" OnClick="@(() => SelectTheme("system"))">@L["System"] @Selected("system")</MudMenuItem>
+    <MudMenuItem Icon="@Icons.Material.Outlined.LightMode" OnClick="@(() => SelectTheme("light"))">@L["Light"] @Selected("light")</MudMenuItem>
+    <MudMenuItem Icon="@Icons.Material.Outlined.DarkMode" OnClick="@(() => SelectTheme("dark"))">@L["Dark"] @Selected("dark")</MudMenuItem>
 </MudMenu>
 
 @code {
-    private string Label => ThemeState.Preference switch { "light" => "Light", "dark" => "Dark", _ => "System" };
+    private string Label => ThemeState.Preference switch { "light" => L["Light"], "dark" => L["Dark"], _ => L["System"] };
     private string ThemeIcon => ThemeState.Preference switch
     {
         "light" => Icons.Material.Outlined.LightMode,
@@ -23,7 +23,7 @@
             builder.AddAttribute(1, "Icon", Icons.Material.Filled.Check);
             builder.AddAttribute(2, "Size", Size.Small);
             builder.AddAttribute(3, "Class", "theme-selected");
-            builder.AddAttribute(4, "aria-label", "Selected");
+            builder.AddAttribute(4, "aria-label", L["Selected"].Value);
             builder.CloseComponent();
         }
     };

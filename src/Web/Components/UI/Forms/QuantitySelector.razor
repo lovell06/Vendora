@@ -1,17 +1,18 @@
 @using System.Globalization
 
 <div class="quantity-selector @Class">
-    <label class="quantity-label" for="@Id">@Label</label>
+    <label class="quantity-label" for="@Id">@LabelText</label>
     <div class="quantity-control">
-        <MudIconButton Icon="@Icons.Material.Outlined.Remove" Size="Size.Small" Disabled="@(Unavailable || _current <= Min)" OnClick="@(() => MoveAsync(-1))" Class="quantity-step" aria-label="@($"Decrease {Label.ToLowerInvariant()}")" />
-        <input id="@Id" class="quantity-value" type="number" inputmode="numeric" min="@Min" max="@Max" step="@Step" @bind="_text" @bind:after="CommitAsync" disabled="@Unavailable" aria-label="@Label" />
-        <MudIconButton Icon="@Icons.Material.Outlined.Add" Size="Size.Small" Disabled="@(Unavailable || _current >= Max)" OnClick="@(() => MoveAsync(1))" Class="quantity-step quantity-increase" aria-label="@($"Increase {Label.ToLowerInvariant()}")" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Remove" Size="Size.Small" Disabled="@(Unavailable || _current <= Min)" OnClick="@(() => MoveAsync(-1))" Class="quantity-step" aria-label="@L["Decrease {0}", LabelText.ToLowerInvariant()]" />
+        <input id="@Id" class="quantity-value" type="number" inputmode="numeric" min="@Min" max="@Max" step="@Step" @bind="_text" @bind:after="CommitAsync" disabled="@Unavailable" aria-label="@LabelText" />
+        <MudIconButton Icon="@Icons.Material.Outlined.Add" Size="Size.Small" Disabled="@(Unavailable || _current >= Max)" OnClick="@(() => MoveAsync(1))" Class="quantity-step quantity-increase" aria-label="@L["Increase {0}", LabelText.ToLowerInvariant()]" />
     </div>
 </div>
 
 @code {
     [Parameter] public string Id { get; set; } = $"quantity-{Guid.NewGuid():N}";
-    [Parameter] public string Label { get; set; } = "Quantity";
+    [Parameter] public string? Label { get; set; }
+    private string LabelText => Label ?? L["Quantity"];
     [Parameter] public int Value { get; set; } = 1;
     [Parameter] public EventCallback<int> ValueChanged { get; set; }
     [Parameter] public int Min { get; set; } = 1;

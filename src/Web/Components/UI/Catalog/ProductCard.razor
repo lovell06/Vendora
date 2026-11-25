@@ -1,35 +1,50 @@
 @using Vendora.Web.Components.UI.Buttons
 
 <article class="product-card">
-    <MudCard Elevation="0" Class="product-card-surface">
-        <div class="product-image">
+    <div class="product-card-surface">
+        <div class="product-image-wrap">
             @if (!string.IsNullOrWhiteSpace(ImageUrl) && !_imageFailed)
             {
                 <img src="@ImageUrl" alt="@(ImageAlt ?? Name)" width="480" height="480" loading="lazy" decoding="async" @onerror="() => _imageFailed = true" />
             }
             else
             {
-                <div class="image-fallback" role="img" aria-label="Product image unavailable"><MudIcon Icon="@Icons.Material.Outlined.Inventory2" aria-hidden="true" /></div>
+                <div class="image-fallback" role="img" aria-label="@L["Product image unavailable"]"><MudIcon Icon="@Icons.Material.Outlined.Inventory2" aria-hidden="true" /></div>
             }
-            @if (InStock == false) { <span class="stock-label">Out of stock</span> }
+            @if (InStock == false)
+            {
+                <span class="stock-badge stock-badge--out">@L["Out of stock"]</span>
+            }
         </div>
-        <MudCardContent Class="product-content">
-            @if (!string.IsNullOrWhiteSpace(Category)) { <p class="product-category">@Category</p> }
+        <div class="product-content">
+            @if (!string.IsNullOrWhiteSpace(Category))
+            {
+                <p class="product-category">@Category</p>
+            }
             <h3 class="product-name">
-                @if (!string.IsNullOrWhiteSpace(DetailsHref)) { <a href="@DetailsHref">@Name</a> }
-                else { @Name }
+                @if (!string.IsNullOrWhiteSpace(DetailsHref))
+                {
+                    <a href="@DetailsHref">@Name</a>
+                }
+                else
+                {
+                    @Name
+                }
             </h3>
-            <p class="product-price">@PriceText</p>
-        </MudCardContent>
+            <div class="product-price-container">
+                <p class="product-price">@PriceText</p>
+            </div>
+        </div>
         @if (OnAddToCart.HasDelegate)
         {
-            <MudCardActions Class="product-actions">
-                <AppButton Class="product-add" Disabled="@(InStock == false)" Busy="@Busy" BusyText="Adding…" OnClick="OnAddToCart" aria-label="@($"Add {Name} to cart")">
-                    @(InStock == false ? "Out of stock" : "Add to cart")
+            <div class="product-actions">
+                <AppButton Class="product-add-btn" Disabled="@(InStock == false)" Busy="@Busy" BusyText="@L["Adding…"]" OnClick="OnAddToCart" aria-label="@L["Add {0} to cart", Name]">
+                    <MudIcon Icon="@Icons.Material.Outlined.AddShoppingCart" Size="Size.Small" />
+                    <span>@(InStock == false ? "Out of stock" : "Add to cart")</span>
                 </AppButton>
-            </MudCardActions>
+            </div>
         }
-    </MudCard>
+    </div>
 </article>
 
 @code {

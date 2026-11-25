@@ -1,8 +1,8 @@
 @page "/not-found"
 @layout StatusLayout
 
-<PageTitle>Page not found | Vendora</PageTitle>
-<StatusPage MinimalOnMobile="true" Code="404" Title="Page not found" Description="This page may have moved or no longer exists. Return home to explore products." Icon="@Icons.Material.Outlined.SearchOff" />
+<PageTitle>@L["Page not found"] | Vendora</PageTitle>
+<StatusPage MinimalOnMobile="true" Code="404" Title="@L["Page not found"]" Description="@L["This page may have moved or no longer exists. Return home to explore products."]" Icon="@Icons.Material.Outlined.SearchOff" />
 
 @code {
     [CascadingParameter] private HttpContext? HttpContext { get; set; }

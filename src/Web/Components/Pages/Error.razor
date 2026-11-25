@@ -1,8 +1,8 @@
 @page "/Error"
 @layout StatusLayout
 
-<PageTitle>Something went wrong | Vendora</PageTitle>
-<StatusPage Code="500" Title="Something went wrong" Description="We couldn’t load this page. Please return home and try again in a moment." Icon="@Icons.Material.Outlined.ErrorOutline" />
+<PageTitle>@L["Something went wrong"] | Vendora</PageTitle>
+<StatusPage Code="500" Title="@L["Something went wrong"]" Description="@L["We couldn’t load this page. Please return home and try again in a moment."]" Icon="@Icons.Material.Outlined.ErrorOutline" />
 
 @code {
     [CascadingParameter] private HttpContext? HttpContext { get; set; }

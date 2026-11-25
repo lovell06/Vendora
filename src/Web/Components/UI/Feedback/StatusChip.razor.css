@@ -1,0 +1,19 @@
+.status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px var(--space-2) 2px 6px;
+    border-radius: var(--shape-full);
+    font-size: var(--type-caption);
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+    background: var(--md-surface-container-high);
+    color: var(--md-on-surface-variant);
+}
+.status-chip ::deep .mud-icon-root { width: 14px; height: 14px; }
+.status-chip--active { background: var(--md-success-container); color: var(--md-on-success-container); }
+.status-chip--discontinued, .status-chip--neutral { background: var(--md-surface-container-high); color: var(--md-on-surface-variant); }
+.status-chip--deleted { background: var(--md-error-container); color: var(--md-on-error-container); }
+.status-chip--outofstock, .status-chip--warning { background: var(--md-warning-container); color: var(--md-on-warning-container); }
+.status-chip--admin, .status-chip--employee, .status-chip--customer { background: var(--md-primary-container); color: var(--md-on-primary-container); }

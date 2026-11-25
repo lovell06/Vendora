@@ -1,15 +1,15 @@
 @using Vendora.Web.Components.UI.Forms
 @using Vendora.Web.Components.UI.Buttons
 
-<MudDialog Class="cart-sheet" AriaLabel="Add to cart">
+<MudDialog Class="cart-sheet" AriaLabel="@L["Add to cart"]">
     <DialogContent>
         <header class="cart-sheet-header">
             <div class="cart-sheet-image">@if (!string.IsNullOrWhiteSpace(ImageUrl)) { <img src="@ImageUrl" alt="" width="64" height="64" /> }</div>
             <div class="cart-sheet-product"><h2>@Name</h2>@if (!string.IsNullOrWhiteSpace(VariantName)) { <p class="cart-sheet-variant">@VariantName</p> }<p>@PriceText</p></div>
-            <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small" OnClick="Cancel" aria-label="Close" />
+            <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small" OnClick="Cancel" aria-label="@L["Close"]" />
         </header>
         <div class="cart-sheet-quantity"><QuantitySelector @bind-Value="_quantity" Min="1" Max="99" /></div>
-        <footer class="cart-sheet-footer"><AppButton OnClick="Confirm" Class="cart-sheet-confirm">Add to cart</AppButton></footer>
+        <footer class="cart-sheet-footer"><AppButton OnClick="Confirm" Class="cart-sheet-confirm">@L["Add to cart"]</AppButton></footer>
     </DialogContent>
 </MudDialog>
 @code {

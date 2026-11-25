@@ -1,0 +1,112 @@
+@implements IDisposable
+@inject IOptions<StoreInfoOptions> StoreOptions
+@inject UserSession Session
+@inject ViewportState Viewport
+@inject NavigationManager Navigation
+
+<footer class="store-footer @(OnCartPage ? "store-footer--cart" : null)">
+    <div class="footer-container">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <BrandLink />
+                @if (!string.IsNullOrWhiteSpace(Info.Description) && !Viewport.IsCompact)
+                {
+                    <p class="footer-desc">@Info.Description</p>
+                }
+                <address class="footer-contact">
+                    @if (!string.IsNullOrWhiteSpace(Info.Hotline))
+                    {
+                        <a href="tel:@PhoneDigits"><MudIcon Icon="@Icons.Material.Outlined.Phone" Size="Size.Small" aria-hidden="true" /> @Info.Hotline</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Info.Email))
+                    {
+                        <a href="mailto:@Info.Email"><MudIcon Icon="@Icons.Material.Outlined.Mail" Size="Size.Small" aria-hidden="true" /> @Info.Email</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Info.Hours) && !Viewport.IsCompact)
+                    {
+                        <span><MudIcon Icon="@Icons.Material.Outlined.Schedule" Size="Size.Small" aria-hidden="true" /> @Info.Hours</span>
+                    }
+                </address>
+                @if (HasSocial && !Viewport.IsCompact)
+                {
+                    <div class="footer-social">@SocialLinks</div>
+                }
+            </div>
+
+            <details class="footer-group" open="@(!Viewport.IsCompact)">
+                <summary>@L["Shop"]</summary>
+                <nav aria-label="@L["Shop"]">
+                    <a href="/">@L["All products"]</a>
+                    @if (Session.IsCustomer) { <a href="/cart">@L["Cart"]</a> }
+                </nav>
+            </details>
+
+            @if (Info.ShowPolicyLinks)
+            {
+                <details class="footer-group" open="@(!Viewport.IsCompact)">
+                    <summary>@L["Support"]</summary>
+                    <nav aria-label="@L["Customer support"]">
+                        <a href="/faq">@L["FAQ"]</a>
+                        <a href="/how-to-buy">@L["How to buy"]</a>
+                        <a href="/contact">@L["Contact"]</a>
+                    </nav>
+                </details>
+                <details class="footer-group" open="@(!Viewport.IsCompact)">
+                    <summary>@L["Policies"]</summary>
+                    <nav aria-label="@L["Policies"]">
+                        <a href="/policies/returns">@L["Returns and refunds"]</a>
+                        <a href="/policies/shipping">@L["Shipping"]</a>
+                        <a href="/policies/payment">@L["Payment"]</a>
+                        <a href="/policies/privacy">@L["Privacy"]</a>
+                        <a href="/terms">@L["Terms of use"]</a>
+                        <a href="/policies/complaints">@L["Complaints"]</a>
+                    </nav>
+                </details>
+            }
+        </div>
+
+        @if (HasSocial && Viewport.IsCompact)
+        {
+            <div class="footer-social">@SocialLinks</div>
+        }
+
+        <div class="footer-legal">
+            <span>
+                @if (!string.IsNullOrWhiteSpace(Info.LegalName)) { <text>@Info.LegalName</text> }
+                @if (!string.IsNullOrWhiteSpace(Info.TaxId)) { <text> · @L["Tax ID"] @Info.TaxId</text> }
+                @if (!string.IsNullOrWhiteSpace(Info.Address)) { <text> · @Info.Address</text> }
+            </span>
+            <span class="footer-copy">© @Year Vendora</span>
+        </div>
+    </div>
+</footer>
+
+@code {
+    private StoreInfoOptions Info => StoreOptions.Value;
+    private int Year => TimeProvider.System.GetLocalNow().Year;
+    private bool OnCartPage => Navigation.ToBaseRelativePath(Navigation.Uri).StartsWith("cart", StringComparison.OrdinalIgnoreCase);
+    private string PhoneDigits => new string(Info.Hotline.Where(c => char.IsDigit(c) || c == '+').ToArray());
+    private bool HasSocial => !string.IsNullOrWhiteSpace(Info.Facebook) || !string.IsNullOrWhiteSpace(Info.Zalo) || !string.IsNullOrWhiteSpace(Info.TikTok);
+
+    private RenderFragment SocialLinks => __builder =>
+    {
+        if (!string.IsNullOrWhiteSpace(Info.Facebook)) { <a href="@Info.Facebook" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Facebook</a> }
+        if (!string.IsNullOrWhiteSpace(Info.Zalo)) { <a href="@Info.Zalo" target="_blank" rel="noopener noreferrer" aria-label="Zalo">Zalo</a> }
+        if (!string.IsNullOrWhiteSpace(Info.TikTok)) { <a href="@Info.TikTok" target="_blank" rel="noopener noreferrer" aria-label="TikTok">TikTok</a> }
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        Viewport.Changed += OnChanged;
+        Session.Changed += OnChanged;
+        await Viewport.EnsureInitializedAsync();
+    }
+
+    private void OnChanged() => _ = InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Viewport.Changed -= OnChanged;
+        Session.Changed -= OnChanged;
+    }
+}

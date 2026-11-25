@@ -1,0 +1,33 @@
+<span class="status-chip status-chip--@Kind.ToString().ToLowerInvariant() @Class">
+    <MudIcon Icon="@IconFor" Size="Size.Small" aria-hidden="true" />
+    <span>@(Label ?? DefaultLabel)</span>
+</span>
+
+@code {
+    [Parameter] public StatusKind Kind { get; set; } = StatusKind.Neutral;
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private string IconFor => Kind switch
+    {
+        StatusKind.Active => Icons.Material.Outlined.CheckCircle,
+        StatusKind.Discontinued => Icons.Material.Outlined.PauseCircle,
+        StatusKind.Deleted => Icons.Material.Outlined.DeleteOutline,
+        StatusKind.OutOfStock => Icons.Material.Outlined.ErrorOutline,
+        StatusKind.Warning => Icons.Material.Outlined.WarningAmber,
+        StatusKind.Admin or StatusKind.Employee or StatusKind.Customer => Icons.Material.Outlined.Badge,
+        _ => Icons.Material.Outlined.Circle
+    };
+
+    private string DefaultLabel => Kind switch
+    {
+        StatusKind.Active => L["Active"],
+        StatusKind.Discontinued => L["Discontinued"],
+        StatusKind.Deleted => L["Deleted"],
+        StatusKind.OutOfStock => L["Out of stock"],
+        StatusKind.Admin => L["Administrator"],
+        StatusKind.Employee => L["Staff"],
+        StatusKind.Customer => L["Customer"],
+        _ => ""
+    };
+}

@@ -1,15 +1,94 @@
 @using Microsoft.AspNetCore.Components.Authorization
+@implements IDisposable
+@inject UserSession Session
+@inject SignOutService SignOut
+@inject NavigationManager Navigation
+
 <header class="store-header">
-    <BrandLink />
-    <nav aria-label="Account">
-        <ThemePicker />
-        <AuthorizeView Roles="Admin,Employee">
-            <MudButton Href="/admin" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button">Quản trị</MudButton>
-        </AuthorizeView>
-        @if (ChildContent is not null) { @ChildContent }
-        else { <MudButton Href="/login" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button">Sign in</MudButton> }
-    </nav>
+    <div class="store-header-inner">
+        <BrandLink />
+        <nav class="store-header-nav" aria-label="@L["Account"]">
+            <LanguagePicker />
+            <ThemePicker />
+            @if (!Session.IsLoaded)
+            {
+                <span class="avatar-skeleton skeleton-shimmer" aria-hidden="true"></span>
+            }
+            else if (Session.IsAuthenticated)
+            {
+                @if (Session.IsCustomer) { <CartButton /> }
+                <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true" Class="account-menu">
+                    <ActivatorContent>
+                        <button type="button" class="avatar-btn" aria-label="@L["Account menu"]" aria-haspopup="menu" @onclick="@(e => context.ToggleAsync(e))">
+                            <UserAvatar Email="@Session.Current?.Email" Size="32" />
+                        </button>
+                    </ActivatorContent>
+                    <ChildContent>
+                        <div class="menu-user-header">
+                            <span class="menu-user-email">@Session.Current?.Email</span>
+                            <span class="menu-user-role">@RoleLabel@(Session.Current?.Role == "Employee" ? " · " + L["View only"] : "")</span>
+                        </div>
+                        <MudDivider />
+                        <MudMenuItem Href="/account" Icon="@Icons.Material.Outlined.Person">@L["Profile"]</MudMenuItem>
+                        <AuthorizeView Roles="Admin,Employee">
+                            <MudMenuItem Href="/admin" Icon="@Icons.Material.Outlined.AdminPanelSettings">@L["Admin area"]</MudMenuItem>
+                        </AuthorizeView>
+                        <MudDivider />
+                        <MudMenuItem Icon="@Icons.Material.Outlined.Logout" IconColor="Color.Error" OnClick="SignOutAsync">@L["Sign out"]</MudMenuItem>
+                    </ChildContent>
+                </MudMenu>
+            }
+            else
+            {
+                <MudButton Href="/register" Variant="Variant.Text" Color="Color.Default" Size="Size.Small" Class="app-button register-link">@L["Register"]</MudButton>
+                <MudButton Href="@LoginHref" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button sign-in-link">@L["Sign in"]</MudButton>
+            }
+            @if (ChildContent is not null) { @ChildContent }
+        </nav>
+    </div>
 </header>
+
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    // Sign in brings the visitor back to the page they were on (except from the home page).
+    private string LoginHref
+    {
+        get
+        {
+            var here = "/" + Navigation.ToBaseRelativePath(Navigation.Uri);
+            return here == "/" ? "/login" : $"/login?returnUrl={Uri.EscapeDataString(here)}";
+        }
+    }
+
+    private string RoleLabel => Session.Current?.Role switch
+    {
+        "Admin" => L["Administrator"],
+        "Employee" => L["Staff"],
+        _ => L["Customer"]
+    };
+
+    protected override void OnInitialized()
+    {
+        Session.Changed += OnSessionChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || Session.IsLoaded) return;
+        await Session.EnsureLoadedAsync();
+        StateHasChanged();
+    }
+
+    private void OnSessionChanged() => _ = InvokeAsync(StateHasChanged);
+
+    private async Task SignOutAsync()
+    {
+        await SignOut.SignOutAsync();
+    }
+
+    public void Dispose()
+    {
+        Session.Changed -= OnSessionChanged;
+    }
 }

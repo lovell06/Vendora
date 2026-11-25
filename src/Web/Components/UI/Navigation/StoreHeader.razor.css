@@ -1,9 +1,91 @@
-.store-header { position: sticky; top: 0; z-index: 10; background: var(--md-surface); display: flex; align-items: center; justify-content: space-between; gap: 24px; max-width: 1280px; margin: auto; padding: 8px 40px; border-bottom: 1px solid var(--md-outline-variant); }
-.store-header nav { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-end; gap: 16px; }
-@media (max-width: 839px) { .store-header { padding: 6px 24px; } }
+.store-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--md-surface) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.store-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 8px 32px;
+}
+
+.store-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border-radius: var(--shape-full);
+  transition: transform var(--motion-fast);
+}
+
+.avatar-btn:hover {
+  transform: scale(1.05);
+}
+
+.avatar-btn:active {
+  transform: scale(0.95);
+}
+
+.menu-user-header {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 16px 10px;
+  gap: 2px;
+}
+
+.menu-user-email {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--md-on-surface);
+  white-space: nowrap;
+}
+
+.menu-user-role {
+  font-size: 0.6875rem;
+  color: var(--md-on-surface-variant);
+}
+
+@media (max-width: 839px) {
+  .store-header-inner { padding: 8px 20px; }
+}
+
 @media (max-width: 599px) {
-  .store-header { padding: 4px 16px; gap: 8px; }
-  .store-header nav { gap: 4px; margin-left: auto; flex-wrap: nowrap; }
-  .store-header ::deep .brand-logo { width: 96px; }
-  .store-header ::deep .app-button svg { width: 18px; height: 18px; }
+  .store-header-inner {
+    padding: 6px 16px;
+  }
+  .store-header ::deep .brand-logo { width: 84px; }
+  .store-header-inner { gap: 8px; }
+  .store-header-nav { gap: 4px; }
+  .store-header ::deep .app-button {
+    padding: 4px 10px;
+    font-size: 0.8125rem;
+  }
+}
+
+.avatar-skeleton {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--shape-full);
+}
+
+@media (max-width: 599px) {
+  .store-header ::deep .register-link { display: none; }
 }

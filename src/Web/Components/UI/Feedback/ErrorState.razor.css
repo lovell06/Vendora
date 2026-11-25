@@ -1,0 +1,10 @@
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-7) var(--space-4);
+    text-align: center;
+}
+.error-state ::deep .error-state__icon { width: 40px; height: 40px; color: var(--md-error); }
+.error-state__msg { margin: 0; font-size: var(--type-body); color: var(--md-on-surface); }

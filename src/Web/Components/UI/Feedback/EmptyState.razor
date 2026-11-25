@@ -1,0 +1,16 @@
+<div class="empty-state" role="status">
+    <MudIcon Icon="@Icon" Class="empty-state__icon" aria-hidden="true" />
+    <h2 class="empty-state__title">@Title</h2>
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <p class="empty-state__desc">@Description</p>
+    }
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public string Icon { get; set; } = Icons.Material.Outlined.Inbox;
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

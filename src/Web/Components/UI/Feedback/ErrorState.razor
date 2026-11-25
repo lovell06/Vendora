@@ -1,0 +1,13 @@
+<div class="error-state" role="alert">
+    <MudIcon Icon="@Icons.Material.Outlined.ErrorOutline" Class="error-state__icon" aria-hidden="true" />
+    <p class="error-state__msg">@(Message ?? L["Could not load data."])</p>
+    @if (OnRetry.HasDelegate)
+    {
+        <AppButton OnClick="@(() => OnRetry.InvokeAsync())">@L["Try again"]</AppButton>
+    }
+</div>
+
+@code {
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public EventCallback OnRetry { get; set; }
+}

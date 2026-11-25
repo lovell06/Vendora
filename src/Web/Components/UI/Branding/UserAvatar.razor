@@ -1,0 +1,32 @@
+<div class="user-avatar @Class" style="width: @(Size)px; height: @(Size)px; font-size: @(FontSize)px;" aria-hidden="true">
+    @Initial
+</div>
+
+@code {
+    [Parameter] public string? Email { get; set; }
+    [Parameter] public int Size { get; set; } = 40;
+    [Parameter] public string? Class { get; set; }
+
+    private string Initial => string.IsNullOrWhiteSpace(Email) ? "U" : Email[0].ToString().ToUpperInvariant();
+    private int FontSize => Size switch
+    {
+        <= 32 => 14,
+        <= 40 => 16,
+        _ => 24
+    };
+}
+
+<style>
+.user-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--shape-full);
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+    font-weight: 700;
+    flex-shrink: 0;
+    user-select: none;
+    line-height: 1;
+}
+</style>

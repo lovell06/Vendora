@@ -1,0 +1,54 @@
+@implements IDisposable
+@inject UserSession Session
+@inject NavigationManager Navigation
+
+@if (_minutes is { } m)
+{
+    <div class="session-banner" role="status">
+        <MudIcon Icon="@Icons.Material.Outlined.WarningAmber" Size="Size.Small" aria-hidden="true" />
+        <span>@(m == 1 ? L["Your session ends in 1 minute. Save your work, then sign in again."] : L["Your session ends in {0} minutes. Save your work, then sign in again.", m])</span>
+    </div>
+}
+
+@code {
+    private const int WarnMinutes = 5;
+    private Timer? _timer;
+    private int? _minutes;
+    private bool _expired;
+
+    protected override void OnInitialized()
+    {
+        Update();
+        _timer = new Timer(_ => _ = InvokeAsync(async () => { Update(); await ExpireIfNeededAsync(); StateHasChanged(); }),
+            null, TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(15));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        await Session.EnsureLoadedAsync();
+        Update();
+        StateHasChanged();
+    }
+
+    private void Update()
+    {
+        if (Session.Current is not { } s) { _minutes = null; return; }
+        var left = s.ExpiresAt - DateTimeOffset.UtcNow;
+        _minutes = left > TimeSpan.Zero && left <= TimeSpan.FromMinutes(WarnMinutes)
+            ? Math.Max(1, (int)Math.Ceiling(left.TotalMinutes))
+            : null;
+    }
+
+    // When the token runs out, end the session and go to /login; the returnUrl brings the user back here.
+    private async Task ExpireIfNeededAsync()
+    {
+        if (_expired || Session.Current is not { } s || s.ExpiresAt > DateTimeOffset.UtcNow) return;
+        _expired = true;
+        var returnUrl = "/" + Navigation.ToBaseRelativePath(Navigation.Uri);
+        await Session.SignOutAsync();
+        Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString(returnUrl)}");
+    }
+
+    public void Dispose() => _timer?.Dispose();
+}
