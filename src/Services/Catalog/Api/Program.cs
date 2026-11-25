@@ -46,11 +46,10 @@ builder.Services
     .AddJwtBearerAuthentication(builder.Configuration)
     .AddApplicationAuthorization();
 
-builder.Logging.AddSimpleConsole(config =>
+builder.Logging.AddSimpleConsole(options =>
 {
-    config.SingleLine = true;
-    config.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
-    config.UseUtcTimestamp = true;
+    options.UseUtcTimestamp = true;
+    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
 });
 
 builder.Services.AddProblemDetails();

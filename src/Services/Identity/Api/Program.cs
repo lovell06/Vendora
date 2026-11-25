@@ -33,9 +33,8 @@ builder.Services
 
 builder.Logging.AddSimpleConsole(options =>
 {
-    options.SingleLine = true;
-    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
     options.UseUtcTimestamp = true;
+    options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
 });
 
 builder.Services.AddProblemDetails();

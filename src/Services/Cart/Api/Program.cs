@@ -17,7 +17,6 @@ builder.Services.AddOpenApi(options =>
 
 builder.Logging.AddSimpleConsole(options =>
 {
-    options.SingleLine = true;
     options.UseUtcTimestamp = true;
     options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
 });

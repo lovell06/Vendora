@@ -6,7 +6,6 @@ builder.Configuration.AddKeyPerFile("/run/secrets/", optional: true);
 
 builder.Logging.AddSimpleConsole(options =>
 {
-    options.SingleLine = true;
     options.UseUtcTimestamp = true;
     options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
 });
