@@ -1,0 +1,51 @@
+.pip { display: grid; gap: var(--space-3); }
+.pip-drop { position: relative; display: flex; flex-direction: column; align-items: center; gap: var(--space-2); padding: var(--space-6) var(--space-4); border: 1px dashed var(--md-outline); border-radius: var(--shape-medium); background: var(--md-surface-container-low); color: var(--md-on-surface-variant); font-size: var(--type-label); text-align: center; cursor: pointer; }
+.pip-drop:hover, .pip-drop:focus-within { border-color: var(--md-primary); }
+.pip-drop--disabled { opacity: .5; cursor: not-allowed; }
+.pip-drop ::deep input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.pip-meta { margin: 0; font-size: var(--type-supporting); color: var(--md-on-surface-variant); font-variant-numeric: tabular-nums; }
+.pip-usage { display: grid; gap: var(--space-1); }
+.pip-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); }
+.pip-bar { height: 6px; border-radius: var(--shape-full); background: var(--md-surface-container-high); overflow: hidden; }
+.pip-bar span { display: block; height: 100%; border-radius: inherit; background: var(--md-primary); transition: width var(--motion-medium) var(--motion-ease); }
+.pip-usage--high .pip-bar span { background: var(--md-warning); }
+.pip-usage--high .pip-meta { color: var(--md-on-surface); }
+.pip-notes { display: grid; gap: var(--space-1); margin: 0; padding: 0; list-style: none; font-size: var(--type-supporting); }
+.pip-notes li { padding: var(--space-2) var(--space-3); border-radius: var(--shape-small); }
+.pip-note--error { background: var(--md-error-container); color: var(--md-on-error-container); }
+.pip-note--ok { background: var(--md-success-container); color: var(--md-on-success-container); }
+@media (prefers-reduced-motion: reduce) { .pip-bar span { transition: none; } }
+.pip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); list-style: none; margin: 0; padding: 0; }
+.pip-item { position: relative; border: var(--border-hairline); border-radius: var(--shape-small); overflow: hidden; background: var(--md-surface-container-high); cursor: grab; transition: transform var(--motion-fast) var(--motion-ease), opacity var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease); }
+.pip-item img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.pip-badge { position: absolute; top: var(--space-2); left: var(--space-2); padding: 2px var(--space-2); border-radius: var(--shape-full); background: var(--md-primary); color: var(--md-on-primary); font-size: var(--type-caption); font-weight: 600; }
+.pip-actions { display: flex; justify-content: center; background: var(--md-surface-container-lowest); border-top: var(--border-hairline); }
+@media (min-width: 600px) { .pip-grid { grid-template-columns: repeat(4, 1fr); } }
+.pip-processing { display: flex; align-items: center; gap: var(--space-2); margin: 0; font-size: var(--type-supporting); color: var(--md-on-surface-variant); }
+
+.pip-hint { margin: 0; font-size: var(--type-supporting); color: var(--md-on-surface-variant); }
+.pip-item:active { cursor: grabbing; }
+.pip-item:hover .pip-handle { opacity: 1; }
+.pip-handle { position: absolute; top: var(--space-2); right: var(--space-2); display: grid; place-items: center; width: 24px; height: 24px; border-radius: var(--shape-xs); background: var(--md-surface-container-lowest); color: var(--md-on-surface-variant); opacity: .85; box-shadow: var(--elevation-overlay); }
+.pip-pos { position: absolute; left: var(--space-2); bottom: calc(var(--space-2) + 40px); min-width: 22px; padding: 0 var(--space-1); border-radius: var(--shape-full); background: var(--md-surface-container-lowest); color: var(--md-on-surface); font-size: var(--type-caption); font-weight: 600; text-align: center; font-variant-numeric: tabular-nums; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+/* Pointer reordering */
+.pip-item { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.pip-item img { pointer-events: none; }
+.pip-handle { touch-action: none; cursor: grab; }
+.pip-grid.is-sorting .pip-item { transition: transform var(--motion-medium) var(--motion-ease); }
+.pip-grid.is-sorting { cursor: grabbing; }
+.pip-item.is-lifted { position: relative; z-index: 3; transition: none !important; cursor: grabbing; box-shadow: var(--elevation-overlay), 0 12px 32px rgb(0 0 0 / .18); outline: 2px solid var(--md-primary); outline-offset: -2px; }
+@media (prefers-reduced-motion: reduce) { .pip-item, .pip-grid.is-sorting .pip-item { transition: none; } }
+
+/* "+" tile: same footprint as an image tile, sits after the last image */
+.pip-add { list-style: none; }
+.pip-add label { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); height: 100%; min-height: 160px; padding: var(--space-3); border: 1.5px dashed var(--md-outline); border-radius: var(--shape-small); background: var(--md-surface-container-low); color: var(--md-on-surface-variant); text-align: center; cursor: pointer; transition: border-color var(--motion-fast) var(--motion-ease), background-color var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease); }
+.pip-add label:hover, .pip-add label:focus-within { border-color: var(--md-primary); background: var(--md-primary-container); color: var(--md-on-primary-container); }
+.pip-add label:focus-within { outline: 2px solid var(--md-primary); outline-offset: 2px; }
+.pip-add ::deep .pip-add__icon { width: 32px; height: 32px; }
+.pip-add__label { font-size: var(--type-label); font-weight: 600; }
+.pip-add__hint { font-size: var(--type-caption); font-variant-numeric: tabular-nums; }
+.pip-add ::deep input[type=file] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.pip-add.is-busy label { cursor: progress; }
+@media (prefers-reduced-motion: reduce) { .pip-add label { transition: none; } }

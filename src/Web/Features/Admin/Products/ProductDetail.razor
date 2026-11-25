@@ -1,0 +1,277 @@
+@page "/admin/products/{IdText}"
+@using Vendora.Web.Gateway.Admin
+@inject AdminGatewayClient Admin
+@inject UserSession Session
+@inject IDialogService Dialogs
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<PageTitle>@(_product?.Name ?? L["Product"]) · Vendora Admin</PageTitle>
+<UnsavedChangesGuard DirtyCheck="@(() => CanEdit && IsDirty)" />
+
+@if (_loading)
+{
+    <TableSkeleton Rows="5" Columns="3" />
+}
+else if (_notFound)
+{
+    <StatusPage Code="404" Title="@L["Product not found"]" Icon="@Icons.Material.Outlined.SearchOff"
+                Description="@L["The product does not exist or was deleted. You can restore it if you know its ID."]" />
+    <p class="pd-back"><a href="/admin/products">← @L["Back to products"]</a></p>
+    @if (CanEdit && _id > 0)
+    {
+        <AppButton Variant="ButtonVariant.Text" OnClick="RestoreAsync">@L["Restore product #{0}", _id]</AppButton>
+    }
+}
+else if (_error is not null)
+{
+    <ErrorState Message="@_error" OnRetry="LoadAsync" />
+}
+else if (_product is { } p)
+{
+    <AdminPageHeader Title="@p.Name" Description="@L["Category {0} · Brand {1} · ID {2}", p.Category.Name, p.Brand, p.Id]"
+                     Breadcrumbs="@([new(L["Catalog"]), new(L["Products"], "/admin/products"), new(p.Name)])">
+        <Status>
+            <StatusChip Kind="@(p.Status == "Discontinued" ? StatusKind.Discontinued : StatusKind.Active)" />
+        </Status>
+        <Actions>
+            @if (CanEdit)
+            {
+                <AppButton OnClick="SaveAsync" Disabled="@(!IsDirty || !IsValid)" Busy="_saving" BusyText="@L["Saving…"]">@L["Save changes"]</AppButton>
+            }
+            <MudMenu Icon="@Icons.Material.Outlined.MoreVert" AriaLabel="@L["More actions"]" Dense="true"
+                     AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+                <MudMenuItem Href="@($"/products/{p.Id}")" Target="_blank">@L["View in store"]</MudMenuItem>
+                @if (CanEdit)
+                {
+                    @if (p.Status == "Discontinued")
+                    {
+                        <MudMenuItem OnClick="ReactivateAsync">@L["Sell again"]</MudMenuItem>
+                    }
+                    else
+                    {
+                        <MudMenuItem OnClick="DiscontinueAsync">@L["Discontinue"]</MudMenuItem>
+                    }
+                    <MudMenuItem OnClick="DeleteAsync">@L["Delete product"]</MudMenuItem>
+                    <MudMenuItem OnClick="RestoreAsync">@L["Restore product"]</MudMenuItem>
+                }
+            </MudMenu>
+        </Actions>
+    </AdminPageHeader>
+
+    <MudTabs @bind-ActivePanelIndex="TabIndex" Elevation="0" Rounded="false" ApplyEffectsToContainer="true" TabPanelsClass="pt-4">
+        <MudTabPanel Text="@L["Details"]">
+            <FormSection Title="@L["General information"]" Description="@L["Name, brand, category and description shown in the store."]">
+                <MudTextField @bind-Value="_name" Label="@L["Product name"]" Variant="Variant.Outlined" Immediate="true" MaxLength="256"
+                              Counter="256" ReadOnly="@(!CanEdit)" Error="@(NameError is not null)" ErrorText="@NameError" />
+                <MudTextField @bind-Value="_brand" Label="@L["Brand"]" Variant="Variant.Outlined" Immediate="true" MaxLength="32"
+                              Counter="32" ReadOnly="@(!CanEdit)" Error="@(BrandError is not null)" ErrorText="@BrandError" />
+                <MudSelect T="int" @bind-Value="_categoryId" Label="@L["Category"]" Variant="Variant.Outlined" ReadOnly="@(!CanEdit)">
+                    @foreach (var c in _categories)
+                    {
+                        <MudSelectItem T="int" Value="c.Id">@c.Name</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudTextField @bind-Value="_description" Label="@L["Description"]" Variant="Variant.Outlined" Lines="6" Immediate="true" ReadOnly="@(!CanEdit)" />
+                @if (_saveError is not null)
+                {
+                    <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" role="alert">@_saveError</MudAlert>
+                }
+            </FormSection>
+        </MudTabPanel>
+
+        <MudTabPanel Text="@L["Variants ({0})", p.Variants.Count]">
+            @if (p.Variants.Count == 0)
+            {
+                <EmptyState Title="@L["No variants yet"]" />
+            }
+            else
+            {
+                <div class="pd-table" role="table" aria-label="@L["Variants"]">
+                    <div class="pd-row pd-head" role="row">
+                        <span role="columnheader">@L["IMAGE"]</span><span role="columnheader">SKU</span><span role="columnheader">@L["NAME"]</span>
+                        <span role="columnheader" class="pd-num">@L["PRICE"]</span><span role="columnheader" class="pd-num">@L["AVAILABLE"]</span>
+                    </div>
+                    @foreach (var v in p.Variants)
+                    {
+                        <div class="pd-row" role="row" @key="v.Id">
+                            <span role="cell" class="pd-thumbs">
+                                @foreach (var img in ImagesOf(v).Take(3)) { <ProductThumb Url="@img.Url" Pixels="32" /> }
+                                @if (!ImagesOf(v).Any()) { <ProductThumb Pixels="32" /> }
+                            </span>
+                            <span role="cell" class="pd-sku">@v.Sku</span>
+                            <span role="cell">@v.Name</span>
+                            <span role="cell" class="pd-num">@PriceFormatter.Format(v.Price, p.Currency)</span>
+                            <span role="cell" class="pd-num">
+                                @v.AvailableQuantity
+                                @if (!v.InStock) { <StatusChip Kind="StatusKind.OutOfStock" Class="ms-2" /> }
+                            </span>
+                        </div>
+                    }
+                </div>
+            }
+            <p class="pd-note">@L["Editing variants is coming in a later release."]</p>
+        </MudTabPanel>
+
+        <MudTabPanel Text="@L["Images ({0})", p.Images.Count]">
+            @if (p.Images.Count == 0)
+            {
+                <EmptyState Icon="@Icons.Material.Outlined.Image" Title="@L["No images yet"]" />
+            }
+            else
+            {
+                <ul class="pd-images">
+                    @foreach (var img in p.Images.OrderBy(i => i.SortOrder))
+                    {
+                        <li @key="img.Id">
+                            <ProductThumb Url="@img.Url" Pixels="140" />
+                            @if (img.Id == p.Images.OrderBy(i => i.SortOrder).First().Id) { <span class="pd-first">@L["First image"]</span> }
+                        </li>
+                    }
+                </ul>
+            }
+            <p class="pd-note">@L["Managing images is coming in a later release."]</p>
+        </MudTabPanel>
+    </MudTabs>
+}
+
+@code {
+    private ProductDetailDto? _product;
+    private List<CategoryDto> _categories = [];
+    private bool _loading = true, _notFound, _saving;
+    private string? _error, _saveError;
+    private long _id;
+    private string _name = "", _brand = "", _description = "";
+    private int _categoryId;
+
+    private static readonly string[] Tabs = ["info", "variants", "images"];
+
+    [Parameter] public string IdText { get; set; } = "";
+    [SupplyParameterFromQuery(Name = "tab")] public string? TabQuery { get; set; }
+
+    private bool CanEdit => Session.Current?.Role == "Admin";
+
+    private int TabIndex
+    {
+        get => Math.Max(0, Array.IndexOf(Tabs, TabQuery ?? "info"));
+        set
+        {
+            var tab = Tabs[Math.Clamp(value, 0, 2)];
+            if (tab == (TabQuery ?? "info")) return;
+            Navigation.NavigateTo($"/admin/products/{_id}?tab={tab}", replace: true);
+        }
+    }
+
+    private bool IsDirty => _product is { } p
+        && (_name.Trim() != p.Name || _brand.Trim() != p.Brand || _categoryId != p.Category.Id
+            || (_description ?? "").Trim() != (p.Description ?? "").Trim());
+
+    private string? NameError => _name.Trim().Length == 0 ? L["Enter a product name"].Value : _name.Trim().Length > 256 ? L["Up to {0} characters", 256].Value : null;
+    private string? BrandError => _brand.Trim().Length == 0 ? L["Enter a brand"].Value : _brand.Trim().Length > 32 ? L["Up to {0} characters", 32].Value : null;
+    private bool IsValid => NameError is null && BrandError is null && _categoryId > 0;
+
+    private IEnumerable<ProductImageDto> ImagesOf(ProductVariantDto v) =>
+        _product!.Images.Where(i => v.ImageIds.Contains(i.Id)).OrderBy(i => i.SortOrder);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!long.TryParse(IdText, out var id) || id <= 0) { _notFound = true; _loading = false; _id = 0; return; }
+        if (id == _id && _product is not null) return;
+        _id = id;
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _loading = true; _error = null; _notFound = false; _saveError = null;
+        var catsTask = Admin.ListCategoriesAsync();
+        var result = await Admin.GetProductAsync(_id);
+        var cats = await catsTask;
+        if (result.Ok && result.Value is { } p)
+        {
+            _product = p;
+            _categories = cats.Ok && cats.Value is { } l ? l.Categories.OrderBy(c => c.Name).ToList() : [];
+            if (_categories.All(c => c.Id != p.Category.Id))
+                _categories.Add(new CategoryDto(p.Category.Id, L["{0} (deleted)", p.Category.Name]));
+            Reset(p);
+        }
+        else if (result.NotFound) _notFound = true;
+        else _error = result.Error ?? L["Could not load the product."];
+        _loading = false;
+    }
+
+    private void Reset(ProductDetailDto p)
+    {
+        _name = p.Name; _brand = p.Brand; _description = p.Description ?? ""; _categoryId = p.Category.Id;
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_saving || !IsValid || !IsDirty) return;
+        _saving = true; _saveError = null;
+        try
+        {
+            var name = _name.Trim(); var brand = _brand.Trim(); var desc = _description.Trim();
+            var r = await Admin.UpdateProductAsync(_id, name, desc, brand, _categoryId);
+            if (!r.Ok) { _saveError = r.Forbidden ? L["You do not have permission to do this."] : r.Error; return; }
+
+            // The API answers 204 even for a deleted product without changing it, so read it back and compare.
+            var fresh = await Admin.GetProductAsync(_id);
+            if (fresh.Ok && fresh.Value is { } p
+                && p.Name == name && p.Brand == brand && p.Category.Id == _categoryId
+                && (p.Description ?? "").Trim() == desc)
+            {
+                _product = p; Reset(p);
+                Snackbar.Add(L["Changes saved"], Severity.Success);
+            }
+            else _saveError = L["Not saved. The product may have been deleted; restore it and try again."];
+        }
+        finally { _saving = false; }
+    }
+
+    private async Task<bool> RunAsync(Task<ApiResult<NoContent>> call, string success)
+    {
+        var r = await call;
+        if (r.Ok) { Snackbar.Add(success, Severity.Success); return true; }
+        Snackbar.Add(r.Forbidden ? L["You do not have permission to do this."] : r.Error ?? L["The action failed."], Severity.Error);
+        return false;
+    }
+
+    private async Task DiscontinueAsync()
+    {
+        if (!await Dialogs.ConfirmAsync(L["Discontinue this product?"], L["The product stays in the system and can be sold again."], L["Discontinue"], danger: true)) return;
+        if (await RunAsync(Admin.DiscontinueProductAsync(_id), L["Discontinued"])) await LoadAsync();
+    }
+
+    private async Task ReactivateAsync()
+    {
+        if (await RunAsync(Admin.ReactivateProductAsync(_id), L["Back on sale"])) await LoadAsync();
+    }
+
+    private async Task RestoreAsync()
+    {
+        var r = await Admin.RestoreProductAsync(_id);
+        if (r.Ok) { Snackbar.Add(L["Restored (if the product had been deleted)."], Severity.Info); await LoadAsync(); }
+        else Snackbar.Add(r.Forbidden ? L["You do not have permission to do this."] : r.Error ?? L["The action failed."], Severity.Error);
+    }
+
+    private async Task DeleteAsync()
+    {
+        string name = _product?.Name ?? L["product"];
+        if (!await Dialogs.ConfirmAsync(L["Delete product {0}?", name], L["The product will disappear from the store. You can undo right after."], L["Delete"], danger: true)) return;
+        var id = _id;
+        var r = await Admin.DeleteProductAsync(id);
+        if (!r.Ok) { Snackbar.Add(r.Forbidden ? L["You do not have permission to do this."] : r.Error ?? L["Could not delete the product."], Severity.Error); return; }
+        Navigation.NavigateTo("/admin/products");
+        Snackbar.Add(L["Deleted product {0}", name], Severity.Success, o =>
+        {
+            o.VisibleStateDuration = 10_000;
+            o.Action = L["Undo"];
+            o.OnClick = async _ =>
+            {
+                var back = await Admin.RestoreProductAsync(id);
+                Snackbar.Add(back.Ok ? L["Product restored"] : back.Error ?? L["Could not restore."], back.Ok ? Severity.Success : Severity.Error);
+            };
+        });
+    }
+}

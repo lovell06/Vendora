@@ -1,0 +1,25 @@
+<span class="thumb" style="width:@(Pixels)px;height:@(Pixels)px">
+    @if (!string.IsNullOrWhiteSpace(Url) && !_failed)
+    {
+        <img src="@Url" alt="" loading="lazy" @onerror="OnError" />
+    }
+    else
+    {
+        <MudIcon Icon="@Icons.Material.Outlined.ImageNotSupported" Size="Size.Small" aria-hidden="true" />
+    }
+</span>
+
+@code {
+    private bool _failed;
+    private string? _lastUrl;
+    [Parameter] public string? Url { get; set; }
+    [Parameter] public int Pixels { get; set; } = 48;
+    private void OnError() => _failed = true;
+
+    protected override void OnParametersSet()
+    {
+        if (Url == _lastUrl) return;
+        _lastUrl = Url;
+        _failed = false;
+    }
+}

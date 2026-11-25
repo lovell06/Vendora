@@ -1,0 +1,266 @@
+@using Vendora.Web.Features.Admin.Products.Shared
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<div class="pip">
+    @* The large drop zone is for the first upload. Once there are images, a "+" tile at the end of the grid adds more. *@
+    @if (Images.Count == 0 || _activeInput == UploadSource.DropZone)
+    {
+        <label class="pip-drop">
+            <MudIcon Icon="@Icons.Material.Outlined.CloudUpload" aria-hidden="true" />
+            <span>@L["Drag and drop or choose images (JPG, PNG, WebP · up to 5 MB each)"]</span>
+            <InputFile OnChange="@(e => OnFilesAsync(e, UploadSource.DropZone))" multiple accept="image/jpeg,image/png,image/webp" disabled="@(_processing is not null)" aria-label="@L["Choose product images"]" />
+        </label>
+    }
+
+    <div class="pip-usage @UsageClass">
+        <p class="pip-meta">
+            <span>@L["{0} / {1} images", Images.Count, MaxCount]</span>
+            <span>@L["{0} MB / 25 MB · {1} MB free", Mb(TotalBytes), Mb(FreeBytes)]</span>
+        </p>
+        <div class="pip-bar" role="progressbar" aria-label="@L["Image storage used"]" aria-valuemin="0" aria-valuemax="25"
+             aria-valuenow="@Mb(TotalBytes)" aria-valuetext="@L["{0} of 25 MB", Mb(TotalBytes)]">
+            <span style="width:@(UsedPercent.ToString(System.Globalization.CultureInfo.InvariantCulture))%"></span>
+        </div>
+    </div>
+
+    @if (_processing is not null)
+    {
+        <p class="pip-processing" role="status"><MudProgressCircular Size="Size.Small" Indeterminate="true" /> @L["Processing {0}…", _processing]</p>
+    }
+
+    @* Capacity notices are recomputed on every render, so deleting images updates them immediately. *@
+    @if (_rejectedForSpace.Count > 0 || _rejectedForCount.Count > 0 || _fileErrors.Count > 0)
+    {
+        <ul class="pip-notes" aria-live="polite">
+            @foreach (var r in _rejectedForSpace)
+            {
+                @if (r.Size > FreeBytes)
+                {
+                    <li class="pip-note--error">@L["Could not add {0} ({1} MB): over 25 MB. Free up {2} MB more.", r.Name, Mb(r.Size), Mb(r.Size - FreeBytes)]</li>
+                }
+                else
+                {
+                    <li class="pip-note--ok">@L["There is now room for {0} ({1} MB). Choose it again to add it.", r.Name, Mb(r.Size)]</li>
+                }
+            }
+            @foreach (var name in _rejectedForCount)
+            {
+                @if (_full)
+                {
+                    <li class="pip-note--error">@L["Could not add {0}: up to {1} images.", name, MaxCount]</li>
+                }
+                else
+                {
+                    <li class="pip-note--ok">@L["There is now room for {0}. Choose it again to add it.", name]</li>
+                }
+            }
+            @foreach (var m in _fileErrors) { <li class="pip-note--error">@m</li> }
+        </ul>
+    }
+
+    @if (Images.Count > 0)
+    {
+        <p class="pip-hint">@L["Drag images to reorder them (on touch screens, press and hold first). The first image is the main image."]</p>
+        @* Reordering by pointer (mouse, pen, touch) is handled in ProductImagePicker.razor.js. *@
+        <ul class="pip-grid" @ref="_grid">
+            @for (var i = 0; i < Images.Count; i++)
+            {
+                var index = i;
+                var img = Images[i];
+                <li class="pip-item" @key="img" title="@L["Drag to reorder"]">
+                    <img src="@img.Preview" alt="@img.FileName" draggable="false" />
+                    @if (i == 0) { <span class="pip-badge">@L["Main image"]</span> }
+                    <span class="pip-handle" aria-hidden="true"><MudIcon Icon="@Icons.Material.Outlined.DragIndicator" Size="Size.Small" /></span>
+                    <span class="pip-pos" aria-hidden="true">@(i + 1)</span>
+                    <div class="pip-actions">
+                        <MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" Size="Size.Small" Disabled="@(i == 0)" aria-label="@L["Move {0} earlier", img.FileName]" OnClick="@(() => Move(index, -1))" />
+                        <MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" Size="Size.Small" Disabled="@(i == Images.Count - 1)" aria-label="@L["Move {0} later", img.FileName]" OnClick="@(() => Move(index, 1))" />
+                        @if (i > 0)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Outlined.Star" Size="Size.Small" aria-label="@L["Make {0} the main image", img.FileName]" OnClick="@(() => MakePrimary(index))" />
+                        }
+                        <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="Size.Small" aria-label="@L["Delete {0}", img.FileName]" OnClick="@(() => Remove(index))" />
+                    </div>
+                </li>
+            }
+            @if (!_full || _activeInput == UploadSource.AddTile)
+            {
+                <li class="pip-add @(_processing is not null ? "is-busy" : null)">
+                    <label title="@L["Add images"]">
+                        @if (_processing is not null)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Outlined.Add" aria-hidden="true" Class="pip-add__icon" />
+                        }
+                        <span class="pip-add__label">@L["Add images"]</span>
+                        <span class="pip-add__hint">@L["{0} left", Math.Max(0, MaxCount - Images.Count)]</span>
+                        <InputFile OnChange="@(e => OnFilesAsync(e, UploadSource.AddTile))" multiple accept="image/jpeg,image/png,image/webp" disabled="@(_processing is not null)" aria-label="@L["Add more product images"]" />
+                    </label>
+                </li>
+            }
+        </ul>
+        <p class="visually-hidden" role="status" aria-live="polite">@_announcement</p>
+    }
+</div>
+
+@code {
+    public const int MaxCount = 10;
+    private const long MaxFile = 5 * 1024 * 1024;
+    private const long MaxTotal = 25L * 1024 * 1024;
+    private static readonly string[] Allowed = ["image/jpeg", "image/png", "image/webp"];
+
+    private readonly List<(string Name, long Size)> _rejectedForSpace = [];
+    private readonly List<string> _rejectedForCount = [];
+    private readonly List<string> _fileErrors = [];
+    private string? _processing;
+
+    [Parameter] public List<ImageItem> Images { get; set; } = [];
+    // Raised once per change: (a, b) = images a and b swapped places; (i, -1) = image i removed.
+    [Parameter] public EventCallback<(int Old, int New)> OnImageMoved { get; set; }
+    [Parameter] public EventCallback OnChanged { get; set; }
+
+    private long TotalBytes => Images.Sum(i => i.Size);
+    private long FreeBytes => Math.Max(0, MaxTotal - TotalBytes);
+    private double UsedPercent => Math.Min(100, Math.Round(TotalBytes * 100d / MaxTotal, 1));
+    private string UsageClass => TotalBytes >= MaxTotal * 0.9 ? "pip-usage--high" : "";
+    private static string Mb(long bytes) => (bytes / 1024d / 1024d).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture);
+    private bool _full => Images.Count >= MaxCount;
+
+    private enum UploadSource { None, DropZone, AddTile }
+    // The InputFile that started an upload must stay rendered until every file is read: removing it
+    // (the drop zone disappears after the first image, the "+" tile at 10 images) would cut off the rest.
+    private UploadSource _activeInput;
+
+    private async Task OnFilesAsync(InputFileChangeEventArgs e, UploadSource source)
+    {
+        _activeInput = source;
+        try { await ReadFilesAsync(e); }
+        finally { _activeInput = UploadSource.None; StateHasChanged(); }
+    }
+
+    private async Task ReadFilesAsync(InputFileChangeEventArgs e)
+    {
+        _rejectedForSpace.Clear(); _rejectedForCount.Clear(); _fileErrors.Clear();
+        foreach (var file in e.GetMultipleFiles(MaxCount + 20))
+        {
+            if (!Allowed.Contains(file.ContentType)) { _fileErrors.Add(L["{0}: only JPG, PNG and WebP are accepted", file.Name]); continue; }
+            if (file.Size > MaxFile) { _fileErrors.Add(L["{0} ({1} MB) is over the 5 MB per-image limit", file.Name, Mb(file.Size)]); continue; }
+            if (Images.Count >= MaxCount) { _rejectedForCount.Add(file.Name); continue; }
+            if (TotalBytes + file.Size > MaxTotal) { _rejectedForSpace.Add((file.Name, file.Size)); continue; }
+
+            _processing = file.Name;
+            StateHasChanged();
+
+            // The browser decodes the file to build the thumbnail. A file it cannot decode is not a usable image;
+            // Blazor's resize call never completes for such files, so it is bounded by a timeout.
+            var preview = await TryCreatePreviewAsync(file);
+            if (preview is null) { _fileErrors.Add(L["{0}: could not read the image (damaged or not an image)", file.Name]); continue; }
+
+            await using var stream = file.OpenReadStream(MaxFile);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            Images.Add(new ImageItem { FileName = file.Name, ContentType = file.ContentType, Data = ms.ToArray(), Preview = preview });
+            await OnChanged.InvokeAsync(); // show each image as soon as it is ready
+        }
+        _processing = null;
+        await OnChanged.InvokeAsync();
+    }
+
+    private static async Task<string?> TryCreatePreviewAsync(IBrowserFile file)
+    {
+        try
+        {
+            var thumb = await file.RequestImageFileAsync("image/jpeg", 240, 240).AsTask().WaitAsync(TimeSpan.FromSeconds(8));
+            await using var ts = thumb.OpenReadStream(2 * 1024 * 1024);
+            using var tm = new MemoryStream();
+            await ts.CopyToAsync(tm).WaitAsync(TimeSpan.FromSeconds(8));
+            return tm.Length == 0 ? null : $"data:image/jpeg;base64,{Convert.ToBase64String(tm.ToArray())}";
+        }
+        catch (Exception) { return null; }
+    }
+
+    private async Task Move(int index, int delta)
+    {
+        var target = index + delta;
+        if (target < 0 || target >= Images.Count) return;
+        (Images[index], Images[target]) = (Images[target], Images[index]);
+        await OnImageMoved.InvokeAsync((index, target)); // one swap event per move
+        await OnChanged.InvokeAsync();
+    }
+
+    // ---- Pointer reordering (mouse, pen, touch). Arrow and star buttons stay for keyboard users. ----
+    private ElementReference _grid;
+    private IJSObjectReference? _module;
+    private DotNetObjectReference<ProductImagePicker>? _self;
+    private bool _attached;
+    private string? _announcement;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Images.Count == 0) { _attached = false; return; } // the grid is removed; attach again when it returns
+        if (_attached) return;
+        try
+        {
+            _module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Features/Admin/Products/Shared/ProductImagePicker.razor.js");
+            _self ??= DotNetObjectReference.Create(this);
+            await _module.InvokeVoidAsync("attach", _grid, _self);
+            _attached = true;
+        }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or InvalidOperationException) { }
+    }
+
+    // Called from JS when a tile is dropped: the dragged image takes the target slot and the others shift by one.
+    [JSInvokable]
+    public async Task OnReorder(int from, int to)
+    {
+        if (from == to || from < 0 || to < 0 || from >= Images.Count || to >= Images.Count)
+        {
+            if (_module is not null) await _module.InvokeVoidAsync("reset", _grid);
+            return;
+        }
+        var name = Images[from].FileName;
+        var step = to > from ? 1 : -1;
+        for (var i = from; i != to; i += step) await SwapAsync(i, i + step); // adjacent swaps keep variant image links right
+        _announcement = L["Moved {0} to position {1}", name, to + 1];
+        await OnChanged.InvokeAsync();
+        StateHasChanged();
+    }
+
+    private async Task SwapAsync(int a, int b)
+    {
+        (Images[a], Images[b]) = (Images[b], Images[a]);
+        await OnImageMoved.InvokeAsync((a, b));
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_module is not null)
+            {
+                await _module.InvokeVoidAsync("detach", _grid);
+                await _module.DisposeAsync();
+            }
+        }
+        catch (Exception ex) when (ex is JSException or JSDisconnectedException or ObjectDisposedException) { }
+        _self?.Dispose();
+    }
+
+    private async Task MakePrimary(int index)
+    {
+        for (var i = index; i > 0; i--) await Move(i, -1);
+    }
+
+    private async Task Remove(int index)
+    {
+        Images.RemoveAt(index);
+        // Notices about this upload's capacity are re-evaluated on render; per-file errors no longer apply once the admin edits the set.
+        _fileErrors.Clear();
+        await OnImageMoved.InvokeAsync((index, -1));
+        await OnChanged.InvokeAsync();
+    }
+}

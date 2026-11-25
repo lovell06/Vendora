@@ -1,0 +1,5 @@
+.table-skeleton { border: var(--border-hairline); border-radius: var(--shape-medium); background: var(--md-surface-container-lowest); overflow: hidden; }
+.table-skeleton__row { display: flex; align-items: center; gap: var(--space-4); height: 52px; padding: 0 var(--space-4); border-bottom: var(--border-hairline); }
+.table-skeleton__row:last-child { border-bottom: 0; }
+.table-skeleton__cell { flex: 1; height: 14px; border-radius: var(--shape-xs); }
+.table-skeleton__cell:first-child { flex: 2; }

@@ -1,0 +1,7 @@
+.dash-grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.dash-card { display: grid; gap: var(--space-2); padding: var(--space-5); border: var(--border-hairline); border-radius: var(--shape-medium); background: var(--md-surface-container-lowest); color: var(--md-on-surface); }
+.dash-card:hover { border-color: var(--md-primary); }
+.dash-card ::deep .mud-icon-root { color: var(--md-primary); }
+.dash-card__title { font-size: var(--type-title); font-weight: 600; }
+.dash-card__desc { font-size: var(--type-supporting); color: var(--md-on-surface-variant); }
+.dash-note { margin-top: var(--space-5); font-size: var(--type-supporting); color: var(--md-on-surface-variant); }

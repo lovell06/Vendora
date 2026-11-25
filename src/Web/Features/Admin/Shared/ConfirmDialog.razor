@@ -1,0 +1,39 @@
+@inject IJSRuntime JS
+
+<MudDialog>
+    <TitleContent><span class="confirm-title">@(Title ?? L["Confirm"])</span></TitleContent>
+    <DialogContent>
+        @if (!string.IsNullOrWhiteSpace(Message))
+        {
+            <MudText Typo="Typo.body2">@Message</MudText>
+        }
+        @foreach (var line in ExtraLines ?? [])
+        {
+            <MudText Typo="Typo.body2" Class="mt-2">@line</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Class="app-button confirm-cancel">@(CancelText ?? L["Cancel"])</MudButton>
+        <MudButton OnClick="Confirm" Variant="Variant.Filled" Color="@(Danger ? Color.Error : Color.Primary)" Class="app-button" DropShadow="false">@(ConfirmText ?? L["OK"])</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string? Message { get; set; }
+    [Parameter] public IReadOnlyList<string>? ExtraLines { get; set; }
+    [Parameter] public string? ConfirmText { get; set; }
+    [Parameter] public string? CancelText { get; set; }
+    [Parameter] public bool Danger { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try { await JS.InvokeVoidAsync("eval", "setTimeout(()=>document.querySelector('.confirm-cancel')?.focus(),50)"); }
+        catch (Exception ex) when (ex is JSException or InvalidOperationException) { }
+    }
+
+    private void Confirm() => MudDialog.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog.Cancel();
+}

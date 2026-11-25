@@ -1,0 +1,25 @@
+@inject IDialogService Dialogs
+@inject NavigationManager Navigation
+
+<NavigationLock OnBeforeInternalNavigation="OnBeforeNavigation" ConfirmExternalNavigation="@Dirty" />
+
+@code {
+    // Evaluated when navigation happens, so a flag flipped just before NavigateTo is honoured.
+    [Parameter] public Func<bool>? DirtyCheck { get; set; }
+    [Parameter] public bool IsDirty { get; set; }
+
+    private bool Dirty => DirtyCheck?.Invoke() ?? IsDirty;
+
+    private async Task OnBeforeNavigation(LocationChangingContext context)
+    {
+        if (!Dirty || IsSamePath(context.TargetLocation)) return; // query-only changes (tabs) keep the page
+        var leave = await Dialogs.ConfirmAsync(
+            L["Leave this page?"], L["Unsaved changes will be lost."], L["Leave"], danger: true);
+        if (!leave) context.PreventNavigation();
+    }
+
+    private bool IsSamePath(string target) =>
+        Uri.TryCreate(target, UriKind.Absolute, out var t)
+        && Uri.TryCreate(Navigation.Uri, UriKind.Absolute, out var c)
+        && string.Equals(t.AbsolutePath, c.AbsolutePath, StringComparison.OrdinalIgnoreCase);
+}

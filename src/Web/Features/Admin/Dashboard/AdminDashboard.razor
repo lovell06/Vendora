@@ -1,10 +1,21 @@
 @page "/admin"
 @inject UserSession Session
 
-<PageTitle>Tổng quan · Vendora Admin</PageTitle>
+<PageTitle>@L["Overview"] · Vendora Admin</PageTitle>
 
-<AdminPageHeader Title="Tổng quan" />
+<AdminPageHeader Title="@L["System overview"]" Description="@L["Signed in as {0}", Session.DisplayName]" />
 
-<MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
-    Số liệu tổng quan sẽ được thêm ở giai đoạn G4. Bạn đang đăng nhập với vai trò @(Session.Current?.Role ?? "").
-</MudAlert>
+<div class="dash-grid">
+    <a class="dash-card" href="/admin/categories">
+        <MudIcon Icon="@Icons.Material.Outlined.Category" aria-hidden="true" />
+        <span class="dash-card__title">@L["Categories"]</span>
+        <span class="dash-card__desc">@L["Add, rename, delete and restore categories."]</span>
+    </a>
+    <a class="dash-card" href="/admin/products">
+        <MudIcon Icon="@Icons.Material.Outlined.Inventory2" aria-hidden="true" />
+        <span class="dash-card__title">@L["Products"]</span>
+        <span class="dash-card__desc">@L["Create products, edit details, discontinue or delete."]</span>
+    </a>
+</div>
+
+<p class="dash-note">@L["Overview metrics will be added in phase G4."]</p>

@@ -1,0 +1,16 @@
+<div class="table-skeleton" aria-busy="true" aria-label="@L["Loading"]">
+    @for (var i = 0; i < Rows; i++)
+    {
+        <div class="table-skeleton__row">
+            @for (var c = 0; c < Columns; c++)
+            {
+                <span class="table-skeleton__cell skeleton-shimmer"></span>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int Rows { get; set; } = 6;
+    [Parameter] public int Columns { get; set; } = 3;
+}

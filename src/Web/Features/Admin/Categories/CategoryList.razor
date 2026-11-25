@@ -1,0 +1,187 @@
+@page "/admin/categories"
+@using System.Globalization
+@using System.Text
+@using Vendora.Web.Gateway.Admin
+@inject AdminGatewayClient Admin
+@inject IDialogService Dialogs
+@inject ISnackbar Snackbar
+
+<PageTitle>@L["Categories"] · Vendora Admin</PageTitle>
+
+<AdminPageHeader Title="@L["Categories"]" Description="@L["Groups of products shown in the store."]"
+                 Breadcrumbs="@([new(L["Catalog"]), new(L["Categories"])])">
+    <Actions>
+        <AuthorizeView Roles="Admin">
+            <AppButton OnClick="AddAsync"><MudIcon Icon="@Icons.Material.Outlined.Add" Size="Size.Small" /> @L["Add category"]</AppButton>
+        </AuthorizeView>
+    </Actions>
+</AdminPageHeader>
+
+@if (_loading)
+{
+    <TableSkeleton Rows="6" Columns="2" />
+}
+else if (_error is not null)
+{
+    <ErrorState Message="@_error" OnRetry="LoadAsync" />
+}
+else
+{
+    @if (_total > 100)
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Class="mb-3">@L["Showing 100 of {0} categories", _total]</MudAlert>
+    }
+
+    <div class="cat-toolbar">
+        <MudTextField @bind-Value="_search" Placeholder="@L["Search by name…"]" Variant="Variant.Outlined" Margin="Margin.Dense"
+                      Immediate="true" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Outlined.Search"
+                      aria-label="@L["Search categories"]" Style="max-width: 360px" />
+    </div>
+
+    @if (_items.Count == 0)
+    {
+        <EmptyState Icon="@Icons.Material.Outlined.Category" Title="@L["No categories yet"]" Description="@L["Add your first category to group products."]">
+            <AuthorizeView Roles="Admin"><AppButton OnClick="AddAsync">@L["Add category"]</AppButton></AuthorizeView>
+        </EmptyState>
+    }
+    else if (Filtered.Count == 0)
+    {
+        <EmptyState Icon="@Icons.Material.Outlined.SearchOff" Title="@L["No matching categories"]" />
+    }
+    else
+    {
+        <div class="cat-table" role="table" aria-label="@L["Category list"]">
+            <div class="cat-row cat-head" role="row">
+                <button type="button" class="cat-sort" role="columnheader" @onclick="ToggleSort"
+                        aria-sort="@(_ascending ? "ascending" : "descending")">
+                    @L["NAME"] <MudIcon Icon="@(_ascending ? Icons.Material.Outlined.ArrowUpward : Icons.Material.Outlined.ArrowDownward)" Size="Size.Small" />
+                </button>
+                <span role="columnheader" class="cat-num">ID</span>
+                <span role="columnheader" class="cat-actions"></span>
+            </div>
+            @foreach (var c in Filtered)
+            {
+                <div class="cat-row @(c.Id == _highlight ? "cat-row--new" : null)" role="row" @key="c.Id">
+                    <span role="cell" class="cat-name">@c.Name</span>
+                    <span role="cell" class="cat-num">@c.Id</span>
+                    <span role="cell" class="cat-actions">
+                        <AuthorizeView Roles="Admin">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" aria-label="@L["Edit {0}", c.Name]" OnClick="@(() => EditAsync(c))" />
+                            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="Size.Small" aria-label="@L["Delete {0}", c.Name]" OnClick="@(() => DeleteAsync(c))" />
+                        </AuthorizeView>
+                    </span>
+                </div>
+            }
+        </div>
+    }
+}
+
+@code {
+    private List<CategoryDto> _items = [];
+    private string _search = "";
+    private bool _ascending = true;
+    private bool _loading = true;
+    private string? _error;
+    private int _total;
+    private int? _highlight;
+
+    private List<CategoryDto> Filtered
+    {
+        get
+        {
+            var key = Fold(_search);
+            var q = _items.Where(c => key.Length == 0 || Fold(c.Name).Contains(key));
+            return (_ascending ? q.OrderBy(c => c.Name, StringComparer.CurrentCultureIgnoreCase)
+                               : q.OrderByDescending(c => c.Name, StringComparer.CurrentCultureIgnoreCase)).ToList();
+        }
+    }
+
+    protected override Task OnInitializedAsync() => LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _loading = true; _error = null;
+        var result = await Admin.ListCategoriesAsync();
+        if (result.Ok && result.Value is { } list) { _items = list.Categories.ToList(); _total = list.TotalCount; }
+        else _error = result.Error ?? L["Could not load categories."];
+        _loading = false;
+    }
+
+    private static string Fold(string text)
+    {
+        var d = text.Trim().Replace('đ', 'd').Replace('Đ', 'D').Normalize(NormalizationForm.FormD);
+        var sb = new StringBuilder(d.Length);
+        foreach (var ch in d)
+            if (CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark) sb.Append(ch);
+        return sb.ToString().ToLowerInvariant();
+    }
+
+    private void ToggleSort() => _ascending = !_ascending;
+
+    private async Task<bool> OpenEditorAsync(CategoryDto? category)
+    {
+        var parameters = new DialogParameters<CategoryEditorDialog>
+        {
+            { x => x.Category, category }, { x => x.Existing, _items }
+        };
+        var dialog = await Dialogs.ShowAsync<CategoryEditorDialog>(null, parameters,
+            new DialogOptions { MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, CloseOnEscapeKey = true });
+        var result = await dialog.Result;
+        if (result is not { Canceled: false, Data: string name }) return false;
+        await LoadAsync();
+        if (category is null)
+        {
+            _highlight = _items.FirstOrDefault(c => c.Name == name)?.Id;
+            Snackbar.Add(L["Added category {0}", name], Severity.Success);
+            _ = ClearHighlightAsync();
+        }
+        else Snackbar.Add(L["Renamed to {0}", name], Severity.Success);
+        return true;
+    }
+
+    private Task AddAsync() => OpenEditorAsync(null);
+    private Task EditAsync(CategoryDto c) => OpenEditorAsync(c);
+
+    private async Task ClearHighlightAsync()
+    {
+        await Task.Delay(2000);
+        _highlight = null;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task DeleteAsync(CategoryDto c)
+    {
+        var lines = new List<string>();
+        var count = await Admin.ListProductsAsync(1, 1, c.Id);
+        if (count.Ok && count.Value is { TotalCount: > 0 } v)
+            lines.Add(L["This category has {0} visible products.", v.TotalCount]);
+
+        var ok = await Dialogs.ConfirmAsync(L["Delete category {0}?", c.Name],
+            L["The category will be hidden from the store. Its products are not deleted."], L["Delete"], danger: true, extraLines: lines);
+        if (!ok) return;
+
+        var result = await Admin.DeleteCategoryAsync(c.Id);
+        if (!result.Ok)
+        {
+            Snackbar.Add(result.Forbidden ? L["You do not have permission to do this."] : result.Error ?? L["Could not delete the category."], Severity.Error);
+            return;
+        }
+        _items = _items.Where(x => x.Id != c.Id).ToList();
+        Snackbar.Add(L["Deleted category {0}", c.Name], Severity.Success, o =>
+        {
+            o.VisibleStateDuration = 10_000;
+            o.Action = L["Undo"];
+            o.OnClick = async _ =>
+            {
+                var back = await Admin.RestoreCategoryAsync(c.Id);
+                if (back.Ok)
+                {
+                    await LoadAsync();
+                    Snackbar.Add(L["Restored {0}", c.Name], Severity.Success);
+                    await InvokeAsync(StateHasChanged);
+                }
+                else Snackbar.Add(back.Error ?? L["Could not restore."], Severity.Error);
+            };
+        });
+    }
+}

@@ -1,0 +1,66 @@
+<MudDialog>
+    <TitleContent><span>@(Category is null ? L["Add category"] : L["Rename category"])</span></TitleContent>
+    <DialogContent>
+        <MudTextField @bind-Value="_name" Label="@L["Category name"]" Variant="Variant.Outlined" Immediate="true"
+                      MaxLength="256" Counter="256" AutoFocus="true" Error="@(Error is not null)"
+                      ErrorText="@Error" OnKeyDown="OnKeyDown" Disabled="_busy" />
+        @if (_serverError is not null)
+        {
+            <MudText Typo="Typo.caption" Color="Color.Error" Class="mt-2" role="alert">@_serverError</MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Class="app-button" Disabled="_busy">@L["Cancel"]</MudButton>
+        <AppButton OnClick="SaveAsync" Disabled="@(Error is not null || _busy)" Busy="_busy" BusyText="@L["Saving…"]">@L["Save"]</AppButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private string _name = "";
+    private bool _busy;
+    private string? _serverError;
+
+    [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
+    [Inject] private Vendora.Web.Gateway.Admin.AdminGatewayClient Admin { get; set; } = default!;
+    [Parameter] public CategoryDto? Category { get; set; }
+    [Parameter] public IReadOnlyList<CategoryDto> Existing { get; set; } = [];
+
+    protected override void OnInitialized() => _name = Category?.Name ?? "";
+
+    private string Trimmed => _name.Trim();
+
+    private string? Error
+    {
+        get
+        {
+            if (Trimmed.Length == 0) return L["Enter a category name"];
+            if (Existing.Any(c => c.Id != Category?.Id
+                && string.Equals(c.Name.Trim(), Trimmed, StringComparison.OrdinalIgnoreCase)))
+                return L["This category already exists"];
+            return null;
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && Error is null && !_busy) await SaveAsync();
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_busy || Error is not null) return;
+        _busy = true;
+        _serverError = null;
+        try
+        {
+            var result = Category is null
+                ? await Admin.CreateCategoryAsync(Trimmed)
+                : await Admin.UpdateCategoryAsync(Category.Id, Trimmed);
+            if (result.Ok) MudDialog.Close(DialogResult.Ok(Trimmed));
+            else _serverError = result.Forbidden ? L["You do not have permission to do this."] : result.Error;
+        }
+        finally { _busy = false; }
+    }
+}

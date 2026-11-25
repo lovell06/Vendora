@@ -1,5 +1,8 @@
-<MudNavMenu>
-    <MudNavLink Href="/admin" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard">Tổng quan</MudNavLink>
+<MudNavMenu Class="admin-nav">
+    <MudNavLink Href="/admin" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Dashboard">@L["Overview"]</MudNavLink>
+    <MudText Class="admin-nav__group" Typo="Typo.caption">@L["CATALOG"]</MudText>
+    <MudNavLink Href="/admin/categories" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Category">@L["Categories"]</MudNavLink>
+    <MudNavLink Href="/admin/products" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Inventory2">@L["Products"]</MudNavLink>
     <MudDivider Class="my-2" />
-    <MudNavLink Href="/" Icon="@Icons.Material.Filled.Storefront">Về cửa hàng</MudNavLink>
+    <MudNavLink Href="/" Icon="@Icons.Material.Outlined.Storefront">@L["Back to store"]</MudNavLink>
 </MudNavMenu>

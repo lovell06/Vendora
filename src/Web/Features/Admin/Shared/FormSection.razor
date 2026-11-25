@@ -1,0 +1,13 @@
+<section class="form-section">
+    <div class="form-section__intro">
+        <h2 class="form-section__title">@Title</h2>
+        @if (!string.IsNullOrWhiteSpace(Description)) { <p class="form-section__desc">@Description</p> }
+    </div>
+    <div class="form-section__fields">@ChildContent</div>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

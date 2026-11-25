@@ -1,39 +1,99 @@
 @inherits LayoutComponentBase
+@implements IAsyncDisposable
+@inject IBrowserViewportService ViewportService
 @inject UserSession Session
-@inject GatewayClient Gateway
-@inject NavigationManager Navigation
+@inject SignOutService SignOut
 
+@* Plain wrapper so the scoped ::deep rules in AdminLayout.razor.css have an element to anchor to. *@
+<div class="admin-shell">
 <MudLayout>
-    <MudAppBar Elevation="1" Dense="true">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
-                       OnClick="ToggleDrawer" aria-label="Mở hoặc đóng menu" />
-        <MudText Typo="Typo.h6" Class="ms-2">Vendora Admin</MudText>
+    <MudAppBar Elevation="0" Dense="true" Class="admin-appbar">
+        <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                       OnClick="ToggleDrawer" aria-label="@L["Open or close menu"]" />
+        <a href="/admin" class="admin-brand" aria-label="Vendora Admin"><span class="admin-brand__name">Vendora</span><span class="admin-brand__tag">Admin</span></a>
+        @if (!IsAdmin)
+        {
+            <StatusChip Kind="StatusKind.Warning" Label="@L["View only"]" Class="admin-viewonly" />
+        }
         <MudSpacer />
-        <MudText Typo="Typo.body2" Class="me-3 d-none d-sm-flex">@Session.DisplayName</MudText>
-        <MudButton Href="/" Variant="Variant.Text" Color="Color.Inherit" Class="me-2">Cửa hàng</MudButton>
-        <MudButton Variant="Variant.Outlined" Color="Color.Inherit" OnClick="SignOutAsync">Đăng xuất</MudButton>
+        <div class="admin-tools">
+            <LanguagePicker />
+            <ThemePicker />
+        </div>
+        <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true">
+            <ActivatorContent>
+                <button type="button" class="admin-account-btn" aria-label="@L["Account menu"]" aria-haspopup="menu" @onclick="@(e => context.ToggleAsync(e))">
+                    <UserAvatar Email="@Session.Current?.Email" Size="32" />
+                    <span class="admin-account-email d-none d-sm-inline">@Session.DisplayName</span>
+                </button>
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem Href="/account" Icon="@Icons.Material.Outlined.Person">@L["Profile"]</MudMenuItem>
+                <MudMenuItem Href="/" Icon="@Icons.Material.Outlined.Storefront">@L["Back to store"]</MudMenuItem>
+                <MudDivider />
+                <MudMenuItem Icon="@Icons.Material.Outlined.Logout" OnClick="SignOutAsync">@L["Sign out"]</MudMenuItem>
+            </ChildContent>
+        </MudMenu>
     </MudAppBar>
 
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" ClipMode="DrawerClipMode.Docked">
-        <AdminNavMenu />
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="0" Variant="_isNarrow ? DrawerVariant.Temporary : DrawerVariant.Persistent"
+               ClipMode="DrawerClipMode.Always" Class="admin-drawer">
+        <div @onclick="CloseIfNarrow"><AdminNavMenu /></div>
     </MudDrawer>
 
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6 px-4">
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="admin-content">
+            <SessionExpiryBanner />
             @Body
         </MudContainer>
     </MudMainContent>
 </MudLayout>
+</div>
 
 @code {
     private bool _drawerOpen = true;
+    private bool _isNarrow;
 
-    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+    private bool IsAdmin => Session.Current?.Role == "Admin";
 
-    private async Task SignOutAsync()
+    protected override void OnInitialized()
     {
-        await Gateway.LogoutAsync();
-        await Session.SignOutAsync();
-        Navigation.NavigateTo("/");
+        Session.Changed += OnSessionChanged;
+    }
+
+    private readonly Guid _viewportId = Guid.NewGuid();
+    private bool _subscribed;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try
+        {
+            await ViewportService.SubscribeAsync(_viewportId, OnViewportChanged, fireImmediately: true);
+            _subscribed = true;
+        }
+        catch (Exception ex) when (ex is JSException or InvalidOperationException) { }
+    }
+
+    // Re-render only when crossing the 960px boundary; an unconditional StateHasChanged here loops forever.
+    private void OnViewportChanged(BrowserViewportEventArgs args)
+    {
+        var narrow = args.Breakpoint < Breakpoint.Md;
+        if (!args.IsImmediate && narrow == _isNarrow) return;
+        _isNarrow = narrow;
+        _drawerOpen = !narrow;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    private void OnSessionChanged() => _ = InvokeAsync(StateHasChanged);
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+    private void CloseIfNarrow() { if (_isNarrow) _drawerOpen = false; }
+    private Task SignOutAsync() => SignOut.SignOutAsync();
+
+    public async ValueTask DisposeAsync()
+    {
+        Session.Changed -= OnSessionChanged;
+        if (!_subscribed) return;
+        try { await ViewportService.UnsubscribeAsync(_viewportId); } catch (Exception) { /* circuit is closing */ }
     }
 }

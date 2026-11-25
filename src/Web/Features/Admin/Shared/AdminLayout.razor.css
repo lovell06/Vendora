@@ -1,0 +1,25 @@
+::deep .admin-appbar { border-bottom: var(--border-hairline); background: var(--md-surface-container-lowest); color: var(--md-on-surface); }
+::deep .admin-drawer { border-right: var(--border-hairline); width: var(--layout-drawer-width); background: var(--md-surface-container-lowest); }
+::deep .admin-content { padding: var(--space-5) var(--layout-gutter); max-width: var(--layout-content-max); }
+::deep .admin-nav__group { display: block; padding: var(--space-4) var(--space-4) var(--space-1); letter-spacing: .12em; color: var(--md-on-surface-variant); }
+::deep .admin-nav .mud-nav-link.active:not(.mud-nav-link-disabled) { background: var(--md-primary-container); color: var(--md-on-primary-container); }
+::deep .admin-account-btn { display: inline-flex; align-items: center; gap: var(--space-2); background: none; border: 0; padding: 0 var(--space-1); color: inherit; }
+::deep .admin-account-email { font-size: var(--type-supporting); color: var(--md-on-surface-variant); }
+@media (min-width: 600px) { ::deep .admin-content { padding: var(--space-5) 24px; } }
+@media (min-width: 1280px) { ::deep .admin-content { padding: var(--space-5) 32px; } }
+
+/* Brand: "Vendora" + an "Admin" tag; on phones only the tag stays */
+.admin-brand { display: inline-flex; align-items: center; gap: var(--space-2); margin-left: var(--space-2); color: var(--md-on-surface); text-decoration: none; white-space: nowrap; }
+.admin-brand__name { font-size: var(--type-title); font-weight: 700; letter-spacing: -0.02em; }
+.admin-brand__tag { padding: 2px var(--space-2); border-radius: var(--shape-xs); background: var(--md-primary-container); color: var(--md-on-primary-container); font-size: var(--type-caption); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+::deep .admin-viewonly { margin-left: var(--space-3); }
+.admin-tools { display: flex; align-items: center; gap: var(--space-2); margin-right: var(--space-2); }
+
+@media (max-width: 599px) {
+    .admin-brand { margin-left: var(--space-1); }
+    .admin-brand__name { display: none; }
+    ::deep .admin-viewonly { margin-left: var(--space-2); padding: 2px 6px; }
+    ::deep .admin-viewonly > span { display: none; }   /* keep the eye icon, drop the text */
+    .admin-tools { gap: var(--space-1); margin-right: var(--space-1); }
+    /* Language and theme menus become icon-only through the shared rule in app.css. */
+}

@@ -1,0 +1,175 @@
+@page "/admin/products"
+@using Vendora.Web.Gateway.Admin
+@inject AdminGatewayClient Admin
+@inject IDialogService Dialogs
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+
+<PageTitle>@L["Products"] · Vendora Admin</PageTitle>
+
+<AdminPageHeader Title="@L["Products"]" Description="@L["Only products currently visible in the store are listed."]"
+                 Breadcrumbs="@([new(L["Catalog"]), new(L["Products"])])">
+    <Actions>
+        <AuthorizeView Roles="Admin">
+            <AppButton OnClick="@(() => Navigation.NavigateTo("/admin/products/new"))">
+                <MudIcon Icon="@Icons.Material.Outlined.Add" Size="Size.Small" /> @L["Add product"]
+            </AppButton>
+        </AuthorizeView>
+    </Actions>
+</AdminPageHeader>
+
+<div class="pl-filters">
+    <MudTextField T="string" Value="_search" ValueChanged="OnSearchChanged" DebounceInterval="300" Immediate="true"
+                  Placeholder="@L["Search by name…"]" Variant="Variant.Outlined" Margin="Margin.Dense"
+                  Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Outlined.Search" aria-label="@L["Search products"]" />
+    <MudSelect T="int?" Value="CategoryId" ValueChanged="OnCategoryChanged" Label="@L["Category"]" Variant="Variant.Outlined"
+               Margin="Margin.Dense" Clearable="true">
+        @foreach (var c in _categories)
+        {
+            <MudSelectItem T="int?" Value="@((int?)c.Id)">@c.Name</MudSelectItem>
+        }
+    </MudSelect>
+    <MudTextField T="string" @bind-Value="_openId" Label="@L["Open by ID"]" Variant="Variant.Outlined" Margin="Margin.Dense"
+                  OnKeyDown="OnOpenIdKey" Error="@(_openIdError is not null)" ErrorText="@_openIdError"
+                  HelperText="@L["Use this to open hidden or deleted products"]" />
+</div>
+
+@if (_loading)
+{
+    <TableSkeleton Rows="8" Columns="3" />
+}
+else if (_error is not null)
+{
+    <ErrorState Message="@_error" OnRetry="LoadAsync" />
+}
+else if (_products.Count == 0)
+{
+    <EmptyState Icon="@Icons.Material.Outlined.Inventory2" Title="@L["No products"]" Description="@L["No visible products match the current filters."]">
+        <AuthorizeView Roles="Admin"><AppButton OnClick="@(() => Navigation.NavigateTo("/admin/products/new"))">@L["Add product"]</AppButton></AuthorizeView>
+    </EmptyState>
+}
+else
+{
+    <div class="pl-table" role="table" aria-label="@L["Product list"]">
+        <div class="pl-row pl-head" role="row">
+            <span role="columnheader">@L["IMAGE"]</span>
+            <span role="columnheader">@L["NAME"]</span>
+            <span role="columnheader" class="pl-price">@L["PRICE"]</span>
+            <span role="columnheader"></span>
+        </div>
+        @foreach (var p in _products)
+        {
+            <div class="pl-row" role="row" @key="p.Id">
+                <span role="cell"><ProductThumb Url="@p.ImageUrl" /></span>
+                <span role="cell" class="pl-name"><a href="/admin/products/@p.Id">@p.Name</a></span>
+                <span role="cell" class="pl-price">@PriceFormatter.FormatRange(p.MinPrice, p.MaxPrice, p.Currency)</span>
+                <span role="cell" class="pl-menu">
+                    <MudMenu Icon="@Icons.Material.Outlined.MoreVert" AriaLabel="@L["Actions for {0}", p.Name]" Size="Size.Small" Dense="true"
+                             AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+                        <MudMenuItem Href="@($"/admin/products/{p.Id}")">@L["View details"]</MudMenuItem>
+                        <MudMenuItem Href="@($"/products/{p.Id}")" Target="_blank">@L["View in store"]</MudMenuItem>
+                        <AuthorizeView Roles="Admin">
+                            <MudMenuItem OnClick="@(() => DiscontinueAsync(p))">@L["Discontinue"]</MudMenuItem>
+                            <MudMenuItem OnClick="@(() => DeleteAsync(p))">@L["Delete"]</MudMenuItem>
+                        </AuthorizeView>
+                    </MudMenu>
+                </span>
+            </div>
+        }
+    </div>
+    @if (TotalPages > 1)
+    {
+        <div class="pl-pager">
+            <MudPagination Count="TotalPages" Selected="Page" SelectedChanged="OnPageChanged" ShowFirstButton="true" ShowLastButton="true" />
+        </div>
+    }
+}
+
+@code {
+    private const int PageSize = 20;
+
+    private List<ProductSummaryDto> _products = [];
+    private List<CategoryDto> _categories = [];
+    private string _search = "";
+    private string _openId = "";
+    private string? _openIdError;
+    private bool _loading = true;
+    private string? _error;
+    private int _total;
+
+    [SupplyParameterFromQuery(Name = "page")] public int? PageQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "search")] public string? SearchQuery { get; set; }
+    [SupplyParameterFromQuery(Name = "categoryId")] public int? CategoryId { get; set; }
+
+    private int Page => Math.Max(1, PageQuery ?? 1);
+    private int TotalPages => Math.Max(1, (int)Math.Ceiling(_total / (double)PageSize));
+
+    protected override async Task OnInitializedAsync()
+    {
+        var cats = await Admin.ListCategoriesAsync();
+        if (cats.Ok && cats.Value is { } v) _categories = v.Categories.OrderBy(c => c.Name).ToList();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _search = SearchQuery ?? "";
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        _loading = true; _error = null;
+        var result = await Admin.ListProductsAsync(Page, PageSize, CategoryId, _search);
+        if (result.Ok && result.Value is { } v) { _products = v.Products.ToList(); _total = v.TotalCount; }
+        else _error = result.Error ?? L["Could not load products."];
+        _loading = false;
+    }
+
+    private void GoTo(int page, string? search, int? categoryId)
+    {
+        var url = "/admin/products";
+        var query = new List<string>();
+        if (page > 1) query.Add($"page={page}");
+        if (!string.IsNullOrWhiteSpace(search)) query.Add($"search={Uri.EscapeDataString(search.Trim())}");
+        if (categoryId is not null) query.Add($"categoryId={categoryId}");
+        Navigation.NavigateTo(query.Count == 0 ? url : $"{url}?{string.Join('&', query)}");
+    }
+
+    private void OnSearchChanged(string value) => GoTo(1, value, CategoryId);
+    private void OnCategoryChanged(int? id) => GoTo(1, _search, id);
+    private void OnPageChanged(int page) => GoTo(page, _search, CategoryId);
+
+    private void OnOpenIdKey(KeyboardEventArgs e)
+    {
+        if (e.Key != "Enter") return;
+        if (long.TryParse(_openId.Trim(), out var id) && id > 0) { _openIdError = null; Navigation.NavigateTo($"/admin/products/{id}"); }
+        else _openIdError = L["The ID must be a number"];
+    }
+
+    private async Task DiscontinueAsync(ProductSummaryDto p)
+    {
+        if (!await Dialogs.ConfirmAsync(L["Discontinue {0}?", p.Name], L["The product stays in the system and can be sold again."], L["Discontinue"], danger: true)) return;
+        var r = await Admin.DiscontinueProductAsync(p.Id);
+        Snackbar.Add(r.Ok ? L["Discontinued {0}", p.Name] : r.Forbidden ? L["You do not have permission to do this."] : r.Error ?? L["The action failed."],
+            r.Ok ? Severity.Success : Severity.Error);
+    }
+
+    private async Task DeleteAsync(ProductSummaryDto p)
+    {
+        if (!await Dialogs.ConfirmAsync(L["Delete product {0}?", p.Name], L["The product will disappear from the store. You can undo right after."], L["Delete"], danger: true)) return;
+        var r = await Admin.DeleteProductAsync(p.Id);
+        if (!r.Ok) { Snackbar.Add(r.Forbidden ? L["You do not have permission to do this."] : r.Error ?? L["Could not delete the product."], Severity.Error); return; }
+        _products = _products.Where(x => x.Id != p.Id).ToList();
+        Snackbar.Add(L["Deleted product {0}", p.Name], Severity.Success, o =>
+        {
+            o.VisibleStateDuration = 10_000;
+            o.Action = L["Undo"];
+            o.OnClick = async _ =>
+            {
+                var back = await Admin.RestoreProductAsync(p.Id);
+                if (back.Ok) { await LoadAsync(); await InvokeAsync(StateHasChanged); }
+                else Snackbar.Add(back.Error ?? L["Could not restore."], Severity.Error);
+            };
+        });
+    }
+}

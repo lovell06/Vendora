@@ -1,0 +1,411 @@
+@page "/admin/products/new"
+@attribute [Authorize(Roles = "Admin")]
+@using Vendora.Web.Gateway.Admin
+@using Vendora.Web.Features.Admin.Products.Shared
+@using Vendora.Web.Features.Admin.Products.Create
+@inject AdminGatewayClient Admin
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject UserSession Session
+@implements IDisposable
+@inject ProductDraft DraftState
+
+<PageTitle>@L["Add product"] · Vendora Admin</PageTitle>
+<UnsavedChangesGuard DirtyCheck="@(() => IsDirty && !_submitted)" />
+
+<AdminPageHeader Title="@L["Add product"]" Breadcrumbs="@([new(L["Catalog"]), new(L["Products"], "/admin/products"), new(L["New"])])" />
+
+<nav aria-label="@L["Product creation steps"]">
+    <ol class="pc-steps">
+        @for (var i = 0; i < StepTitles.Length; i++)
+        {
+            var step = i;
+            var state = StepState(step);
+            <li>
+                <button type="button" class="pc-steps__item is-@state" aria-current="@(step == Draft.Step ? "step" : null)"
+                        aria-label="@(state == "done" ? L["Step {0}: {1} (done)", step + 1, StepTitles[step]] : state == "error" ? L["Step {0}: {1} (needs fixing)", step + 1, StepTitles[step]] : L["Step {0}: {1}", step + 1, StepTitles[step]])"
+                        @onclick="@(() => GoToStep(step))" disabled="@_busy">
+                    <span class="pc-steps__num">
+                        @if (state == "done") { <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" aria-hidden="true" /> }
+                        else if (state == "error") { <span aria-hidden="true">!</span> }
+                        else { @(step + 1) }
+                    </span>
+                    <span class="pc-steps__label">@StepTitles[step]</span>
+                </button>
+            </li>
+        }
+    </ol>
+</nav>
+
+    @if (Draft.Step == 0)
+{
+        <FormSection Title="@L["General information"]" Description="@L["The currency is fixed to VND."]">
+            <MudTextField @bind-Value="Draft.Name" Label="@L["Product name *"]" Variant="Variant.Outlined" Immediate="true" MaxLength="256" Counter="256"
+                          Error="@(S1 && NameError is not null)" ErrorText="@NameError" />
+            <MudTextField @bind-Value="Draft.Brand" Label="@L["Brand *"]" Variant="Variant.Outlined" Immediate="true" MaxLength="32" Counter="32"
+                          Error="@(S1 && BrandError is not null)" ErrorText="@BrandError" />
+            @if (_categoriesLoading)
+            {
+                <MudSelect T="int" Label="@L["Category *"]" Variant="Variant.Outlined" Disabled="true" HelperText="@L["Loading categories…"]" />
+            }
+            else if (_categoriesError is not null)
+            {
+                <div class="pc-category-note pc-category-note--error" role="alert">
+                    <MudIcon Icon="@Icons.Material.Outlined.ErrorOutline" Size="Size.Small" aria-hidden="true" />
+                    <span>@L["Could not load categories."] @_categoriesError</span>
+                    <button type="button" class="pc-link" @onclick="LoadCategoriesAsync">@L["Try again"]</button>
+                </div>
+            }
+            else if (_categories.Count == 0)
+            {
+                <div class="pc-category-note" role="status">
+                    <MudIcon Icon="@Icons.Material.Outlined.Info" Size="Size.Small" aria-hidden="true" />
+                    <div>
+                        <strong>@L["No categories yet."]</strong>
+                        <span>@L["A product must belong to a category. Create a category first, then come back here."]</span>
+                        <a href="/admin/categories" class="pc-category-note__link">@L["Create a category"] →</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <MudSelect T="int" @bind-Value="Draft.CategoryId" Label="@L["Category *"]" Variant="Variant.Outlined"
+                           Error="@(S1 && Draft.CategoryId == 0)" ErrorText="@L["Choose a category"]">
+                    @foreach (var c in _categories) { <MudSelectItem T="int" Value="c.Id">@c.Name</MudSelectItem> }
+                </MudSelect>
+            }
+            <MudTextField @bind-Value="Draft.Description" Label="@L["Description"]" Variant="Variant.Outlined" Lines="6" />
+            <MudText Typo="Typo.body2">@L["Currency"]: <strong>VND</strong></MudText>
+            <MudSwitch T="bool" @bind-Value="Draft.IsVisible" Color="Color.Primary" Label="@L["Show in the store right away"]" />
+            @if (!Draft.IsVisible)
+            {
+                <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+                    @L["Hidden products do not appear in the admin list until a new filter is available. Note the ID after creating it."]
+                </MudAlert>
+            }
+        </FormSection>
+    }
+
+    @if (Draft.Step == 1)
+{
+        <FormSection Title="@L["Product images"]" Description="@L["The first image is the main image. Up to 10 images."]">
+            <ProductImagePicker Images="Draft.Images" OnImageMoved="OnImageMoved" OnChanged="@(() => { StateHasChanged(); return Task.CompletedTask; })" />
+            @if (S2 && Draft.Images.Count == 0) { <MudText Color="Color.Error" Typo="Typo.caption" role="alert">@L["Add at least one image."]</MudText> }
+        </FormSection>
+    }
+
+    @if (Draft.Step == 2)
+{
+        <FormSection Title="@L["Variants"]" Description="@L["Each variant has a unique SKU, a price and at least one image."]">
+            @if (_dupSku) { <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" role="alert">@L["This SKU already exists. Change it and try again."]</MudAlert> }
+            @for (var i = 0; i < Draft.Variants.Count; i++)
+            {
+                var v = Draft.Variants[i];
+                var n = i;
+                <div class="pc-variant" @key="v">
+                    <MudTextField @bind-Value="v.Sku" Label="SKU *" Variant="Variant.Outlined" Margin="Margin.Dense" MaxLength="20" Immediate="true"
+                                  Error="@(S3 && SkuError(v) is not null)" ErrorText="@SkuError(v)" />
+                    <MudTextField @bind-Value="v.Name" Label="@L["Name (e.g. Black / M) *"]" Variant="Variant.Outlined" Margin="Margin.Dense" MaxLength="256" Immediate="true"
+                                  Error="@(S3 && string.IsNullOrWhiteSpace(v.Name))" ErrorText="@L["Enter a variant name"]" />
+                    <MudNumericField T="decimal" @bind-Value="v.Price" Label="@L["Price (₫) *"]" Variant="Variant.Outlined" Margin="Margin.Dense" Min="0" Format="0.##"
+                                     Error="@(S3 && PriceError(v) is not null)" ErrorText="@PriceError(v)" />
+                    <fieldset class="pc-images @(S3 && v.ImageIndexes.Count == 0 ? "pc-images--error" : null)">
+                        <legend>@L["Variant images *"] <span class="pc-images__count">@L["{0} / {1} selected", v.ImageIndexes.Count, Draft.Images.Count]</span></legend>
+                        @if (Draft.Images.Count == 0)
+                        {
+                            <p class="pc-images__hint">@L["No images yet. Go back to the Images step to upload some."]</p>
+                        }
+                        else
+                        {
+                            <div class="pc-images__grid">
+                                @for (var k = 0; k < Draft.Images.Count; k++)
+                                {
+                                    var index = k;
+                                    var img = Draft.Images[k];
+                                    var selected = v.ImageIndexes.Contains(index);
+                                    <button type="button" class="pc-thumb @(selected ? "is-selected" : null)" aria-pressed="@(selected ? "true" : "false")"
+                                            aria-label="@(index == 0 ? L["Image {0} (main image): {1}", index + 1, img.FileName] : L["Image {0}: {1}", index + 1, img.FileName])" title="@img.FileName"
+                                            @onclick="@(() => ToggleImage(v, index))">
+                                        @if (img.Preview is not null) { <img src="@img.Preview" alt="" /> }
+                                        else { <MudIcon Icon="@Icons.Material.Outlined.Image" aria-hidden="true" /> }
+                                        <span class="pc-thumb__num" aria-hidden="true">@(index + 1)</span>
+                                        @if (index == 0) { <span class="pc-thumb__main" aria-hidden="true">@L["Main"]</span> }
+                                        @if (selected) { <span class="pc-thumb__check" aria-hidden="true"><MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" /></span> }
+                                    </button>
+                                }
+                            </div>
+                        }
+                        @if (S3 && v.ImageIndexes.Count == 0) { <p class="pc-images__error" role="alert">@L["Choose at least one image"]</p> }
+                    </fieldset>
+                    <div class="pc-variant__actions">
+                        <MudIconButton Icon="@Icons.Material.Outlined.ContentCopy" Size="Size.Small" aria-label="@L["Duplicate row"]" OnClick="@(() => Duplicate(n))" />
+                        <MudIconButton Icon="@Icons.Material.Outlined.Delete" Size="Size.Small" aria-label="@L["Delete variant"]" Disabled="@(Draft.Variants.Count == 1)" OnClick="@(() => Draft.Variants.RemoveAt(n))" />
+                    </div>
+                </div>
+            }
+            <div><AppButton Variant="ButtonVariant.Text" OnClick="@(() => Draft.Variants.Add(new VariantRow()))"><MudIcon Icon="@Icons.Material.Outlined.Add" Size="Size.Small" /> @L["Add variant"]</AppButton></div>
+        </FormSection>
+    }
+
+    @if (Draft.Step == 3)
+{
+        <FormSection Title="@L["Review"]">
+            <div class="pc-review">
+                <section class="pc-review__card" aria-labelledby="rv-info">
+                    <header class="pc-review__head">
+                        <h3 id="rv-info">@L["General information"]</h3>
+                        <button type="button" class="pc-edit" @onclick="@(() => Draft.Step = 0)" aria-label="@L["Edit general information"]">
+                            <MudIcon Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" aria-hidden="true" /><span>@L["Edit"]</span>
+                        </button>
+                    </header>
+                    <dl class="pc-review__list">
+                        <div><dt>@L["Name"]</dt><dd>@Draft.Name.Trim()</dd></div>
+                        <div><dt>@L["Brand"]</dt><dd>@Draft.Brand.Trim()</dd></div>
+                        <div><dt>@L["Category"]</dt><dd>@(_categories.FirstOrDefault(c => c.Id == Draft.CategoryId)?.Name)</dd></div>
+                        <div><dt>@L["Visibility"]</dt><dd>@(Draft.IsVisible ? L["Shown in the store right away"] : L["Hidden"])</dd></div>
+                        @if (!string.IsNullOrWhiteSpace(Draft.Description))
+                        {
+                            <div><dt>@L["Description"]</dt><dd class="pc-review__desc">@Draft.Description.Trim()</dd></div>
+                        }
+                    </dl>
+                </section>
+
+                <section class="pc-review__card" aria-labelledby="rv-images">
+                    <header class="pc-review__head">
+                        <h3 id="rv-images">@L["Images"] <span class="pc-review__count">@Draft.Images.Count</span></h3>
+                        <button type="button" class="pc-edit" @onclick="@(() => Draft.Step = 1)" aria-label="@L["Edit images"]">
+                            <MudIcon Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" aria-hidden="true" /><span>@L["Edit"]</span>
+                        </button>
+                    </header>
+                    <ul class="pc-review__thumbs">
+                        @for (var k = 0; k < Draft.Images.Count; k++)
+                        {
+                            var img = Draft.Images[k];
+                            <li title="@img.FileName">
+                                @if (img.Preview is not null) { <img src="@img.Preview" alt="@L["Image {0}", k + 1]" /> }
+                                <span class="pc-thumb__num">@(k + 1)</span>
+                            </li>
+                        }
+                    </ul>
+                </section>
+
+                <section class="pc-review__card" aria-labelledby="rv-variants">
+                    <header class="pc-review__head">
+                        <h3 id="rv-variants">@L["Variants"] <span class="pc-review__count">@Draft.Variants.Count</span></h3>
+                        <button type="button" class="pc-edit" @onclick="@(() => Draft.Step = 2)" aria-label="@L["Edit variants"]">
+                            <MudIcon Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" aria-hidden="true" /><span>@L["Edit"]</span>
+                        </button>
+                    </header>
+                    <ul class="pc-review__variants">
+                        @foreach (var v in Draft.Variants)
+                        {
+                            <li>
+                                <span class="pc-review__sku">@v.Sku.Trim().ToUpperInvariant()</span>
+                                <span class="pc-review__vname">@v.Name.Trim()</span>
+                                <span class="pc-review__imgs">@L["{0} images", v.ImageIndexes.Count]</span>
+                                <span class="pc-review__price">@PriceFormatter.Format(v.Price, "VND")</span>
+                            </li>
+                        }
+                    </ul>
+                </section>
+            </div>
+            @if (_serverError is not null) { <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" role="alert">@_serverError</MudAlert> }
+            <div><AppButton OnClick="SubmitAsync" Busy="_busy" BusyText="@L["Creating…"]">@L["Create product"]</AppButton></div>
+        </FormSection>
+    }
+
+<div class="pc-nav">
+    <AppButton Variant="ButtonVariant.Text" OnClick="Back" Disabled="@(Draft.Step == 0 || _busy)">@L["Back"]</AppButton>
+    @if (Draft.Step < StepTitles.Length - 1)
+    {
+        <AppButton OnClick="Next">@L["Continue"]</AppButton>
+    }
+</div>
+
+@code {
+    private bool _busy, _submitted, _dupSku;
+    private bool _triedStep1, _triedStep2, _triedStep3;
+    private string? _serverError;
+    private List<CategoryDto> _categories = [];
+    private bool _categoriesLoading = true;
+    private string? _categoriesError;
+    private ProductDraft Draft = default!;
+
+    private bool S1 => _triedStep1;
+    private bool S2 => _triedStep2;
+    private bool S3 => _triedStep3;
+
+    private bool IsDirty => Draft.IsDirty;
+
+    private string? NameError => Draft.Name.Trim().Length == 0 ? L["Enter a product name"].Value : Draft.Name.Trim().Length > 256 ? L["Up to {0} characters", 256].Value : null;
+    private string? BrandError => Draft.Brand.Trim().Length == 0 ? L["Enter a brand"].Value : Draft.Brand.Trim().Length > 32 ? L["Up to {0} characters", 32].Value : null;
+    private bool Step1Valid => NameError is null && BrandError is null && Draft.CategoryId > 0;
+    private bool Step2Valid => Draft.Images.Count is >= 1 and <= 10;
+
+    private string? SkuError(VariantRow v)
+    {
+        var sku = v.Sku.Trim();
+        if (sku.Length == 0) return L["Enter a SKU"];
+        if (sku.Length > 20) return L["Up to {0} characters", 20];
+        return Draft.Variants.Count(o => string.Equals(o.Sku.Trim(), sku, StringComparison.OrdinalIgnoreCase)) > 1 ? L["This SKU is repeated in the form"].Value : null;
+    }
+
+    private string? PriceError(VariantRow v) =>
+        v.Price < 0 ? L["The price cannot be negative"].Value : decimal.Round(v.Price, 2) != v.Price ? L["Up to 2 decimal places"].Value : null;
+
+    private bool Step3Valid => Draft.Variants.Count > 0 && Draft.Variants.All(v =>
+        SkuError(v) is null && !string.IsNullOrWhiteSpace(v.Name) && v.Name.Trim().Length <= 256
+        && PriceError(v) is null && v.ImageIndexes.Count > 0);
+
+    protected override async Task OnInitializedAsync()
+    {
+        Draft = DraftState;
+        await LoadCategoriesAsync();
+    }
+
+    private static readonly StringComparer VietnameseOrder = StringComparer.Create(new System.Globalization.CultureInfo("vi-VN"), ignoreCase: true);
+
+    // Categories are sorted A→Z (Vietnamese order); the first one is preselected so the admin rarely has to pick.
+    private async Task LoadCategoriesAsync()
+    {
+        _categoriesLoading = true; _categoriesError = null;
+        var cats = await Admin.ListCategoriesAsync();
+        if (cats.Ok && cats.Value is { } v)
+        {
+            _categories = v.Categories.OrderBy(c => c.Name, VietnameseOrder).ToList();
+            if (_categories.Count > 0 && _categories.All(c => c.Id != Draft.CategoryId))
+                Draft.CategoryId = _categories[0].Id; // keep a restored draft's choice if it still exists
+        }
+        else _categoriesError = cats.Error;
+        _categoriesLoading = false;
+    }
+
+    private string[] StepTitles => [L["General information"], L["Images"], L["Variants"], L["Review"]];
+
+    private void Back() { if (Draft.Step > 0) Draft.Step--; }
+
+    private bool StepValid(int step) => step switch
+    {
+        0 => Step1Valid,
+        1 => Step2Valid,
+        2 => Step3Valid,
+        _ => Step1Valid && Step2Valid && Step3Valid
+    };
+
+    private bool StepTried(int step) => step switch { 0 => _triedStep1, 1 => _triedStep2, 2 => _triedStep3, _ => false };
+
+    private string StepState(int step) =>
+        step == Draft.Step ? "current"
+        : step < 3 && StepTried(step) && !StepValid(step) ? "error"
+        : step < 3 && StepTried(step) && StepValid(step) ? "done"
+        : "upcoming";
+
+    // Jump straight to a step. Going back is always allowed; going forward stops at the first
+    // earlier step that is still invalid and shows its errors there.
+    private void GoToStep(int target)
+    {
+        if (_busy || target == Draft.Step) return;
+        if (target > Draft.Step)
+        {
+            for (var s = 0; s < target; s++)
+            {
+                MarkTried(s);
+                if (!StepValid(s)) { Draft.Step = s; return; }
+            }
+        }
+        Draft.Step = target;
+    }
+
+    private void MarkTried(int step)
+    {
+        if (step == 0) _triedStep1 = true;
+        else if (step == 1) _triedStep2 = true;
+        else if (step == 2) _triedStep3 = true;
+    }
+
+    private void Next()
+    {
+        if (Draft.Step == 0) { _triedStep1 = true; if (!Step1Valid) return; }
+        else if (Draft.Step == 1) { _triedStep2 = true; if (!Step2Valid) return; }
+        else if (Draft.Step == 2) { _triedStep3 = true; if (!Step3Valid) return; }
+        Draft.Step++;
+    }
+
+    private Task OnImageMoved((int Old, int New) change)
+    {
+        // Keep each variant's image selection pointing at the same pictures after a reorder/removal.
+        // Moves arrive as the swap pair (a->b) and (b->a); a removal arrives as (i, -1).
+        if (change.New == -1)
+        {
+            foreach (var v in Draft.Variants)
+                v.ImageIndexes = v.ImageIndexes.Where(i => i != change.Old).Select(i => i > change.Old ? i - 1 : i).ToHashSet();
+        }
+        else if (change.Old != change.New)
+        {
+            foreach (var v in Draft.Variants)
+            {
+                var hadOld = v.ImageIndexes.Contains(change.Old);
+                var hadNew = v.ImageIndexes.Contains(change.New);
+                if (hadOld == hadNew) continue;
+                if (hadOld) { v.ImageIndexes.Remove(change.Old); v.ImageIndexes.Add(change.New); }
+                else { v.ImageIndexes.Remove(change.New); v.ImageIndexes.Add(change.Old); }
+            }
+        }
+        return Task.CompletedTask;
+    }
+
+    private static void ToggleImage(VariantRow v, int index)
+    {
+        if (!v.ImageIndexes.Remove(index)) v.ImageIndexes.Add(index);
+    }
+
+    private void Duplicate(int i)
+    {
+        var s = Draft.Variants[i];
+        Draft.Variants.Insert(i + 1, new VariantRow { Sku = "", Name = s.Name, Price = s.Price, ImageIndexes = [.. s.ImageIndexes] });
+    }
+
+    private async Task SubmitAsync()
+    {
+        if (_busy) return;
+        _triedStep1 = _triedStep2 = _triedStep3 = true;
+        if (!Step1Valid) { Draft.Step = 0; return; }
+        if (!Step2Valid) { Draft.Step = 1; return; }
+        if (!Step3Valid) { Draft.Step = 2; return; }
+
+        _busy = true; _serverError = null; _dupSku = false;
+        try
+        {
+            var input = new CreateProductInput(
+                Draft.Name.Trim(), Draft.Description.Trim(), Draft.Brand.Trim(), Draft.CategoryId, Draft.IsVisible,
+                Draft.Variants.Select(v => new ProductVariantInput(v.Sku.Trim().ToUpperInvariant(), v.Name.Trim(), v.Price, v.ImageIndexes.OrderBy(x => x).ToList())).ToList(),
+                Draft.Images.Select(i => new ProductImageFile(i.FileName, i.ContentType, () => new MemoryStream(i.Data))).ToList());
+
+            var result = await Admin.CreateProductAsync(input);
+            if (result.Ok)
+            {
+                _submitted = true;
+                Draft.Reset();
+                Snackbar.Add(L["Product created. Initial stock is 0."], Severity.Success);
+                Navigation.NavigateTo($"/admin/products/{result.Value}");
+                return;
+            }
+
+            if (result.Conflict && result.Code == "catalog.duplicate") { _dupSku = true; Draft.Step = 2; }
+            else if (result.PayloadTooLarge) { _serverError = L["The images are too large. Use fewer or smaller images and try again."]; Draft.Step = 1; }
+            else if (result.Forbidden) _serverError = L["You do not have permission to do this."];
+            else
+            {
+                _serverError = result.Error;
+                if (result.Code?.Contains("image", StringComparison.OrdinalIgnoreCase) == true) Draft.Step = 1;
+            }
+        }
+        finally { _busy = false; }
+    }
+
+    // Leaving normally discards the draft; if the session ended, keep it so signing back in restores the form.
+    public void Dispose()
+    {
+        if (Session.IsAuthenticated) Draft.Reset();
+    }
+}

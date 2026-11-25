@@ -1,0 +1,8 @@
+.form-section { display: grid; gap: var(--space-4); padding: var(--space-5) 0; border-bottom: var(--border-hairline); }
+.form-section:last-child { border-bottom: 0; }
+.form-section__title { margin: 0; font-size: var(--type-section); font-weight: 600; }
+.form-section__desc { margin: var(--space-1) 0 0; font-size: var(--type-supporting); color: var(--md-on-surface-variant); }
+.form-section__fields { display: grid; gap: var(--space-4); }
+@media (min-width: 960px) {
+    .form-section { grid-template-columns: 280px minmax(0, 1fr); gap: var(--space-6); }
+}
