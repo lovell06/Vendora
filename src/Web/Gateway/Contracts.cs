@@ -35,4 +35,6 @@ public sealed record CartItemDto(long ProductVariantId, int Quantity);
 
 public sealed record CartResponse(IReadOnlyList<CartItemDto> Items);
 
-public sealed record LoginResponse(Guid UserId, string AccessToken, string RefreshToken);
+public sealed record RefreshTokenDto(Guid Id, string Value);
+
+public sealed record LoginResponse(Guid UserId, string AccessToken, RefreshTokenDto RefreshToken);

@@ -165,7 +165,7 @@ public sealed class CartState(GatewayClient gateway, UserSession session)
         _busy.Remove(variantId);
         if (result.Ok) { Changed?.Invoke(); return; }
 
-        OperationFailed?.Invoke(result.Error ?? "Unable to update your cart.");
+        OperationFailed?.Invoke(result.Error ?? Vendora.Web.Localization.Text.Get("Unable to update your cart."));
         await RefreshAsync();
     }
 
@@ -185,7 +185,7 @@ public sealed class CartState(GatewayClient gateway, UserSession session)
         var failed = results.FirstOrDefault(r => !r.Ok);
         if (failed is not null)
         {
-            OperationFailed?.Invoke(failed.Error ?? "Unable to update your cart.");
+            OperationFailed?.Invoke(failed.Error ?? Vendora.Web.Localization.Text.Get("Unable to update your cart."));
             await RefreshAsync();
             return [];
         }
@@ -198,7 +198,7 @@ public sealed class CartState(GatewayClient gateway, UserSession session)
     {
         var chosen = SelectedLines;
         if (chosen.Count == 0 || PlacingOrder)
-            return ApiResult<NoContent>.Fail("Select at least one item to check out.", System.Net.HttpStatusCode.BadRequest);
+            return ApiResult<NoContent>.Fail(Vendora.Web.Localization.Text.Get("Select at least one item to check out."), System.Net.HttpStatusCode.BadRequest);
 
         PlacingOrder = true;
         Changed?.Invoke();

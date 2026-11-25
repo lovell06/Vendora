@@ -58,7 +58,7 @@ public sealed class CartUiState : IDisposable
             BackgroundClass = "overlay-blur-backdrop"
         };
         // The pop-out origin is set in the browser (cart.js) at click time, without a round trip.
-        var reference = await _dialogs.ShowAsync<CartDrawer>("Your cart", options);
+        var reference = await _dialogs.ShowAsync<CartDrawer>(Vendora.Web.Localization.Text.Get("Your cart"), options);
         _dialog = reference;
         _ = WatchAsync(reference);
     }
