@@ -98,3 +98,46 @@ Build using the [Web instructions](../../README.md#verification-when-making-chan
 Builds and browser checks were not run during this documentation update; descriptions and examples were checked statically against source code.
 
 [Web](../../README.md) · [Home](../../Features/Home/README.md) · [Products](../../Features/Products/README.md) · [Authentication](../../Features/Authentication/README.md).
+
+## Design tokens
+
+Tokens live in `wwwroot/app.css` (three blocks: light, `prefers-color-scheme: dark`, `[data-theme="dark"]`) and are mirrored for MudBlazor in `Components/Theming/VendoraTheme.cs`. Do not write hex values in `.razor` or `.razor.css`.
+
+| Group | Tokens |
+| --- | --- |
+| Colour | `--md-primary`, `--md-on-primary`, `--md-primary-container`, `--md-on-primary-container`, `--md-surface`, `--md-surface-container-lowest/-low/-high` và `--md-surface-container`, `--md-on-surface`, `--md-on-surface-variant`, `--md-outline`, `--md-outline-variant`, `--md-error` (+`-container`, `--md-on-error-container`), `--md-success` / `--md-warning` (+`-container`, `--md-on-*-container`), `--md-scrim` |
+| Type | `--type-display/headline/admin-title/title/section/body/table/label/supporting/caption` |
+| Space | `--space-1…8` = 4, 8, 12, 16, 24, 32, 48, 64 px |
+| Shape | `--shape-xs/small/medium/large/full`, `--button-radius`, `--border-hairline`, `--elevation-overlay` |
+| Layout | `--layout-appbar-height` 56px, `--layout-drawer-width` 248px, `--layout-content-max`, `--layout-gutter` |
+| Motion | `--motion-fast`, `--motion-medium`, `--motion-ease` |
+
+### Contrast (WCAG AA needs 4.5:1)
+
+| Cặp (chữ / nền) | Chế độ | Tỉ lệ | AA |
+| --- | --- | --- | --- |
+| Chữ trắng trên primary (`#FFFFFF` / `#2563EB`) | sáng | 5.17 | Đạt |
+| Primary trên surface (`#2563EB` / `#F8FAFC`) | sáng | 4.94 | Đạt |
+| On primary container / container (`#1E40AF` / `#EFF6FF`) | sáng | 8.01 | Đạt |
+| Success / success container (`#1E6B3A` / `#DDF3E3`) | sáng | 5.59 | Đạt |
+| Warning / warning container (`#7A5300` / `#FFF1D6`) | sáng | 6.14 | Đạt |
+| On error container / container (`#991B1B` / `#FEF2F2`) | sáng | 7.60 | Đạt |
+| Chữ trắng trên error (`#FFFFFF` / `#DC2626`) | sáng | 4.83 | Đạt |
+| Error trên surface (`#DC2626` / `#F8FAFC`) | sáng | 4.62 | Đạt |
+| On surface variant / surface (`#475569` / `#F8FAFC`) | sáng | 7.24 | Đạt |
+| On primary / primary (`#0B0F19` / `#60A5FA`) | tối | 7.53 | Đạt |
+| On primary container / container (`#DBEAFE` / `#1E3A8A`) | tối | 8.49 | Đạt |
+| Success / container (`#8DD9A4` / `#1B3A25`) | tối | 7.50 | Đạt |
+| Warning / container (`#F3C46B` / `#3D2E0B`) | tối | 8.10 | Đạt |
+| On error container / container (`#FECACA` / `#450A0A`) | tối | 11.16 | Đạt |
+| Error trên surface (`#F87171` / `#0B0F19`) | tối | 6.92 | Đạt |
+| On surface variant / surface (`#94A3B8` / `#0B0F19`) | tối | 7.47 | Đạt |
+
+## Feedback components
+
+| Component | Use |
+| --- | --- |
+| `StatusChip` (`StatusKind`) | Status as colour + icon + label: Active, Discontinued, Deleted, OutOfStock, Warning, Admin, Employee, Customer |
+| `EmptyState` | Icon, title, description, optional action as child content |
+| `ErrorState` | Error message and a "Thử lại" button when `OnRetry` is set |
+| `SessionExpiryBanner` | Warns in the last 5 minutes of the session; at expiry signs out and goes to `/login?returnUrl=…` |

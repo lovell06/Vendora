@@ -8,27 +8,58 @@ public static class VendoraTheme
     {
         PaletteLight = new PaletteLight
         {
-            Primary = "#285EA8", PrimaryContrastText = "#FFFFFF",
-            Background = "#F8FAFD", Surface = "#FFFFFF",
-            TextPrimary = "#1A1C20", TextSecondary = "#454B56",
-            ActionDefault = "#454B56", Divider = "#C5CDDA",
-            LinesDefault = "#747C89", Error = "#A32B25",
-            AppbarBackground = "#F8FAFD", AppbarText = "#1A1C20"
+            Primary = "#2563EB",
+            PrimaryContrastText = "#FFFFFF",
+            Secondary = "#1E6B3A",
+            SecondaryContrastText = "#FFFFFF",
+            Background = "#F8FAFC",
+            Surface = "#FFFFFF",
+            TextPrimary = "#0F172A",
+            TextSecondary = "#475569",
+            ActionDefault = "#475569",
+            Divider = "#E2E8F0",
+            LinesDefault = "#CBD5E1",
+            Error = "#DC2626",
+            Warning = "#7A5300",
+            Success = "#1E6B3A",
+            AppbarBackground = "#FFFFFF",
+            AppbarText = "#0F172A"
         },
         PaletteDark = new PaletteDark
         {
-            Primary = "#AAC7FF", PrimaryContrastText = "#102F59",
-            Background = "#111318", Surface = "#191C22",
-            TextPrimary = "#E2E5ED", TextSecondary = "#C2C8D4",
-            ActionDefault = "#C2C8D4", Divider = "#424A57",
-            LinesDefault = "#8C95A4", Error = "#FFB4AA",
-            AppbarBackground = "#111318", AppbarText = "#E2E5ED"
+            Primary = "#60A5FA",
+            PrimaryContrastText = "#0F172A",
+            Secondary = "#8DD9A4",
+            SecondaryContrastText = "#0F172A",
+            Background = "#0B0F19",
+            Surface = "#111827",
+            TextPrimary = "#F8FAFC",
+            TextSecondary = "#94A3B8",
+            ActionDefault = "#94A3B8",
+            Divider = "#1E293B",
+            LinesDefault = "#334155",
+            Error = "#F87171",
+            Warning = "#F3C46B",
+            Success = "#8DD9A4",
+            AppbarBackground = "#0B0F19",
+            AppbarText = "#F8FAFC"
         },
-        LayoutProperties = new LayoutProperties { DefaultBorderRadius = "4px" },
+        LayoutProperties = new LayoutProperties
+        {
+            DefaultBorderRadius = "10px"
+        },
         Typography = new Typography
         {
-            Default = new DefaultTypography { FontFamily = ["Inter", "Segoe UI", "sans-serif"] },
-            Button = new ButtonTypography { TextTransform = "none", FontWeight = "600" }
+            Default = new DefaultTypography
+            {
+                FontFamily = ["Inter", "system-ui", "-apple-system", "sans-serif"]
+            },
+            Button = new ButtonTypography
+            {
+                TextTransform = "none",
+                FontWeight = "600",
+                LetterSpacing = "0.01em"
+            }
         }
     };
 }
