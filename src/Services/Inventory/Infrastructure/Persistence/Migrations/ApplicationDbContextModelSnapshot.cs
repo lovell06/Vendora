@@ -111,6 +111,9 @@ namespace Vendora.Services.Inventory.Infrastructure.Persistence.Migrations
                     b.HasIndex("Sku")
                         .IsUnique();
 
+                    b.HasIndex("CreatedAt", "Id")
+                        .IsDescending();
+
                     b.ToTable("inventory_items", (string)null);
                 });
 

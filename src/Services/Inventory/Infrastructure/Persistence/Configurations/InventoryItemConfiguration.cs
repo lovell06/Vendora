@@ -10,6 +10,8 @@ public sealed class InventoryItemConfiguration : IEntityTypeConfiguration<Invent
             .IsUnique();
         builder.HasIndex(item => item.Sku)
             .IsUnique();
+        builder.HasIndex(item => new { item.CreatedAt, item.Id })
+            .IsDescending(true, true);
 
         builder.Property(item => item.Id)
             .HasColumnName("id");

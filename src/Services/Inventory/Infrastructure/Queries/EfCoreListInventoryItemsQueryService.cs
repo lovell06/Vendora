@@ -6,7 +6,10 @@ public sealed class EfCoreListInventoryItemsQueryService(ApplicationDbContext co
     {
         var efCoreQuery = context.InventoryItems
             .AsNoTracking()
+            .OrderByDescending(item => item.CreatedAt)
+            .ThenByDescending(item => item.Id)
             .Select(item => new ListInventoryItems.InventoryItemDto(
+                item.Id,
                 item.ProductId,
                 item.ProductVariantId,
                 item.Sku,

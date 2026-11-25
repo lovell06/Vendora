@@ -4,7 +4,7 @@ namespace Vendora.Services.Inventory.Api.InventoryItems.Get;
 
 public sealed class GetInventoryItemRequest
 {
-    public const string Pattern = "/{productId}";
+    public const string Pattern = "/{productVariantId:long}";
 
     public long ProductVariantId { get; init; }
 

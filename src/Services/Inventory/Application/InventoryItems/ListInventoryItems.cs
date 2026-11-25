@@ -7,6 +7,7 @@ public static class ListInventoryItems
     public sealed record Response(IReadOnlyList<InventoryItemDto> InventoryItems, int Page, int TotalCount);
 
     public sealed record InventoryItemDto(
+        long Id,
         long ProductId,
         long ProductVariantId,
         string Sku,
