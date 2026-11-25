@@ -1,0 +1,320 @@
+@page "/account"
+@page "/tai-khoan"
+@layout HomeLayout
+@attribute [Authorize]
+@inject UserSession Session
+@inject SignOutService SignOut
+@inject IJSRuntime Js
+@inject ISnackbar Snackbar
+
+<PageTitle>@L["Your profile"] | Vendora</PageTitle>
+
+<StoreHeader />
+
+<main class="profile-container" id="main-content" tabindex="-1">
+    <SessionExpiryBanner />
+    <div class="profile-header">
+        <UserAvatar Email="@Session.Current?.Email" Size="64" />
+        <h1 class="profile-email">@(Session.Current?.Email ?? L["User"])</h1>
+        <span class="role-badge">@RoleLabel</span>
+    </div>
+
+    <div class="profile-card">
+        <h2 class="card-title">@L["Account details"]</h2>
+        <dl class="profile-list">
+            <div class="profile-item">
+                <dt>@L["Email address"]</dt>
+                <dd>@(Session.Current?.Email ?? "—")</dd>
+            </div>
+            <div class="profile-item">
+                <dt>@L["Role"]</dt>
+                <dd>@RoleLabel</dd>
+            </div>
+            <div class="profile-item">
+                <dt>@L["Account ID"]</dt>
+                <dd class="id-row">
+                    <span class="id-value">@ShortenedId</span>
+                    <button type="button" class="copy-btn @(_copied ? "copy-btn--copied" : "")" @onclick="CopyIdAsync" aria-label="@L["Copy account ID"]">
+                        <MudIcon Icon="@(_copied ? Icons.Material.Outlined.Check : Icons.Material.Outlined.ContentCopy)" Size="Size.Small" />
+                        <span>@(_copied ? L["Copied"] : L["Copy"])</span>
+                    </button>
+                </dd>
+            </div>
+        </dl>
+    </div>
+
+    <div class="profile-card">
+        <h2 class="card-title">@L["Session security"]</h2>
+        <div class="session-row">
+            <div class="session-info">
+                <span class="session-label">@L["Active sign-in session"]</span>
+                <span class="session-expiry">@ExpiryText</span>
+            </div>
+            <AppButton Variant="ButtonVariant.Text" OnClick="SignOutAsync" Busy="@_signingOut" BusyText="@L["Signing out…"]" Class="signout-btn">
+                <MudIcon Icon="@Icons.Material.Outlined.Logout" Size="Size.Small" />
+                <span>@L["Sign out"]</span>
+            </AppButton>
+        </div>
+    </div>
+
+    @if (IsStaffOrAdmin)
+    {
+        <div class="profile-admin-link">
+            <a href="/admin" class="admin-cta">
+                <MudIcon Icon="@Icons.Material.Outlined.AdminPanelSettings" Size="Size.Small" />
+                <span>@L["Go to the admin area"] →</span>
+            </a>
+        </div>
+    }
+</main>
+
+<style>
+.profile-container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    padding: 16px 0 24px;
+}
+
+.profile-email {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--md-on-surface);
+    margin: 0;
+}
+
+.role-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: var(--shape-full);
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.profile-card {
+    background: var(--md-surface-container-lowest);
+    border: 1px solid var(--md-outline-variant);
+    border-radius: var(--shape-medium);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--md-on-surface);
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.profile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+}
+
+.profile-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+  gap: 16px;
+}
+
+.profile-item dt {
+  color: var(--md-on-surface-variant);
+}
+
+.profile-item dd {
+  font-weight: 600;
+  color: var(--md-on-surface);
+  margin: 0;
+}
+
+.id-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.id-value {
+  font-family: monospace;
+  font-size: 0.8125rem;
+}
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--shape-xs);
+  border: 1px solid var(--md-outline-variant);
+  background: var(--md-surface-container);
+  color: var(--md-on-surface);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--motion-fast) var(--ease-spring);
+}
+
+.copy-btn:hover {
+  background: var(--md-primary-container);
+  color: var(--md-on-primary-container);
+  border-color: var(--md-primary);
+}
+
+.copy-btn--copied {
+  background: var(--md-success-container);
+  color: var(--md-on-success-container);
+  border-color: var(--md-success);
+}
+
+.session-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.session-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.session-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--md-on-surface);
+}
+
+.session-expiry {
+  font-size: 0.8125rem;
+  color: var(--md-on-surface-variant);
+}
+
+.signout-btn {
+  color: var(--md-error) !important;
+}
+
+.profile-admin-link {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.admin-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--md-primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: var(--shape-small);
+  transition: background-color var(--motion-fast);
+}
+
+.admin-cta:hover {
+  background: var(--md-primary-container);
+}
+</style>
+
+@code {
+    private bool _copied;
+    private bool _signingOut;
+    private TimeSpan? _browserOffset;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        try
+        {
+            var minutes = await Js.InvokeAsync<int>("eval", "-new Date().getTimezoneOffset()");
+            _browserOffset = TimeSpan.FromMinutes(minutes);
+            StateHasChanged();
+        }
+        catch (Exception ex) when (ex is JSException or InvalidOperationException) { }
+    }
+
+    private string RoleLabel => Session.Current?.Role switch
+    {
+        "Admin" => L["Administrator"],
+        "Employee" => L["Staff"],
+        _ => L["Customer"]
+    };
+
+    private bool IsStaffOrAdmin => Session.Current?.Role is "Admin" or "Employee";
+
+    private string ShortenedId
+    {
+        get
+        {
+            var id = Session.Current?.UserId.ToString() ?? "";
+            return id.Length > 12 ? $"{id[..8]}…{id[^4..]}" : id;
+        }
+    }
+
+    private string ExpiryText
+    {
+        get
+        {
+            if (Session.Current is not { } s) return L["Not active"];
+            var offset = _browserOffset ?? TimeZoneInfo.Local.GetUtcOffset(s.ExpiresAt);
+            var localExp = s.ExpiresAt.ToOffset(offset);
+            var today = DateTimeOffset.UtcNow.ToOffset(offset).Date;
+            return localExp.Date == today
+                ? L["Signed in until {0} today", localExp.ToString("HH:mm")]
+                : L["Signed in until {0}", localExp.ToString("dd/MM/yyyy HH:mm")];
+        }
+    }
+
+    private async Task CopyIdAsync()
+    {
+        if (Session.Current is not { } s) return;
+        try
+        {
+            await Js.InvokeVoidAsync("navigator.clipboard.writeText", s.UserId.ToString());
+            _copied = true;
+            StateHasChanged();
+            await Task.Delay(2000);
+            _copied = false;
+            StateHasChanged();
+        }
+        catch
+        {
+            Snackbar.Add(L["Could not copy the account ID."], Severity.Warning);
+        }
+    }
+
+    private async Task SignOutAsync()
+    {
+        if (_signingOut) return;
+        _signingOut = true;
+        try
+        {
+            await SignOut.SignOutAsync();
+        }
+        finally
+        {
+            _signingOut = false;
+        }
+    }
+}
