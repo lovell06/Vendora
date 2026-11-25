@@ -61,3 +61,20 @@ dotnet build src/Web/Vendora.Web.csproj
 Manually check compact/wide windows, light/dark/system themes, keyboard operation, navigation, empty results, and an unavailable Gateway. Feature READMEs list additional scenarios. The Web changes that connected it to the API were made without a `dotnet` SDK, so they have not been built or run yet; the repository has no automated test projects.
 
 [Back to the project overview](../../README.md).
+
+## Footer and store details
+
+The storefront footer reads business details from the `Store` section of [appsettings.json](appsettings.json) (`Hotline`, `Email`, `Hours`, `LegalName`, `TaxId`, `Address`, `Facebook`, `Zalo`, `TikTok`, `Description`). Empty values are not rendered. Keep `Store:ShowPolicyLinks` set to `false` until the support and policy pages exist, so the footer never links to a 404.
+
+## Who sees what
+
+Guests see Register and Sign in. Customers see the cart and their account menu. `Admin` and `Employee` accounts do not shop: the cart button, add-to-cart buttons, and `/cart` are hidden for them, and the product page offers an admin link instead. Web has no HTTP authentication scheme, so route access is enforced by `AuthorizeRouteView` (see [Admin](Features/Admin/README.md)).
+
+## Languages
+
+The UI is in English by default, with Vietnamese as an option (the language menu next to the theme menu, on every layout).
+
+- Write UI text in English and wrap it: `@L["Add product"]` in Razor (`L` is injected by the `_Imports.razor` files), `L["Deleted {0}", name]` for values, and `Text.Get("…")` in services. Validation attributes use `ErrorMessageResourceType = typeof(ValidationText)`.
+- Add the Vietnamese translation to `Localization/SharedResource.vi.resx` with the English text as the `name`. A missing entry falls back to English.
+- The choice is stored in the `.AspNetCore.Culture` cookie by `/culture/set?culture=vi&redirectUri=/…`, which reloads the page because a Blazor circuit keeps the culture it started with.
+- Store details in the `Store` config section (description, opening hours, address) are shown as written; they are not translated.
