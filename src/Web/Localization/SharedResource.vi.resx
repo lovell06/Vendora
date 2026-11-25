@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Vietnamese UI text. The key (name) is the English text used in code with L["..."] or Text.Get("..."). -->
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="(Out)" xml:space="preserve"><value>(Hết)</value></data>
+  <data name="1 item" xml:space="preserve"><value>1 sản phẩm</value></data>
+  <data name="1 item selected" xml:space="preserve"><value>Đã chọn 1 sản phẩm</value></data>
+  <data name="100% genuine with official warranty" xml:space="preserve"><value>Chính hãng 100%, bảo hành chính thức</value></data>
+  <data name="30-day hassle-free returns" xml:space="preserve"><value>Đổi trả dễ dàng trong 30 ngày</value></data>
+  <data name="A product must belong to a category. Create a category first, then come back here." xml:space="preserve"><value>Sản phẩm phải thuộc một danh mục. Hãy tạo danh mục trước rồi quay lại đây.</value></data>
+  <data name="AVAILABLE" xml:space="preserve"><value>TỒN KHẢ DỤNG</value></data>
+  <data name="Access denied" xml:space="preserve"><value>Quyền truy cập bị từ chối</value></data>
+  <data name="Account" xml:space="preserve"><value>Tài khoản</value></data>
+  <data name="Account ID" xml:space="preserve"><value>Mã tài khoản</value></data>
+  <data name="Account created. Check your email for a verification link, then sign in." xml:space="preserve"><value>Đã tạo tài khoản. Hãy kiểm tra email để mở liên kết xác minh, rồi đăng nhập.</value></data>
+  <data name="Account details" xml:space="preserve"><value>Thông tin tài khoản</value></data>
+  <data name="Account menu" xml:space="preserve"><value>Menu tài khoản</value></data>
+  <data name="Actions for {0}" xml:space="preserve"><value>Thao tác với {0}</value></data>
+  <data name="Active" xml:space="preserve"><value>Đang bán</value></data>
+  <data name="Active sign-in session" xml:space="preserve"><value>Phiên đăng nhập hiện tại</value></data>
+  <data name="Add at least one image." xml:space="preserve"><value>Thêm ít nhất một ảnh.</value></data>
+  <data name="Add category" xml:space="preserve"><value>Thêm danh mục</value></data>
+  <data name="Add product" xml:space="preserve"><value>Thêm sản phẩm</value></data>
+  <data name="Add to cart" xml:space="preserve"><value>Thêm vào giỏ</value></data>
+  <data name="Add variant" xml:space="preserve"><value>Thêm biến thể</value></data>
+  <data name="Add your first category to group products." xml:space="preserve"><value>Thêm danh mục đầu tiên để phân nhóm sản phẩm.</value></data>
+  <data name="Add {0} to cart" xml:space="preserve"><value>Thêm {0} vào giỏ</value></data>
+  <data name="Add, rename, delete and restore categories." xml:space="preserve"><value>Thêm, đổi tên, xoá và hoàn tác danh mục.</value></data>
+  <data name="Added category {0}" xml:space="preserve"><value>Đã thêm danh mục {0}</value></data>
+  <data name="Adding…" xml:space="preserve"><value>Đang thêm…</value></data>
+  <data name="Admin area" xml:space="preserve"><value>Khu quản trị</value></data>
+  <data name="Administrator" xml:space="preserve"><value>Quản trị viên</value></data>
+  <data name="All photos ({0})" xml:space="preserve"><value>Tất cả ảnh ({0})</value></data>
+  <data name="All products" xml:space="preserve"><value>Tất cả sản phẩm</value></data>
+  <data name="Already have an account?" xml:space="preserve"><value>Đã có tài khoản?</value></data>
+  <data name="Already verified?" xml:space="preserve"><value>Đã xác minh?</value></data>
+  <data name="An unhandled error has occurred." xml:space="preserve"><value>Đã xảy ra lỗi không mong muốn.</value></data>
+  <data name="Back" xml:space="preserve"><value>Quay lại</value></data>
+  <data name="Back on sale" xml:space="preserve"><value>Đã bán lại</value></data>
+  <data name="Back to home" xml:space="preserve"><value>Về trang chủ</value></data>
+  <data name="Back to products" xml:space="preserve"><value>Về danh sách sản phẩm</value></data>
+  <data name="Back to store" xml:space="preserve"><value>Về cửa hàng</value></data>
+  <data name="Brand" xml:space="preserve"><value>Thương hiệu</value></data>
+  <data name="Brand *" xml:space="preserve"><value>Thương hiệu *</value></data>
+  <data name="CATALOG" xml:space="preserve"><value>CATALOG</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Huỷ</value></data>
+  <data name="Cart" xml:space="preserve"><value>Giỏ hàng</value></data>
+  <data name="Catalog" xml:space="preserve"><value>Catalog</value></data>
+  <data name="Catalog intro" xml:space="preserve"><value>Giới thiệu danh mục</value></data>
+  <data name="Categories" xml:space="preserve"><value>Danh mục</value></data>
+  <data name="Category" xml:space="preserve"><value>Danh mục</value></data>
+  <data name="Category *" xml:space="preserve"><value>Danh mục *</value></data>
+  <data name="Category list" xml:space="preserve"><value>Danh sách danh mục</value></data>
+  <data name="Category name" xml:space="preserve"><value>Tên danh mục</value></data>
+  <data name="Category {0} · Brand {1} · ID {2}" xml:space="preserve"><value>Danh mục {0} · Thương hiệu {1} · ID {2}</value></data>
+  <data name="Changes saved" xml:space="preserve"><value>Đã lưu thay đổi</value></data>
+  <data name="Checkout" xml:space="preserve"><value>Thanh toán</value></data>
+  <data name="Checkout ({0})" xml:space="preserve"><value>Thanh toán ({0})</value></data>
+  <data name="Choose a category" xml:space="preserve"><value>Chọn danh mục</value></data>
+  <data name="Choose an option for this product first." xml:space="preserve"><value>Hãy chọn phân loại cho sản phẩm trước.</value></data>
+  <data name="Choose at least one image" xml:space="preserve"><value>Chọn ít nhất một ảnh</value></data>
+  <data name="Choose product image" xml:space="preserve"><value>Chọn ảnh sản phẩm</value></data>
+  <data name="Choose product images" xml:space="preserve"><value>Chọn ảnh sản phẩm</value></data>
+  <data name="Clear search" xml:space="preserve"><value>Xoá tìm kiếm</value></data>
+  <data name="Close" xml:space="preserve"><value>Đóng</value></data>
+  <data name="Close cart" xml:space="preserve"><value>Đóng giỏ hàng</value></data>
+  <data name="Color theme" xml:space="preserve"><value>Giao diện màu</value></data>
+  <data name="Complaints" xml:space="preserve"><value>Giải quyết khiếu nại</value></data>
+  <data name="Confirm" xml:space="preserve"><value>Xác nhận</value></data>
+  <data name="Confirm password" xml:space="preserve"><value>Nhập lại mật khẩu</value></data>
+  <data name="Confirm your password." xml:space="preserve"><value>Nhập lại mật khẩu.</value></data>
+  <data name="Connection lost." xml:space="preserve"><value>Mất kết nối.</value></data>
+  <data name="Contact" xml:space="preserve"><value>Liên hệ</value></data>
+  <data name="Continue" xml:space="preserve"><value>Tiếp tục</value></data>
+  <data name="Continue shopping" xml:space="preserve"><value>Tiếp tục mua sắm</value></data>
+  <data name="Copied" xml:space="preserve"><value>Đã sao chép</value></data>
+  <data name="Copy" xml:space="preserve"><value>Sao chép</value></data>
+  <data name="Copy account ID" xml:space="preserve"><value>Sao chép mã tài khoản</value></data>
+  <data name="Could not add {0} ({1} MB): over 25 MB. Free up {2} MB more." xml:space="preserve"><value>Chưa thêm được {0} ({1} MB): vượt 25 MB. Cần giải phóng thêm {2} MB.</value></data>
+  <data name="Could not add {0}: up to {1} images." xml:space="preserve"><value>Chưa thêm được {0}: tối đa {1} ảnh.</value></data>
+  <data name="Could not copy the account ID." xml:space="preserve"><value>Không sao chép được mã tài khoản.</value></data>
+  <data name="Could not delete the category." xml:space="preserve"><value>Không xoá được danh mục.</value></data>
+  <data name="Could not delete the product." xml:space="preserve"><value>Không xoá được sản phẩm.</value></data>
+  <data name="Could not load categories." xml:space="preserve"><value>Không tải được danh mục.</value></data>
+  <data name="Could not load data." xml:space="preserve"><value>Không tải được dữ liệu.</value></data>
+  <data name="Could not load products." xml:space="preserve"><value>Không tải được sản phẩm.</value></data>
+  <data name="Could not load the product." xml:space="preserve"><value>Không tải được sản phẩm.</value></data>
+  <data name="Could not restore." xml:space="preserve"><value>Không khôi phục được.</value></data>
+  <data name="Create a category" xml:space="preserve"><value>Tạo danh mục</value></data>
+  <data name="Create a password." xml:space="preserve"><value>Tạo mật khẩu.</value></data>
+  <data name="Create account" xml:space="preserve"><value>Tạo tài khoản</value></data>
+  <data name="Create an account" xml:space="preserve"><value>Tạo tài khoản</value></data>
+  <data name="Create product" xml:space="preserve"><value>Tạo sản phẩm</value></data>
+  <data name="Create products, edit details, discontinue or delete." xml:space="preserve"><value>Tạo sản phẩm, sửa thông tin, ngừng bán hoặc xoá.</value></data>
+  <data name="Creating account…" xml:space="preserve"><value>Đang tạo tài khoản…</value></data>
+  <data name="Creating…" xml:space="preserve"><value>Đang tạo…</value></data>
+  <data name="Currency" xml:space="preserve"><value>Tiền tệ</value></data>
+  <data name="Customer" xml:space="preserve"><value>Khách hàng</value></data>
+  <data name="Customer support" xml:space="preserve"><value>Hỗ trợ khách hàng</value></data>
+  <data name="Dark" xml:space="preserve"><value>Tối</value></data>
+  <data name="Decrease {0}" xml:space="preserve"><value>Giảm {0}</value></data>
+  <data name="Delete" xml:space="preserve"><value>Xoá</value></data>
+  <data name="Delete category {0}?" xml:space="preserve"><value>Xoá danh mục {0}?</value></data>
+  <data name="Delete product" xml:space="preserve"><value>Xoá sản phẩm</value></data>
+  <data name="Delete product {0}?" xml:space="preserve"><value>Xoá sản phẩm {0}?</value></data>
+  <data name="Delete variant" xml:space="preserve"><value>Xoá biến thể</value></data>
+  <data name="Delete {0}" xml:space="preserve"><value>Xoá {0}</value></data>
+  <data name="Deleted" xml:space="preserve"><value>Đã xoá</value></data>
+  <data name="Deleted category {0}" xml:space="preserve"><value>Đã xoá danh mục {0}</value></data>
+  <data name="Deleted product {0}" xml:space="preserve"><value>Đã xoá sản phẩm {0}</value></data>
+  <data name="Description" xml:space="preserve"><value>Mô tả</value></data>
+  <data name="Details" xml:space="preserve"><value>Thông tin</value></data>
+  <data name="Discontinue" xml:space="preserve"><value>Ngừng bán</value></data>
+  <data name="Discontinue this product?" xml:space="preserve"><value>Ngừng bán sản phẩm này?</value></data>
+  <data name="Discontinue {0}?" xml:space="preserve"><value>Ngừng bán {0}?</value></data>
+  <data name="Discontinued" xml:space="preserve"><value>Ngừng bán</value></data>
+  <data name="Discontinued {0}" xml:space="preserve"><value>Đã ngừng bán {0}</value></data>
+  <data name="Discover Curated Essentials" xml:space="preserve"><value>Khám phá sản phẩm chọn lọc</value></data>
+  <data name="Don’t have an account?" xml:space="preserve"><value>Chưa có tài khoản?</value></data>
+  <data name="Drag and drop or choose images (JPG, PNG, WebP · up to 5 MB each)" xml:space="preserve"><value>Kéo thả hoặc chọn ảnh (JPG, PNG, WebP · tối đa 5 MB mỗi ảnh)</value></data>
+  <data name="Duplicate row" xml:space="preserve"><value>Nhân bản dòng</value></data>
+  <data name="Each variant has a unique SKU, a price and at least one image." xml:space="preserve"><value>Mỗi biến thể có SKU duy nhất, giá và ít nhất một ảnh.</value></data>
+  <data name="Edit" xml:space="preserve"><value>Sửa</value></data>
+  <data name="Edit general information" xml:space="preserve"><value>Sửa thông tin chung</value></data>
+  <data name="Edit images" xml:space="preserve"><value>Sửa ảnh</value></data>
+  <data name="Edit in admin" xml:space="preserve"><value>Sửa trong admin</value></data>
+  <data name="Edit variants" xml:space="preserve"><value>Sửa biến thể</value></data>
+  <data name="Edit {0}" xml:space="preserve"><value>Sửa {0}</value></data>
+  <data name="Editing variants is coming in a later release." xml:space="preserve"><value>Chỉnh sửa biến thể sẽ có ở bản sau.</value></data>
+  <data name="Email address" xml:space="preserve"><value>Địa chỉ email</value></data>
+  <data name="Enter a SKU" xml:space="preserve"><value>Nhập SKU</value></data>
+  <data name="Enter a brand" xml:space="preserve"><value>Nhập thương hiệu</value></data>
+  <data name="Enter a category name" xml:space="preserve"><value>Nhập tên danh mục</value></data>
+  <data name="Enter a product name" xml:space="preserve"><value>Nhập tên sản phẩm</value></data>
+  <data name="Enter a valid email address." xml:space="preserve"><value>Nhập email hợp lệ.</value></data>
+  <data name="Enter a valid phone number." xml:space="preserve"><value>Nhập số điện thoại hợp lệ.</value></data>
+  <data name="Enter a variant name" xml:space="preserve"><value>Nhập tên biến thể</value></data>
+  <data name="Enter your email address." xml:space="preserve"><value>Nhập địa chỉ email.</value></data>
+  <data name="Enter your full name." xml:space="preserve"><value>Nhập họ và tên.</value></data>
+  <data name="Enter your password." xml:space="preserve"><value>Nhập mật khẩu.</value></data>
+  <data name="Enter your phone number." xml:space="preserve"><value>Nhập số điện thoại.</value></data>
+  <data name="FAQ" xml:space="preserve"><value>Câu hỏi thường gặp</value></data>
+  <data name="First image" xml:space="preserve"><value>Ảnh đầu</value></data>
+  <data name="Free express delivery on orders over 500k" xml:space="preserve"><value>Giao nhanh miễn phí cho đơn từ 500k</value></data>
+  <data name="Full name" xml:space="preserve"><value>Họ và tên</value></data>
+  <data name="Full name must be 100 characters or fewer." xml:space="preserve"><value>Họ tên tối đa 100 ký tự.</value></data>
+  <data name="General information" xml:space="preserve"><value>Thông tin chung</value></data>
+  <data name="Go to the admin area" xml:space="preserve"><value>Vào khu quản trị</value></data>
+  <data name="Groups of products shown in the store." xml:space="preserve"><value>Nhóm sản phẩm hiển thị trên cửa hàng.</value></data>
+  <data name="Hidden" xml:space="preserve"><value>Ẩn</value></data>
+  <data name="Hidden products do not appear in the admin list until a new filter is available. Note the ID after creating it." xml:space="preserve"><value>Sản phẩm ẩn sẽ không xuất hiện trong danh sách quản trị cho tới khi có bộ lọc mới. Ghi lại ID sau khi tạo.</value></data>
+  <data name="Home" xml:space="preserve"><value>Trang chủ</value></data>
+  <data name="How to buy" xml:space="preserve"><value>Hướng dẫn mua hàng</value></data>
+  <data name="IMAGE" xml:space="preserve"><value>ẢNH</value></data>
+  <data name="Image storage used" xml:space="preserve"><value>Dung lượng ảnh đã dùng</value></data>
+  <data name="Image unavailable" xml:space="preserve"><value>Không có ảnh</value></data>
+  <data name="Image {0}" xml:space="preserve"><value>Ảnh {0}</value></data>
+  <data name="Image {0} (main image): {1}" xml:space="preserve"><value>Ảnh {0} (ảnh chính): {1}</value></data>
+  <data name="Image {0}: {1}" xml:space="preserve"><value>Ảnh {0}: {1}</value></data>
+  <data name="Images" xml:space="preserve"><value>Ảnh</value></data>
+  <data name="Images ({0})" xml:space="preserve"><value>Ảnh ({0})</value></data>
+  <data name="In stock" xml:space="preserve"><value>Còn hàng</value></data>
+  <data name="Incorrect email or password. Please try again." xml:space="preserve"><value>Email hoặc mật khẩu không đúng. Vui lòng thử lại.</value></data>
+  <data name="Increase {0}" xml:space="preserve"><value>Tăng {0}</value></data>
+  <data name="Items in your cart" xml:space="preserve"><value>Sản phẩm trong giỏ</value></data>
+  <data name="Items you add will show up here." xml:space="preserve"><value>Sản phẩm bạn thêm sẽ hiện ở đây.</value></data>
+  <data name="Language" xml:space="preserve"><value>Ngôn ngữ</value></data>
+  <data name="Leave" xml:space="preserve"><value>Rời trang</value></data>
+  <data name="Leave this page?" xml:space="preserve"><value>Rời trang này?</value></data>
+  <data name="Light" xml:space="preserve"><value>Sáng</value></data>
+  <data name="Load more ({0} remaining)" xml:space="preserve"><value>Xem thêm (còn {0})</value></data>
+  <data name="Loading" xml:space="preserve"><value>Đang tải</value></data>
+  <data name="Loading categories…" xml:space="preserve"><value>Đang tải danh mục…</value></data>
+  <data name="Loading product" xml:space="preserve"><value>Đang tải sản phẩm</value></data>
+  <data name="Loading…" xml:space="preserve"><value>Đang tải…</value></data>
+  <data name="Main" xml:space="preserve"><value>Chính</value></data>
+  <data name="Main image" xml:space="preserve"><value>Ảnh chính</value></data>
+  <data name="Make {0} the main image" xml:space="preserve"><value>Đặt {0} làm ảnh chính</value></data>
+  <data name="Managing images is coming in a later release." xml:space="preserve"><value>Quản lý ảnh sẽ có ở bản sau.</value></data>
+  <data name="More actions" xml:space="preserve"><value>Thao tác khác</value></data>
+  <data name="Move {0} earlier" xml:space="preserve"><value>Chuyển {0} lên trước</value></data>
+  <data name="Move {0} later" xml:space="preserve"><value>Chuyển {0} ra sau</value></data>
+  <data name="NAME" xml:space="preserve"><value>TÊN</value></data>
+  <data name="Name" xml:space="preserve"><value>Tên</value></data>
+  <data name="Name (e.g. Black / M) *" xml:space="preserve"><value>Tên (vd Đen / M) *</value></data>
+  <data name="Name, brand, category and description shown in the store." xml:space="preserve"><value>Tên, thương hiệu, danh mục và mô tả hiển thị trên cửa hàng.</value></data>
+  <data name="New" xml:space="preserve"><value>Thêm mới</value></data>
+  <data name="No categories yet" xml:space="preserve"><value>Chưa có danh mục nào</value></data>
+  <data name="No categories yet." xml:space="preserve"><value>Chưa có danh mục nào.</value></data>
+  <data name="No images yet" xml:space="preserve"><value>Chưa có ảnh</value></data>
+  <data name="No images yet. Go back to the Images step to upload some." xml:space="preserve"><value>Chưa có ảnh. Quay lại bước Ảnh để tải ảnh lên.</value></data>
+  <data name="No items selected" xml:space="preserve"><value>Chưa chọn sản phẩm nào</value></data>
+  <data name="No matching categories" xml:space="preserve"><value>Không có danh mục khớp</value></data>
+  <data name="No products" xml:space="preserve"><value>Không có sản phẩm</value></data>
+  <data name="No products found" xml:space="preserve"><value>Không tìm thấy sản phẩm</value></data>
+  <data name="No variants yet" xml:space="preserve"><value>Chưa có biến thể</value></data>
+  <data name="No visible products match the current filters." xml:space="preserve"><value>Không có sản phẩm hiển thị khớp bộ lọc hiện tại.</value></data>
+  <data name="Not active" xml:space="preserve"><value>Không hoạt động</value></data>
+  <data name="Not saved. The product may have been deleted; restore it and try again." xml:space="preserve"><value>Chưa lưu được. Sản phẩm có thể đã bị xoá, hãy Khôi phục rồi thử lại.</value></data>
+  <data name="OK" xml:space="preserve"><value>Đồng ý</value></data>
+  <data name="Only products currently visible in the store are listed." xml:space="preserve"><value>Danh sách chỉ gồm sản phẩm đang hiển thị trên cửa hàng.</value></data>
+  <data name="Open by ID" xml:space="preserve"><value>Mở theo ID</value></data>
+  <data name="Open cart, {0} items" xml:space="preserve"><value>Mở giỏ hàng, {0} sản phẩm</value></data>
+  <data name="Open or close menu" xml:space="preserve"><value>Mở hoặc đóng menu</value></data>
+  <data name="Option:" xml:space="preserve"><value>Phân loại:</value></data>
+  <data name="Order placed." xml:space="preserve"><value>Đã đặt hàng.</value></data>
+  <data name="Out of stock" xml:space="preserve"><value>Hết hàng</value></data>
+  <data name="Overview" xml:space="preserve"><value>Tổng quan</value></data>
+  <data name="Overview metrics will be added in phase G4." xml:space="preserve"><value>Số liệu tổng quan sẽ được thêm ở giai đoạn G4.</value></data>
+  <data name="PRICE" xml:space="preserve"><value>GIÁ</value></data>
+  <data name="Page not found" xml:space="preserve"><value>Không tìm thấy trang</value></data>
+  <data name="Password" xml:space="preserve"><value>Mật khẩu</value></data>
+  <data name="Password must be at least 8 characters." xml:space="preserve"><value>Mật khẩu phải có ít nhất 8 ký tự.</value></data>
+  <data name="Passwords do not match." xml:space="preserve"><value>Mật khẩu không khớp.</value></data>
+  <data name="Payment" xml:space="preserve"><value>Thanh toán</value></data>
+  <data name="Phone number" xml:space="preserve"><value>Số điện thoại</value></data>
+  <data name="Place an order for 1 item, total {0}?" xml:space="preserve"><value>Đặt hàng 1 sản phẩm, tổng {0}?</value></data>
+  <data name="Place an order for {0} items, total {1}?" xml:space="preserve"><value>Đặt hàng {0} sản phẩm, tổng {1}?</value></data>
+  <data name="Place order" xml:space="preserve"><value>Đặt hàng</value></data>
+  <data name="Placing order…" xml:space="preserve"><value>Đang đặt hàng…</value></data>
+  <data name="Please sign in to continue." xml:space="preserve"><value>Vui lòng đăng nhập để tiếp tục.</value></data>
+  <data name="Please try again in a moment." xml:space="preserve"><value>Vui lòng thử lại sau giây lát.</value></data>
+  <data name="Policies" xml:space="preserve"><value>Chính sách</value></data>
+  <data name="Press the button below to confirm this email address for your Vendora account." xml:space="preserve"><value>Bấm nút bên dưới để xác nhận địa chỉ email này cho tài khoản Vendora của bạn.</value></data>
+  <data name="Price (₫) *" xml:space="preserve"><value>Giá (₫) *</value></data>
+  <data name="Price unavailable" xml:space="preserve"><value>Chưa có giá</value></data>
+  <data name="Privacy" xml:space="preserve"><value>Bảo mật thông tin</value></data>
+  <data name="Processing {0}…" xml:space="preserve"><value>Đang xử lý {0}…</value></data>
+  <data name="Product" xml:space="preserve"><value>Sản phẩm</value></data>
+  <data name="Product categories" xml:space="preserve"><value>Danh mục sản phẩm</value></data>
+  <data name="Product category" xml:space="preserve"><value>Danh mục sản phẩm</value></data>
+  <data name="Product code" xml:space="preserve"><value>Mã sản phẩm</value></data>
+  <data name="Product created. Initial stock is 0." xml:space="preserve"><value>Đã tạo sản phẩm. Tồn kho ban đầu là 0.</value></data>
+  <data name="Product creation steps" xml:space="preserve"><value>Các bước tạo sản phẩm</value></data>
+  <data name="Product gallery" xml:space="preserve"><value>Thư viện ảnh sản phẩm</value></data>
+  <data name="Product image unavailable" xml:space="preserve"><value>Không có ảnh sản phẩm</value></data>
+  <data name="Product images" xml:space="preserve"><value>Ảnh sản phẩm</value></data>
+  <data name="Product information" xml:space="preserve"><value>Thông tin sản phẩm</value></data>
+  <data name="Product list" xml:space="preserve"><value>Danh sách sản phẩm</value></data>
+  <data name="Product name" xml:space="preserve"><value>Tên sản phẩm</value></data>
+  <data name="Product name *" xml:space="preserve"><value>Tên sản phẩm *</value></data>
+  <data name="Product not found" xml:space="preserve"><value>Không tìm thấy sản phẩm</value></data>
+  <data name="Product restored" xml:space="preserve"><value>Đã khôi phục sản phẩm</value></data>
+  <data name="Products" xml:space="preserve"><value>Sản phẩm</value></data>
+  <data name="Profile" xml:space="preserve"><value>Hồ sơ</value></data>
+  <data name="Quality products, transparent pricing, and seamless checkout." xml:space="preserve"><value>Sản phẩm chất lượng, giá minh bạch, thanh toán thuận tiện.</value></data>
+  <data name="Quantity" xml:space="preserve"><value>Số lượng</value></data>
+  <data name="Quantity of {0}" xml:space="preserve"><value>Số lượng của {0}</value></data>
+  <data name="Register" xml:space="preserve"><value>Đăng ký</value></data>
+  <data name="Reload" xml:space="preserve"><value>Tải lại</value></data>
+  <data name="Reload page" xml:space="preserve"><value>Tải lại trang</value></data>
+  <data name="Remove" xml:space="preserve"><value>Xoá</value></data>
+  <data name="Remove selected" xml:space="preserve"><value>Xoá mục đã chọn</value></data>
+  <data name="Remove selected ({0})" xml:space="preserve"><value>Xoá mục đã chọn ({0})</value></data>
+  <data name="Remove {0} from cart" xml:space="preserve"><value>Xoá {0} khỏi giỏ</value></data>
+  <data name="Removed {0}" xml:space="preserve"><value>Đã xoá {0}</value></data>
+  <data name="Removed {0} items" xml:space="preserve"><value>Đã xoá {0} sản phẩm</value></data>
+  <data name="Rename category" xml:space="preserve"><value>Đổi tên danh mục</value></data>
+  <data name="Renamed to {0}" xml:space="preserve"><value>Đã đổi tên thành {0}</value></data>
+  <data name="Reset filters" xml:space="preserve"><value>Xoá bộ lọc</value></data>
+  <data name="Restore product" xml:space="preserve"><value>Khôi phục sản phẩm</value></data>
+  <data name="Restore product #{0}" xml:space="preserve"><value>Khôi phục sản phẩm #{0}</value></data>
+  <data name="Restored (if the product had been deleted)." xml:space="preserve"><value>Đã khôi phục (nếu sản phẩm từng bị xoá).</value></data>
+  <data name="Restored {0}" xml:space="preserve"><value>Đã khôi phục {0}</value></data>
+  <data name="Results for “{0}”" xml:space="preserve"><value>Kết quả cho “{0}”</value></data>
+  <data name="Returns and refunds" xml:space="preserve"><value>Đổi trả và hoàn tiền</value></data>
+  <data name="Review" xml:space="preserve"><value>Xem lại</value></data>
+  <data name="Role" xml:space="preserve"><value>Vai trò</value></data>
+  <data name="Save" xml:space="preserve"><value>Lưu</value></data>
+  <data name="Save changes" xml:space="preserve"><value>Lưu thay đổi</value></data>
+  <data name="Saving…" xml:space="preserve"><value>Đang lưu…</value></data>
+  <data name="Search" xml:space="preserve"><value>Tìm</value></data>
+  <data name="Search by name…" xml:space="preserve"><value>Tìm theo tên…</value></data>
+  <data name="Search categories" xml:space="preserve"><value>Tìm danh mục</value></data>
+  <data name="Search products" xml:space="preserve"><value>Tìm sản phẩm</value></data>
+  <data name="Search products…" xml:space="preserve"><value>Tìm sản phẩm…</value></data>
+  <data name="Search: “{0}”" xml:space="preserve"><value>Tìm: “{0}”</value></data>
+  <data name="Select all" xml:space="preserve"><value>Chọn tất cả</value></data>
+  <data name="Select all items" xml:space="preserve"><value>Chọn tất cả</value></data>
+  <data name="Select at least one item to check out." xml:space="preserve"><value>Hãy chọn ít nhất một sản phẩm để thanh toán.</value></data>
+  <data name="Select {0}" xml:space="preserve"><value>Chọn {0}</value></data>
+  <data name="Select {0}, {1}" xml:space="preserve"><value>Chọn {0}, {1}</value></data>
+  <data name="Selected" xml:space="preserve"><value>Đã chọn</value></data>
+  <data name="Selected items use different currencies. Select items with one currency to check out." xml:space="preserve"><value>Các sản phẩm đã chọn dùng nhiều loại tiền. Hãy chọn sản phẩm cùng một loại tiền để thanh toán.</value></data>
+  <data name="Sell again" xml:space="preserve"><value>Bán lại</value></data>
+  <data name="Session security" xml:space="preserve"><value>Bảo mật phiên</value></data>
+  <data name="Shipping" xml:space="preserve"><value>Vận chuyển</value></data>
+  <data name="Shipping is calculated at checkout." xml:space="preserve"><value>Phí vận chuyển được tính khi thanh toán.</value></data>
+  <data name="Shop" xml:space="preserve"><value>Mua sắm</value></data>
+  <data name="Show in the store right away" xml:space="preserve"><value>Hiển thị ngay trên cửa hàng</value></data>
+  <data name="Showing 100 of {0} categories" xml:space="preserve"><value>Đang hiện 100 / {0} danh mục</value></data>
+  <data name="Shown in the store right away" xml:space="preserve"><value>Hiển thị ngay trên cửa hàng</value></data>
+  <data name="Sign in" xml:space="preserve"><value>Đăng nhập</value></data>
+  <data name="Sign in now" xml:space="preserve"><value>Đăng nhập ngay</value></data>
+  <data name="Sign in required" xml:space="preserve"><value>Yêu cầu đăng nhập</value></data>
+  <data name="Sign in to your account to access this area." xml:space="preserve"><value>Bạn cần đăng nhập tài khoản để truy cập vào khu vực này.</value></data>
+  <data name="Sign out" xml:space="preserve"><value>Đăng xuất</value></data>
+  <data name="Signed in as {0}" xml:space="preserve"><value>Đăng nhập với {0}</value></data>
+  <data name="Signed in until {0}" xml:space="preserve"><value>Đăng nhập đến {0}</value></data>
+  <data name="Signed in until {0} today" xml:space="preserve"><value>Đăng nhập đến {0} hôm nay</value></data>
+  <data name="Signing in…" xml:space="preserve"><value>Đang đăng nhập…</value></data>
+  <data name="Signing out…" xml:space="preserve"><value>Đang đăng xuất…</value></data>
+  <data name="Skip to content" xml:space="preserve"><value>Chuyển đến nội dung</value></data>
+  <data name="Something went wrong" xml:space="preserve"><value>Đã xảy ra lỗi</value></data>
+  <data name="Staff" xml:space="preserve"><value>Nhân viên</value></data>
+  <data name="Step {0}: {1}" xml:space="preserve"><value>Bước {0}: {1}</value></data>
+  <data name="Step {0}: {1} (done)" xml:space="preserve"><value>Bước {0}: {1} (đã xong)</value></data>
+  <data name="Step {0}: {1} (needs fixing)" xml:space="preserve"><value>Bước {0}: {1} (cần sửa)</value></data>
+  <data name="Subtotal" xml:space="preserve"><value>Tạm tính</value></data>
+  <data name="Support" xml:space="preserve"><value>Hỗ trợ</value></data>
+  <data name="System" xml:space="preserve"><value>Theo hệ thống</value></data>
+  <data name="System overview" xml:space="preserve"><value>Tổng quan hệ thống</value></data>
+  <data name="Tax ID" xml:space="preserve"><value>MST</value></data>
+  <data name="Terms of use" xml:space="preserve"><value>Điều khoản sử dụng</value></data>
+  <data name="That conflicts with the current state. Please try again." xml:space="preserve"><value>Thao tác xung đột với trạng thái hiện tại. Vui lòng thử lại.</value></data>
+  <data name="The ID must be a number" xml:space="preserve"><value>ID phải là số</value></data>
+  <data name="The action failed." xml:space="preserve"><value>Thao tác thất bại.</value></data>
+  <data name="The category will be hidden from the store. Its products are not deleted." xml:space="preserve"><value>Danh mục sẽ ẩn khỏi cửa hàng. Sản phẩm trong danh mục không bị xoá.</value></data>
+  <data name="The currency is fixed to VND." xml:space="preserve"><value>Tiền tệ cố định là VND.</value></data>
+  <data name="The first image is the main image. Up to 10 images." xml:space="preserve"><value>Ảnh đầu tiên là ảnh chính. Tối đa 10 ảnh.</value></data>
+  <data name="The images are too large. Use fewer or smaller images and try again." xml:space="preserve"><value>Ảnh quá lớn. Giảm số ảnh hoặc dung lượng rồi thử lại.</value></data>
+  <data name="The price cannot be negative" xml:space="preserve"><value>Giá không âm</value></data>
+  <data name="The product does not exist or was deleted. You can restore it if you know its ID." xml:space="preserve"><value>Sản phẩm không tồn tại hoặc đã bị xoá. Bạn có thể khôi phục nếu đã biết ID.</value></data>
+  <data name="The product stays in the system and can be sold again." xml:space="preserve"><value>Sản phẩm vẫn còn trong hệ thống và có thể bán lại.</value></data>
+  <data name="The product will disappear from the store. You can undo right after." xml:space="preserve"><value>Sản phẩm sẽ biến mất khỏi cửa hàng. Bạn có thể hoàn tác ngay sau đó.</value></data>
+  <data name="The server returned an empty response." xml:space="preserve"><value>Máy chủ trả về phản hồi rỗng.</value></data>
+  <data name="The upload is too large." xml:space="preserve"><value>Tệp tải lên quá lớn.</value></data>
+  <data name="There is now room for {0} ({1} MB). Choose it again to add it." xml:space="preserve"><value>Đã đủ chỗ cho {0} ({1} MB). Chọn lại ảnh này để thêm.</value></data>
+  <data name="There is now room for {0}. Choose it again to add it." xml:space="preserve"><value>Đã có chỗ cho {0}. Chọn lại ảnh này để thêm.</value></data>
+  <data name="This SKU already exists. Change it and try again." xml:space="preserve"><value>SKU đã tồn tại. Đổi SKU khác rồi thử lại.</value></data>
+  <data name="This SKU is repeated in the form" xml:space="preserve"><value>SKU bị trùng trong form</value></data>
+  <data name="This category already exists" xml:space="preserve"><value>Đã có danh mục này</value></data>
+  <data name="This category has {0} visible products." xml:space="preserve"><value>Danh mục đang có {0} sản phẩm hiển thị.</value></data>
+  <data name="This email is already in use. Sign in or use another email." xml:space="preserve"><value>Email này đã được dùng. Hãy đăng nhập hoặc dùng email khác.</value></data>
+  <data name="This page may have moved or no longer exists. Return home to explore products." xml:space="preserve"><value>Trang này có thể đã được chuyển hoặc không còn tồn tại. Hãy về trang chủ để xem sản phẩm.</value></data>
+  <data name="This product is out of stock." xml:space="preserve"><value>Sản phẩm này đã hết hàng.</value></data>
+  <data name="This product is unavailable or may have been removed. Return home to explore other products." xml:space="preserve"><value>Sản phẩm này không có sẵn hoặc đã bị gỡ. Hãy về trang chủ để xem sản phẩm khác.</value></data>
+  <data name="This verification link is invalid or has expired. Verification links are valid for a few minutes." xml:space="preserve"><value>Liên kết xác minh không hợp lệ hoặc đã hết hạn. Liên kết chỉ có hiệu lực trong vài phút.</value></data>
+  <data name="This verification link is invalid." xml:space="preserve"><value>Liên kết xác minh không hợp lệ.</value></data>
+  <data name="Try again" xml:space="preserve"><value>Thử lại</value></data>
+  <data name="Try another search or category." xml:space="preserve"><value>Thử từ khoá hoặc danh mục khác.</value></data>
+  <data name="Unable to add this product." xml:space="preserve"><value>Không thêm được sản phẩm này.</value></data>
+  <data name="Unable to complete your request. Please try again later." xml:space="preserve"><value>Không thể hoàn tất yêu cầu. Vui lòng thử lại sau.</value></data>
+  <data name="Unable to connect. Check your connection and try again." xml:space="preserve"><value>Không kết nối được. Hãy kiểm tra kết nối và thử lại.</value></data>
+  <data name="Unable to load this product." xml:space="preserve"><value>Không tải được sản phẩm này.</value></data>
+  <data name="Unable to place your order." xml:space="preserve"><value>Không đặt được hàng.</value></data>
+  <data name="Unable to update your cart." xml:space="preserve"><value>Không cập nhật được giỏ hàng.</value></data>
+  <data name="Undo" xml:space="preserve"><value>Hoàn tác</value></data>
+  <data name="Unexpected response from the server." xml:space="preserve"><value>Phản hồi không mong đợi từ máy chủ.</value></data>
+  <data name="Unsaved changes will be lost." xml:space="preserve"><value>Các thay đổi chưa lưu sẽ bị mất.</value></data>
+  <data name="Up to 2 decimal places" xml:space="preserve"><value>Tối đa 2 chữ số thập phân</value></data>
+  <data name="Up to {0} characters" xml:space="preserve"><value>Tối đa {0} ký tự</value></data>
+  <data name="Updating your cart" xml:space="preserve"><value>Đang cập nhật giỏ hàng</value></data>
+  <data name="Use at least 8 characters." xml:space="preserve"><value>Dùng ít nhất 8 ký tự.</value></data>
+  <data name="Use this to open hidden or deleted products" xml:space="preserve"><value>Dùng để mở sản phẩm đang ẩn hoặc đã xoá</value></data>
+  <data name="User" xml:space="preserve"><value>Người dùng</value></data>
+  <data name="VENDORA ACCOUNT" xml:space="preserve"><value>TÀI KHOẢN VENDORA</value></data>
+  <data name="Variant images *" xml:space="preserve"><value>Ảnh của biến thể *</value></data>
+  <data name="Variants" xml:space="preserve"><value>Biến thể</value></data>
+  <data name="Variants ({0})" xml:space="preserve"><value>Biến thể ({0})</value></data>
+  <data name="Vendora — Home" xml:space="preserve"><value>Vendora — Trang chủ</value></data>
+  <data name="Verify email" xml:space="preserve"><value>Xác minh email</value></data>
+  <data name="Verify your email" xml:space="preserve"><value>Xác minh email của bạn</value></data>
+  <data name="Verifying…" xml:space="preserve"><value>Đang xác minh…</value></data>
+  <data name="View details" xml:space="preserve"><value>Xem chi tiết</value></data>
+  <data name="View full cart" xml:space="preserve"><value>Xem toàn bộ giỏ hàng</value></data>
+  <data name="View in admin" xml:space="preserve"><value>Xem trong admin</value></data>
+  <data name="View in store" xml:space="preserve"><value>Xem trên cửa hàng</value></data>
+  <data name="View only" xml:space="preserve"><value>Chỉ xem</value></data>
+  <data name="View {0}" xml:space="preserve"><value>Xem {0}</value></data>
+  <data name="Visibility" xml:space="preserve"><value>Hiển thị</value></data>
+  <data name="We could not find what you asked for." xml:space="preserve"><value>Không tìm thấy nội dung bạn yêu cầu.</value></data>
+  <data name="We couldn’t load products" xml:space="preserve"><value>Không tải được sản phẩm</value></data>
+  <data name="We couldn’t load this page. Please return home and try again in a moment." xml:space="preserve"><value>Không tải được trang này. Hãy về trang chủ và thử lại sau giây lát.</value></data>
+  <data name="We couldn’t load this product" xml:space="preserve"><value>Không tải được sản phẩm này</value></data>
+  <data name="We couldn’t load your cart" xml:space="preserve"><value>Không tải được giỏ hàng</value></data>
+  <data name="You do not have permission to do this." xml:space="preserve"><value>Bạn không có quyền thực hiện thao tác này.</value></data>
+  <data name="You do not have permission to view this page. Go back to the store or contact your manager." xml:space="preserve"><value>Bạn không có đủ quyền hạn để xem trang này. Vui lòng quay lại cửa hàng hoặc liên hệ quản lý.</value></data>
+  <data name="You may also like" xml:space="preserve"><value>Có thể bạn cũng thích</value></data>
+  <data name="Your cart" xml:space="preserve"><value>Giỏ hàng</value></data>
+  <data name="Your cart ({0})" xml:space="preserve"><value>Giỏ hàng ({0})</value></data>
+  <data name="Your cart is empty" xml:space="preserve"><value>Giỏ hàng trống</value></data>
+  <data name="Your email is verified. You can now sign in." xml:space="preserve"><value>Email đã được xác minh. Bạn có thể đăng nhập.</value></data>
+  <data name="Your profile" xml:space="preserve"><value>Hồ sơ của bạn</value></data>
+  <data name="Your session ends in 1 minute. Save your work, then sign in again." xml:space="preserve"><value>Phiên đăng nhập sẽ hết sau 1 phút. Hãy lưu công việc rồi đăng nhập lại.</value></data>
+  <data name="Your session ends in {0} minutes. Save your work, then sign in again." xml:space="preserve"><value>Phiên đăng nhập sẽ hết sau {0} phút. Hãy lưu công việc rồi đăng nhập lại.</value></data>
+  <data name="product" xml:space="preserve"><value>sản phẩm</value></data>
+  <data name="{0} (deleted)" xml:space="preserve"><value>{0} (đã xoá)</value></data>
+  <data name="{0} ({1} MB) is over the 5 MB per-image limit" xml:space="preserve"><value>{0} ({1} MB) vượt quá 5 MB mỗi ảnh</value></data>
+  <data name="{0} / {1} images" xml:space="preserve"><value>{0} / {1} ảnh</value></data>
+  <data name="{0} / {1} selected" xml:space="preserve"><value>{0} / {1} đã chọn</value></data>
+  <data name="{0} MB / 25 MB · {1} MB free" xml:space="preserve"><value>{0} MB / 25 MB · còn trống {1} MB</value></data>
+  <data name="{0} images" xml:space="preserve"><value>{0} ảnh</value></data>
+  <data name="{0} items" xml:space="preserve"><value>{0} sản phẩm</value></data>
+  <data name="{0} items selected" xml:space="preserve"><value>Đã chọn {0} sản phẩm</value></data>
+  <data name="{0} of 25 MB" xml:space="preserve"><value>{0} trên 25 MB</value></data>
+  <data name="{0} · photo {1}" xml:space="preserve"><value>{0} · ảnh {1}</value></data>
+  <data name="{0}: could not read the image (damaged or not an image)" xml:space="preserve"><value>{0}: không đọc được ảnh (file hỏng hoặc không phải ảnh)</value></data>
+  <data name="{0}: only JPG, PNG and WebP are accepted" xml:space="preserve"><value>{0}: chỉ nhận JPG, PNG, WebP</value></data>
+  <data name="Drag to reorder" xml:space="preserve"><value>Kéo để sắp xếp</value></data>
+  <data name="Moved {0} to position {1}" xml:space="preserve"><value>Đã chuyển {0} tới vị trí {1}</value></data>
+  <data name="Drag images to reorder them (on touch screens, press and hold first). The first image is the main image." xml:space="preserve"><value>Kéo thả ảnh để sắp xếp (trên màn hình cảm ứng, nhấn giữ ảnh trước khi kéo). Ảnh đầu tiên là ảnh chính.</value></data>
+  <data name="Add images" xml:space="preserve"><value>Thêm ảnh</value></data>
+  <data name="{0} left" xml:space="preserve"><value>Còn {0} ảnh</value></data>
+  <data name="Add more product images" xml:space="preserve"><value>Thêm ảnh sản phẩm</value></data>
+</root>

@@ -1,0 +1,24 @@
+@inject NavigationManager Navigation
+
+<MudMenu Label="@Cultures.ShortName(Cultures.Current)" StartIcon="@Icons.Material.Outlined.Translate" EndIcon="@Icons.Material.Outlined.ExpandMore"
+         AriaLabel="@L["Language"]" Size="Size.Small" Variant="Variant.Text" Color="Color.Inherit" Dense="true" Class="theme-picker language-picker"
+         AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+    @foreach (var culture in Cultures.Supported)
+    {
+        var c = culture;
+        <MudMenuItem OnClick="@(() => Select(c))">
+            <span lang="@c">@Cultures.DisplayName(c)</span>
+            @if (c == Cultures.Current) { <MudIcon Icon="@Icons.Material.Filled.Check" Size="Size.Small" Class="theme-selected" aria-label="@L["Selected"]" /> }
+        </MudMenuItem>
+    }
+</MudMenu>
+
+@code {
+    // The circuit's culture is fixed when it starts, so store the choice in a cookie and reload this page.
+    private void Select(string culture)
+    {
+        if (culture == Cultures.Current) return;
+        var here = "/" + Navigation.ToBaseRelativePath(Navigation.Uri);
+        Navigation.NavigateTo($"culture/set?culture={culture}&redirectUri={Uri.EscapeDataString(here)}", forceLoad: true);
+    }
+}
