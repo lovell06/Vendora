@@ -4,24 +4,32 @@
 @inject GatewayClient Gateway
 @inject UserSession Session
 @inject NavigationManager Navigation
-<PageTitle>Sign in | Vendora</PageTitle>
-<PageHeading Title="Sign in" Eyebrow="VENDORA ACCOUNT" />
+<PageTitle>@L["Sign in"] | Vendora</PageTitle>
+<PageHeading Title="@L["Sign in"]" Eyebrow="@L["VENDORA ACCOUNT"]" />
 <EditForm Model="_model" OnValidSubmit="Submit" FormName="login" aria-busy="@_busy">
     <DataAnnotationsValidator />
-    <AppTextField Id="email" Label="Email address" Type="email" @bind-Value="_model.Email" Autocomplete="username" />
-    <AppTextField Id="password" Label="Password" @bind-Value="_model.Password" Autocomplete="current-password" RevealPassword="true" />
+    <AppTextField Id="email" Label="@L["Email address"]" Type="email" @bind-Value="_model.Email" Autocomplete="username" />
+    <AppTextField Id="password" Label="@L["Password"]" @bind-Value="_model.Password" Autocomplete="current-password" RevealPassword="true" />
     @if (_error is not null)
     {
         <InlineFeedback Message="@_error" Success="false"></InlineFeedback>
     }
-    <AppButton Type="submit" Busy="@_busy" BusyText="Signing in…" Class="auth-submit">Sign in</AppButton>
+    <AppButton Type="submit" Busy="@_busy" BusyText="@L["Signing in…"]" Class="auth-submit">@L["Sign in"]</AppButton>
 </EditForm>
-<div class="switch-form">Don’t have an account? <a href="/register">Create account</a></div>
+<div class="switch-form">@L["Don’t have an account?"] <a href="/register">@L["Create account"]</a></div>
 @code {
     private readonly LoginModel _model = new();
     private bool _busy;
     private string? _error;
     [Parameter, SupplyParameterFromQuery(Name = "returnUrl")] public string? ReturnUrl { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        await Session.EnsureLoadedAsync();
+        if (Session.IsAuthenticated) Navigation.NavigateTo(Destination(), replace: true);
+    }
+
+    private string Destination() => IsLocal(ReturnUrl) ? ReturnUrl! : Session.IsStaff ? "/admin" : "/";
+
     private async Task Submit()
     {
         if (_busy) return;
@@ -32,11 +40,11 @@
             var result = await Gateway.LoginAsync(_model.Email, _model.Password);
             if (!result.Ok || result.Value is null)
             {
-                _error = result.Unauthorized ? "Incorrect email or password. Please try again." : result.Error;
+                _error = result.Unauthorized ? L["Incorrect email or password. Please try again."] : result.Error;
                 return;
             }
             await Session.SignInAsync(result.Value);
-            Navigation.NavigateTo(IsLocal(ReturnUrl) ? ReturnUrl! : "/");
+            Navigation.NavigateTo(Destination());
         }
         finally { _busy = false; }
     }
@@ -44,7 +52,7 @@
     private static bool IsLocal(string? url) =>
         !string.IsNullOrEmpty(url) && url[0] == '/' && (url.Length == 1 || (url[1] != '/' && url[1] != '\\'));
     private sealed class LoginModel {
-        [Required(ErrorMessage = "Enter your email address."), EmailAddress(ErrorMessage = "Enter a valid email address.")] public string Email { get; set; } = "";
-        [Required(ErrorMessage = "Enter your password.")] public string Password { get; set; } = "";
+        [Required(ErrorMessageResourceType = typeof(ValidationText), ErrorMessageResourceName = nameof(ValidationText.EnterEmail)), EmailAddress(ErrorMessageResourceType = typeof(ValidationText), ErrorMessageResourceName = nameof(ValidationText.InvalidEmail))] public string Email { get; set; } = "";
+        [Required(ErrorMessageResourceType = typeof(ValidationText), ErrorMessageResourceName = nameof(ValidationText.EnterPassword))] public string Password { get; set; } = "";
     }
 }

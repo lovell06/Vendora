@@ -1,1 +1,5 @@
-.store-shell { min-height: 100dvh; }
+.store-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}

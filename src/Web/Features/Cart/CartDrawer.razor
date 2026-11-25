@@ -3,15 +3,15 @@
 @inject CartState Cart
 @inject IJSRuntime JS
 
-<MudDialog Class="cart-drawer" AriaLabel="Your cart">
+<MudDialog Class="cart-drawer" AriaLabel="@L["Your cart"]">
     <DialogContent>
         <div class="cart-drawer-root">
         <header class="cart-drawer-header">
-            <h2 id="cart-drawer-title">Your cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</h2>
-            <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small" data-cart-close aria-label="Close cart" />
+            <h2 id="cart-drawer-title">@(Cart.Count > 0 ? L["Your cart ({0})", Cart.Count] : L["Your cart"])</h2>
+            <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small" data-cart-close aria-label="@L["Close cart"]" />
         </header>
         <CartView Mode="CartViewMode.Overlay" OnContinueShopping="Close" OnCheckedOut="Close" />
-        <a class="cart-drawer-link" href="/cart" @onclick="OpenFullPage" @onclick:preventDefault>View full cart</a>
+        <a class="cart-drawer-link" href="/cart" @onclick="OpenFullPage" @onclick:preventDefault>@L["View full cart"]</a>
         </div>
     </DialogContent>
 </MudDialog>

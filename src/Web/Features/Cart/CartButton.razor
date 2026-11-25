@@ -3,12 +3,16 @@
 @inject CartUiState CartUi
 @inject ViewportState Viewport
 
-@* A real link to /cart: on compact screens the browser navigates to the page; on wide screens the click opens the floating panel instead. *@
 <a href="/cart" @ref="_link" class="cart-button" @onclick="OnClick" @onclick:preventDefault="@(!Viewport.IsCompact)"
-   aria-label="@($"Open cart, {Cart.Count} items")" aria-haspopup="@(Viewport.IsCompact ? null : "dialog")" aria-expanded="@(Viewport.IsCompact ? null : CartUi.IsDrawerOpen.ToString().ToLowerInvariant())">
-    <AppIcon Name="bag" />
-    <span class="cart-button-label">Cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</span>
-    @if (Cart.Count > 0) { <span class="cart-badge" @key="Cart.Count" aria-hidden="true">@(Cart.Count > 99 ? "99+" : Cart.Count.ToString())</span> }
+   aria-label="@L["Open cart, {0} items", Cart.Count]" aria-haspopup="@(Viewport.IsCompact ? null : "dialog")" aria-expanded="@(Viewport.IsCompact ? null : CartUi.IsDrawerOpen.ToString().ToLowerInvariant())">
+    <div class="cart-icon-wrapper">
+        <AppIcon Name="bag" />
+        @if (Cart.Count > 0)
+        {
+            <span class="cart-badge" @key="Cart.Count" aria-hidden="true">@(Cart.Count > 99 ? "99+" : Cart.Count.ToString())</span>
+        }
+    </div>
+    <span class="cart-button-label">Cart</span>
 </a>
 
 @code {
@@ -24,7 +28,7 @@
     private async Task OnClick()
     {
         CartUi.Trigger = _link;
-        if (Viewport.IsCompact) { CartUi.CameFromInApp = true; return; } // The link navigates to /cart.
+        if (Viewport.IsCompact) { CartUi.CameFromInApp = true; return; }
         await CartUi.OpenAsync();
     }
 

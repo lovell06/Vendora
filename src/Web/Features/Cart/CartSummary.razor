@@ -2,12 +2,12 @@
 
 <div class="cart-summary @(Bar ? "cart-summary--bar" : "")">
     <div class="cart-summary-totals" aria-live="polite" aria-atomic="true">
-        <span class="cart-summary-count">@(Cart.SelectedCount == 0 ? "No items selected" : $"{Cart.SelectedCount} {(Cart.SelectedCount == 1 ? "item" : "items")} selected")</span>
-        <span class="cart-summary-total"><span class="cart-summary-label">Subtotal</span> @TotalText</span>
+        <span class="cart-summary-count">@(Cart.SelectedCount == 0 ? L["No items selected"] : Cart.SelectedCount == 1 ? L["1 item selected"] : L["{0} items selected", Cart.SelectedCount])</span>
+        <span class="cart-summary-total"><span class="cart-summary-label">@L["Subtotal"]</span> @TotalText</span>
     </div>
-    @if (Cart.HasMixedCurrency) { <p class="cart-summary-note" role="alert">Selected items use different currencies. Select items with one currency to check out.</p> }
-    else if (!Bar) { <p class="cart-summary-note">Shipping is calculated at checkout.</p> }
-    <AppButton Class="cart-summary-checkout" OnClick="OnCheckout" Disabled="@(Cart.SelectedCount == 0 || Cart.HasMixedCurrency || Cart.IsAnyBusy)" Busy="@Cart.PlacingOrder" BusyText="Placing order…">Checkout@(Cart.SelectedCount > 0 ? $" ({Cart.SelectedCount})" : "")</AppButton>
+    @if (Cart.HasMixedCurrency) { <p class="cart-summary-note" role="alert">@L["Selected items use different currencies. Select items with one currency to check out."]</p> }
+    else if (!Bar) { <p class="cart-summary-note">@L["Shipping is calculated at checkout."]</p> }
+    <AppButton Class="cart-summary-checkout" OnClick="OnCheckout" Disabled="@(Cart.SelectedCount == 0 || Cart.HasMixedCurrency || Cart.IsAnyBusy)" Busy="@Cart.PlacingOrder" BusyText="@L["Placing order…"]">@(Cart.SelectedCount > 0 ? L["Checkout ({0})", Cart.SelectedCount] : L["Checkout"])</AppButton>
 </div>
 @code {
     // Bar = compact layout used by the fixed bottom bar of the /cart page on phones.

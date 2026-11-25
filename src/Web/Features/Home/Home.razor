@@ -10,87 +10,109 @@
 @inject CartState Cart
 @inject CartUiState CartUi
 @inject NavigationManager Navigation
-<PageTitle>Home | Vendora</PageTitle>
-<StoreHeader>
-        @if (Session.IsAuthenticated)
+<PageTitle>@L["Home"] | Vendora</PageTitle>
+
+<StoreHeader />
+
+<main id="home-content" class="store-content" tabindex="-1">
+    <!-- Desktop-only clean hero section; hidden on mobile to prioritize products directly -->
+    <section class="desktop-hero" aria-label="@L["Catalog intro"]">
+        <div class="hero-text">
+            <h1 class="hero-title">@L["Discover Curated Essentials"]</h1>
+            <p class="hero-subtitle">@L["Quality products, transparent pricing, and seamless checkout."]</p>
+        </div>
+    </section>
+
+    <!-- Toolbar: Search + Category MudChips in Horizontal Streamlined Layout -->
+    <div class="catalog-toolbar">
+        <form class="store-search" @onsubmit="Search" @onsubmit:preventDefault role="search">
+            <MudTextField T="string" InputId="product-search" @bind-Value="_query" InputType="InputType.Search"
+                          Placeholder="@L["Search products…"]" Variant="Variant.Text" Underline="false"
+                          Immediate="true" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Outlined.Search"
+                          Margin="Margin.Dense" Class="catalog-search-input" aria-label="@L["Search products"]" />
+            @if (!string.IsNullOrWhiteSpace(_query))
+            {
+                <MudIconButton Icon="@Icons.Material.Outlined.Close" Size="Size.Small" OnClick="ClearSearch" aria-label="@L["Clear search"]" Class="search-clear-btn" />
+            }
+            <AppButton Type="submit" Class="search-submit-btn">@L["Search"]</AppButton>
+        </form>
+
+        <!-- Category Buttons: Original MudChipSet appearance inside streamlined toolbar -->
+        <div class="category-options" aria-label="@L["Product categories"]">
+            <MudChipSet T="string" SelectedValue="_selectedCategory" SelectedValueChanged="OnCategoryChanged"
+                        SelectionMode="SelectionMode.SingleSelection" CheckMark="true" Size="Size.Small"
+                        Label="true" aria-label="@L["Product category"]">
+                <MudChip T="string" Value="@("all")">@L["All products"]</MudChip>
+                @foreach (var category in _categories)
+                {
+                    <MudChip T="string" Value="@category.Id.ToString()">@category.Name</MudChip>
+                }
+            </MudChipSet>
+        </div>
+    </div>
+
+    <!-- Results Section (Full Width, Streamlined Layout) -->
+    <section class="catalog-results" aria-labelledby="products-title">
+        <div class="results-header">
+            <h2 id="products-title" class="results-title">@(_submittedQuery.Length == 0 ? (SelectedCategoryName ?? L["All products"]) : L["Search: “{0}”", _submittedQuery])</h2>
+            <span class="product-count" aria-live="polite">@(_totalCount == 1 ? L["1 item"] : L["{0} items", _totalCount])</span>
+        </div>
+        @if (_submittedQuery.Length > 0)
         {
-            <CartButton />
-            <AppButton Variant="ButtonVariant.Icon" OnClick="ToggleAccount" aria-label="Your account" aria-expanded="@_accountOpen" aria-controls="account-panel"><AppIcon Name="user" /><span class="desktop-action-label">Account</span></AppButton>
+            <div class="search-summary">
+                <span>@L["Results for “{0}”", _submittedQuery]</span>
+                <AppButton Variant="ButtonVariant.Text" OnClick="ClearSearch">@L["Clear search"]</AppButton>
+            </div>
+        }
+
+        @if (_loading && _products.Count == 0)
+        {
+            <ProductGrid>
+                @for (var i = 0; i < 8; i++)
+                {
+                    <ProductCardSkeleton @key="i" />
+                }
+            </ProductGrid>
+        }
+        else if (_error is not null)
+        {
+            <div class="catalog-empty" role="alert">
+                <h3>@L["We couldn’t load products"]</h3>
+                <p>@_error</p>
+                <AppButton Variant="ButtonVariant.Primary" OnClick="Reload">@L["Try again"]</AppButton>
+            </div>
+        }
+        else if (_products.Count > 0)
+        {
+            <ProductGrid>
+                @foreach (var product in _products)
+                {
+                    <ProductCard @key="product.Id" Name="@product.Name" Category="@SelectedCategoryName"
+                                 PriceText="@PriceFormatter.FormatRange(product.MinPrice, product.MaxPrice, product.Currency)"
+                                 ImageUrl="@product.ImageUrl" DetailsHref="@($"/products/{product.Id}")"
+                                 Busy="@(_busyProductId == product.Id)" OnAddToCart="@(Session.IsStaff ? default : EventCallback.Factory.Create<MouseEventArgs>(this, () => AddToCart(product)))" />
+                }
+            </ProductGrid>
+            @if (_products.Count < _totalCount)
+            {
+                <div class="load-more">
+                    <AppButton Variant="ButtonVariant.Text" OnClick="LoadMore" Busy="@_loading" BusyText="@L["Loading…"]" Class="load-more-btn">
+                        @L["Load more ({0} remaining)", _totalCount - _products.Count]
+                    </AppButton>
+                </div>
+            }
         }
         else
         {
-            <MudButton Href="/login" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button sign-in-link">Sign in</MudButton>
-        }
-</StoreHeader>
-<main id="home-content" class="store-content" tabindex="-1">
-    <div class="catalog-intro"><PageHeading Title="Explore products" Eyebrow="CATALOG" /></div>
-    @if (Session.IsAuthenticated && _accountOpen)
-    {
-        <section id="account-panel" class="cart-panel" aria-labelledby="account-title">
-            <div class="section-heading"><h2 id="account-title">Your account</h2><AppButton Variant="ButtonVariant.Text" OnClick="ToggleAccount">Close</AppButton></div>
-            <p>@Session.DisplayName</p>
-            <AppButton Variant="ButtonVariant.Text" OnClick="SignOut" Busy="@_signingOut" BusyText="Signing out…">Sign out</AppButton>
-        </section>
-    }
-    <form class="store-search" @onsubmit="Search" @onsubmit:preventDefault role="search">
-        <MudTextField T="string" InputId="product-search" @bind-Value="_query" InputType="InputType.Search" Placeholder="Search products" Variant="Variant.Text" Underline="false" Immediate="true" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Outlined.Search" Margin="Margin.Dense" Class="catalog-search-input" aria-label="Search products" />
-        <AppButton Type="submit">Search</AppButton>
-    </form>
-    <div class="catalog-layout">
-        <aside class="catalog-filters" aria-labelledby="category-title">
-            <h2 id="category-title">Categories</h2>
-            <div class="category-options">
-                <MudChipSet T="string" SelectedValue="_selectedCategory" SelectedValueChanged="OnCategoryChanged" SelectionMode="SelectionMode.SingleSelection" CheckMark="true" Size="Size.Small" Label="true" aria-label="Product category">
-                    <MudChip T="string" Value="@("all")">All products</MudChip>
-                    @foreach (var category in _categories)
-                    {
-                        <MudChip T="string" Value="@category.Id.ToString()">@category.Name</MudChip>
-                    }
-                </MudChipSet>
+            <div class="catalog-empty">
+                <h3>@L["No products found"]</h3>
+                <p>@L["Try another search or category."]</p>
+                <AppButton Variant="ButtonVariant.Text" OnClick="ResetFilters">@L["Reset filters"]</AppButton>
             </div>
-        </aside>
-        <section class="catalog-results" aria-labelledby="products-title">
-            <div class="section-heading results-heading"><h2 id="products-title">@(_submittedQuery.Length == 0 ? "All products" : "Search results")</h2><span class="product-count" aria-live="polite">@_totalCount products</span></div>
-            @if (_submittedQuery.Length > 0)
-            {
-                <div class="search-summary"><span>Results for “@_submittedQuery”</span><AppButton Variant="ButtonVariant.Text" OnClick="ClearSearch">Clear search</AppButton></div>
-            }
-            @if (_loading && _products.Count == 0)
-            {
-                <div class="catalog-empty" role="status"><MudProgressCircular Indeterminate="true" Size="Size.Medium" aria-label="Loading products" /></div>
-            }
-            else if (_error is not null)
-            {
-                <div class="catalog-empty" role="alert">
-                    <h3>We couldn’t load products</h3>
-                    <p>@_error</p>
-                    <AppButton Variant="ButtonVariant.Text" OnClick="Reload">Try again</AppButton>
-                </div>
-            }
-            else if (_products.Count > 0)
-            {
-                <ProductGrid>
-                    @foreach (var product in _products)
-                    {
-                        <ProductCard @key="product.Id" Name="@product.Name" Category="@SelectedCategoryName" PriceText="@PriceFormatter.FormatRange(product.MinPrice, product.MaxPrice, product.Currency)" ImageUrl="@product.ImageUrl" DetailsHref="@($"/products/{product.Id}")" Busy="@(_busyProductId == product.Id)" OnAddToCart="@(() => AddToCart(product))" />
-                    }
-                </ProductGrid>
-                @if (_products.Count < _totalCount)
-                {
-                    <div class="load-more"><AppButton Variant="ButtonVariant.Text" OnClick="LoadMore" Busy="@_loading" BusyText="Loading…">Load more</AppButton></div>
-                }
-            }
-            else
-            {
-                <div class="catalog-empty">
-                    <h3>No products found</h3>
-                    <p>Try another search or category.</p>
-                    <AppButton Variant="ButtonVariant.Text" OnClick="ResetFilters">Reset filters</AppButton>
-                </div>
-            }
-        </section>
-    </div>
+        }
+    </section>
 </main>
+
 @code {
     private const int PageSize = 24;
 
@@ -103,11 +125,9 @@
     private bool _loading;
     private string? _error;
     private long? _busyProductId;
-    private bool _signingOut;
     private string _selectedCategory = "all";
     private string _query = "";
     private string _submittedQuery = "";
-    private bool _accountOpen;
 
     private int? SelectedCategoryId => int.TryParse(_selectedCategory, out var id) ? id : null;
     private string? SelectedCategoryName => _categories.FirstOrDefault(category => category.Id == SelectedCategoryId)?.Name;
@@ -130,7 +150,6 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // Old deep link /?panel=cart: floating panel on wide screens, the /cart page on phones.
         if (firstRender && Panel == "cart" && Session.IsAuthenticated) await CartUi.OpenAsync();
     }
 
@@ -196,24 +215,23 @@
         _busyProductId = summary.Id;
         try
         {
-            // The list does not carry variants, so load the product to know what can be added.
             var detail = await Gateway.GetProductAsync(summary.Id);
             if (!detail.Ok || detail.Value is null)
             {
-                Snackbar.Add(detail.Error ?? "Unable to add this product.", Severity.Error);
+                Snackbar.Add(detail.Error ?? L["Unable to add this product."], Severity.Error);
                 return;
             }
             var variants = detail.Value.Variants;
             if (variants.Count != 1)
             {
-                Snackbar.Add("Choose an option for this product first.", Severity.Info);
+                Snackbar.Add(L["Choose an option for this product first."], Severity.Info);
                 Navigation.NavigateTo($"/products/{summary.Id}");
                 return;
             }
             var variant = variants[0];
             if (!variant.InStock)
             {
-                Snackbar.Add("This product is out of stock.", Severity.Warning);
+                Snackbar.Add(L["This product is out of stock."], Severity.Warning);
                 return;
             }
 
@@ -232,7 +250,7 @@
                     NoHeader = true, BackdropClick = true, CloseOnEscapeKey = true,
                     CloseOnNavigation = true, BackgroundClass = "cart-sheet-backdrop"
                 };
-                var dialog = await DialogService.ShowAsync<AddToCartSheet>("Add to cart", parameters, options);
+                var dialog = await DialogService.ShowAsync<AddToCartSheet>(L["Add to cart"], parameters, options);
                 var result = await dialog.Result;
                 if (result is not { Canceled: false, Data: int selected }) return;
                 quantity = selected;
@@ -240,32 +258,12 @@
 
             var added = await Cart.AddAsync(variant.Id, quantity);
             if (added.Ok) Snackbar.Add($"{quantity} × {summary.Name} added to your cart.", Severity.Success);
-            else Snackbar.Add(added.Error ?? "Unable to add this product.", Severity.Error);
+            else Snackbar.Add(added.Error ?? L["Unable to add this product."], Severity.Error);
         }
         finally { _busyProductId = null; }
     }
 
-    private async Task SignOut()
-    {
-        if (_signingOut) return;
-        _signingOut = true;
-        try
-        {
-            await Gateway.LogoutAsync(); // Best effort: the local session ends either way.
-            Cart.Clear();
-            await Session.SignOutAsync();
-            _accountOpen = false;
-        }
-        finally { _signingOut = false; }
-    }
-
-    private void ToggleAccount() { if (!Session.IsAuthenticated) return; _accountOpen = !_accountOpen; }
-
-    private void OnSessionChanged() => _ = InvokeAsync(() =>
-    {
-        if (!Session.IsAuthenticated) { _accountOpen = false; }
-        StateHasChanged();
-    });
+    private void OnSessionChanged() => _ = InvokeAsync(StateHasChanged);
 
     public void Dispose()
     {

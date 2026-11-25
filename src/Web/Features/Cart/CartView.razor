@@ -14,9 +14,9 @@
         else if (Cart.Error is not null && Cart.Lines.Count == 0)
         {
             <div class="cart-state" role="alert">
-                <h2>We couldn’t load your cart</h2>
+                <h2>@L["We couldn’t load your cart"]</h2>
                 <p>@Cart.Error</p>
-                <AppButton Variant="ButtonVariant.Text" OnClick="Cart.RefreshAsync">Try again</AppButton>
+                <AppButton Variant="ButtonVariant.Text" OnClick="Cart.RefreshAsync">@L["Try again"]</AppButton>
             </div>
         }
         else if (Cart.Lines.Count == 0)
@@ -25,16 +25,16 @@
         }
         else
         {
-            @if (Cart.Loading) { <MudProgressLinear Indeterminate="true" Size="Size.Small" Class="cart-progress" aria-label="Updating your cart" /> }
-            @if (Cart.Error is not null) { <p class="cart-inline-error" role="alert">@Cart.Error <AppButton Variant="ButtonVariant.Text" OnClick="Cart.RefreshAsync">Try again</AppButton></p> }
+            @if (Cart.Loading) { <MudProgressLinear Indeterminate="true" Size="Size.Small" Class="cart-progress" aria-label="@L["Updating your cart"]" /> }
+            @if (Cart.Error is not null) { <p class="cart-inline-error" role="alert">@Cart.Error <AppButton Variant="ButtonVariant.Text" OnClick="Cart.RefreshAsync">@L["Try again"]</AppButton></p> }
             <div class="cart-toolbar">
                 <label class="cart-select-all">
-                    <input type="checkbox" @ref="_selectAll" checked="@Cart.AllSelected" @onchange="@(e => Cart.SelectAll((bool)(e.Value ?? false)))" aria-label="Select all items" />
-                    <span>Select all</span>
+                    <input type="checkbox" @ref="_selectAll" checked="@Cart.AllSelected" @onchange="@(e => Cart.SelectAll((bool)(e.Value ?? false)))" aria-label="@L["Select all items"]" />
+                    <span>@L["Select all"]</span>
                 </label>
-                <AppButton Variant="ButtonVariant.Text" Disabled="@(Cart.SelectedCount == 0 || Cart.IsAnyBusy)" OnClick="RemoveSelected">Remove selected@(Cart.SelectedCount > 0 ? $" ({Cart.SelectedCount})" : "")</AppButton>
+                <AppButton Variant="ButtonVariant.Text" Disabled="@(Cart.SelectedCount == 0 || Cart.IsAnyBusy)" OnClick="RemoveSelected">@(Cart.SelectedCount > 0 ? L["Remove selected ({0})", Cart.SelectedCount] : L["Remove selected"])</AppButton>
             </div>
-            <ul class="cart-lines" aria-label="Items in your cart">
+            <ul class="cart-lines" aria-label="@L["Items in your cart"]">
                 @foreach (var line in Cart.Lines)
                 {
                     <CartLineItem @key="line.VariantId" Line="line" Selected="Cart.IsSelected(line.VariantId)"
@@ -93,10 +93,10 @@
     {
         var removed = await Cart.RemoveLinesAsync(ids);
         if (removed.Count == 0) return;
-        var message = removed.Count == 1 ? $"Removed {removed[0].ProductName}" : $"Removed {removed.Count} items";
+        string message = removed.Count == 1 ? L["Removed {0}", removed[0].ProductName] : L["Removed {0} items", removed.Count];
         Snackbar.Add(message, Severity.Normal, options =>
         {
-            options.Action = "Undo";
+            options.Action = L["Undo"];
             options.VisibleStateDuration = 5000;
             options.OnClick = async _ =>
             {
@@ -110,18 +110,18 @@
         if (Cart.SelectedCount == 0 || Cart.HasMixedCurrency) return;
         var total = PriceFormatter.Format(Cart.SelectedTotal, Cart.SelectedCurrency!);
         var confirmed = await DialogService.ShowMessageBoxAsync(
-            "Place order",
-            $"Place an order for {Cart.SelectedCount} {(Cart.SelectedCount == 1 ? "item" : "items")}, total {total}?",
-            yesText: "Place order", cancelText: "Cancel");
+            L["Place order"],
+            Cart.SelectedCount == 1 ? L["Place an order for 1 item, total {0}?", total] : L["Place an order for {0} items, total {1}?", Cart.SelectedCount, total],
+            yesText: L["Place order"], cancelText: L["Cancel"]);
         if (confirmed != true) return;
 
         var result = await Cart.CheckoutAsync();
         if (result.Ok)
         {
-            Snackbar.Add("Order placed.", Severity.Success);
+            Snackbar.Add(L["Order placed."], Severity.Success);
             await OnCheckedOut.InvokeAsync();
         }
-        else Snackbar.Add(result.Error ?? "Unable to place your order.", Severity.Error);
+        else Snackbar.Add(result.Error ?? L["Unable to place your order."], Severity.Error);
     }
 
     public void Dispose()

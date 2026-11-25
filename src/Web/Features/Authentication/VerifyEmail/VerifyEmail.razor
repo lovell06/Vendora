@@ -1,29 +1,29 @@
 @page "/verify-email"
 @layout AuthLayout
 @inject GatewayClient Gateway
-<PageTitle>Verify email | Vendora</PageTitle>
-<PageHeading Title="Verify your email" Eyebrow="VENDORA ACCOUNT" />
+<PageTitle>@L["Verify email"] | Vendora</PageTitle>
+<PageHeading Title="@L["Verify your email"]" Eyebrow="@L["VENDORA ACCOUNT"]" />
 @if (!HasValidLink)
 {
-    <InlineFeedback Message="This verification link is invalid." Success="false">
-        <a href="/register">Create an account</a>
+    <InlineFeedback Message="@L["This verification link is invalid."]" Success="false">
+        <a href="/register">@L["Create an account"]</a>
     </InlineFeedback>
 }
 else if (_verified)
 {
-    <InlineFeedback Message="Your email is verified. You can now sign in." Success="true" />
-    <AppButton OnClick="@(() => Navigation.NavigateTo("/login"))" Class="auth-submit">Sign in</AppButton>
+    <InlineFeedback Message="@L["Your email is verified. You can now sign in."]" Success="true" />
+    <AppButton OnClick="@(() => Navigation.NavigateTo("/login"))" Class="auth-submit">@L["Sign in"]</AppButton>
 }
 else
 {
-    <p class="verify-email-text">Press the button below to confirm this email address for your Vendora account.</p>
+    <p class="verify-email-text">@L["Press the button below to confirm this email address for your Vendora account."]</p>
     @if (_error is not null)
     {
         <InlineFeedback Message="@_error" Success="false" />
     }
-    <AppButton OnClick="Verify" Busy="@_busy" BusyText="Verifying…" Class="auth-submit">Verify email</AppButton>
+    <AppButton OnClick="Verify" Busy="@_busy" BusyText="@L["Verifying…"]" Class="auth-submit">@L["Verify email"]</AppButton>
 }
-<div class="switch-form">Already verified? <a href="/login">Sign in</a></div>
+<div class="switch-form">@L["Already verified?"] <a href="/login">@L["Sign in"]</a></div>
 @code {
     [Inject] private NavigationManager Navigation { get; set; } = default!;
 
@@ -54,7 +54,7 @@ else
             }
             // The verify API answers an invalid or expired token with an empty 401.
             _error = result.Unauthorized
-                ? "This verification link is invalid or has expired. Verification links are valid for a few minutes."
+                ? L["This verification link is invalid or has expired. Verification links are valid for a few minutes."]
                 : result.Error;
         }
         finally { _busy = false; }

@@ -1,28 +1,40 @@
-<section class="product-gallery" aria-label="Product gallery">
-    <div class="gallery-image">
-        @if (ActiveImage is { } image && !_failedUrls.Contains(image.Url))
-        {
-            <img @key="image.Url" src="@image.Url" alt="@image.Alt" width="480" height="480"
-                 fetchpriority="high" @onerror="() => _failedUrls.Add(image.Url)" />
-        }
-        else
-        {
-            <div class="gallery-fallback"><MudIcon Icon="@Icons.Material.Outlined.ImageNotSupported" aria-hidden="true" /><span>Image unavailable</span></div>
-        }
+<section class="product-gallery" aria-label="@L["Product gallery"]">
+    <div class="gallery-main-card">
+        <div class="gallery-image">
+            @if (ActiveImage is { } image && !_failedUrls.Contains(image.Url))
+            {
+                <img @key="image.Url" src="@image.Url" alt="@image.Alt" width="600" height="600"
+                     fetchpriority="high" @onerror="() => _failedUrls.Add(image.Url)" class="gallery-img-active" />
+            }
+            else
+            {
+                <div class="gallery-fallback">
+                    <MudIcon Icon="@Icons.Material.Outlined.ImageNotSupported" Size="Size.Large" aria-hidden="true" />
+                    <span>@L["Image unavailable"]</span>
+                </div>
+            }
+        </div>
+        <div class="gallery-counter-pill" aria-live="polite" aria-atomic="true">
+            @(ActiveIndex + 1) / @Images.Count
+        </div>
     </div>
-    <p class="gallery-caption" aria-live="polite" aria-atomic="true">@ActiveImage?.Alt · @(ActiveIndex + 1) of @Images.Count</p>
     @if (Images.Count > 1)
     {
-        <div class="gallery-thumbnails" role="group" aria-label="Choose product image">
+        <div class="gallery-thumbnails" role="group" aria-label="@L["Choose product image"]">
             @foreach (var thumbnail in Images)
             {
-                <button @key="thumbnail.Id" type="button" class="gallery-thumbnail" aria-label="@($"View {thumbnail.Alt}")"
-                        aria-pressed="@(thumbnail.Id == ActiveImage?.Id ? "true" : "false")" @onclick="() => ActiveImageIdChanged.InvokeAsync(thumbnail.Id)">
+                var isSelected = thumbnail.Id == ActiveImage?.Id;
+                <button @key="thumbnail.Id" type="button" class="gallery-thumbnail @(isSelected ? "gallery-thumbnail--selected" : "")"
+                        aria-label="@L["View {0}", thumbnail.Alt]" aria-pressed="@(isSelected ? "true" : "false")"
+                        @onclick="() => ActiveImageIdChanged.InvokeAsync(thumbnail.Id)">
                     @if (!_failedUrls.Contains(thumbnail.Url))
                     {
-                        <img src="@thumbnail.Url" alt="" width="64" height="64" loading="lazy" @onerror="() => _failedUrls.Add(thumbnail.Url)" />
+                        <img src="@thumbnail.Url" alt="" width="72" height="72" loading="lazy" @onerror="() => _failedUrls.Add(thumbnail.Url)" />
                     }
-                    else { <MudIcon Icon="@Icons.Material.Outlined.ImageNotSupported" aria-hidden="true" /> }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Outlined.ImageNotSupported" Size="Size.Small" aria-hidden="true" />
+                    }
                 </button>
             }
         </div>

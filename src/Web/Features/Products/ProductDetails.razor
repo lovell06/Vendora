@@ -10,89 +10,165 @@
 @inject CartState Cart
 @inject NavigationManager Navigation
 
-<PageTitle>@(_product is null ? (_loading ? "Loading product" : "Product not found") : _product.Name) | Vendora</PageTitle>
-<StoreHeader>
-    @if (Session.IsAuthenticated)
-    {
-        <CartButton />
-    }
-    else
-    {
-        <MudButton Href="@($"/login?returnUrl={Uri.EscapeDataString(Navigation.ToBaseRelativePath(Navigation.Uri).Insert(0, "/"))}")" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button sign-in-link">Sign in</MudButton>
-    }
-</StoreHeader>
+<PageTitle>@(_product is null ? (_loading ? L["Loading product"] : L["Product not found"]) : _product.Name) | Vendora</PageTitle>
+
+<StoreHeader />
+
 <main id="home-content" class="product-detail-page" tabindex="-1">
     @if (_loading)
     {
-        <div role="status" style="display:grid;place-items:center;min-height:240px"><MudProgressCircular Indeterminate="true" Size="Size.Medium" aria-label="Loading product" /></div>
+        <div role="status" class="product-detail-skeleton">
+            <div class="skeleton-media skeleton-shimmer"></div>
+            <div class="skeleton-info">
+                <div class="skeleton-line skeleton-line--sm skeleton-shimmer"></div>
+                <div class="skeleton-line skeleton-line--lg skeleton-shimmer"></div>
+                <div class="skeleton-line skeleton-line--md skeleton-shimmer"></div>
+                <div class="skeleton-line skeleton-line--full skeleton-shimmer"></div>
+                <div class="skeleton-line skeleton-line--btn skeleton-shimmer"></div>
+            </div>
+        </div>
     }
     else if (_product is null && _notFound)
     {
-        <StatusPage Code="404" Title="Product not found" Description="This product is unavailable. Return home to explore other products." Icon="@Icons.Material.Outlined.SearchOff" MinimalOnMobile="true" />
+        <StatusPage Code="404" Title="@L["Product not found"]" Description="@L["This product is unavailable or may have been removed. Return home to explore other products."]" Icon="@Icons.Material.Outlined.SearchOff" MinimalOnMobile="true" />
     }
     else if (_product is null)
     {
-        <StatusPage Code="503" Title="We couldn’t load this product" Description="@(_error ?? "Please try again later.")" Icon="@Icons.Material.Outlined.CloudOff" MinimalOnMobile="true" />
+        <StatusPage Code="503" Title="@L["We couldn’t load this product"]" Description="@(_error ?? L["Please try again in a moment."])" Icon="@Icons.Material.Outlined.CloudOff" MinimalOnMobile="true" />
     }
     else
     {
-        <MudButton Href="/" StartIcon="@Icons.Material.Outlined.ArrowBack" Variant="Variant.Text" Color="Color.Primary" Class="app-button back-link">All products</MudButton>
+        <!-- Back Navigation -->
+        <div class="detail-top-nav">
+            <a href="/" class="back-link">
+                <MudIcon Icon="@Icons.Material.Outlined.ArrowBack" Size="Size.Small" />
+                <span>@L["All products"]</span>
+            </a>
+            <span class="detail-nav-cat">/ @_product.Category.Name</span>
+        </div>
+
         <div class="detail-layout">
+            <!-- Media Gallery -->
             <div class="detail-media">
                 <ProductGallery @key="Id" Images="VisibleImages" @bind-ActiveImageId="_activeImageId" />
                 @if (_product.Variants.Count > 0 && _gallery.Count > VisibleImages.Count)
                 {
-                    <label class="gallery-toggle"><input type="checkbox" @bind="_showAllImages" />View all product photos (@_gallery.Count)</label>
+                    <label class="gallery-toggle">
+                        <input type="checkbox" @bind="_showAllImages" />
+                        <span>@L["All photos ({0})", _gallery.Count]</span>
+                    </label>
                 }
             </div>
+
+            <!-- Product Information & Purchase -->
             <section class="detail-summary" aria-labelledby="product-title">
-                <p class="category">@_product.Category.Name</p>
-                <h1 id="product-title">@_product.Name</h1>
-                <p class="detail-price">@PriceText</p>
-                <p class="stock"><MudIcon Icon="@(CanPurchase ? Icons.Material.Outlined.CheckCircle : Icons.Material.Outlined.RemoveCircleOutline)" Size="Size.Small" aria-hidden="true" />@(CanPurchase ? "In stock" : "Out of stock")</p>
-                @if (!string.IsNullOrWhiteSpace(_product.Description)) { <p class="description">@_product.Description</p> }
+                <p class="category-eyebrow">@_product.Category.Name</p>
+                <h1 id="product-title" class="product-title">@_product.Name</h1>
+
+                <div class="price-stock-row">
+                    <span class="detail-price">@PriceText</span>
+                    <span class="stock-status @(CanPurchase ? "stock-status--in" : "stock-status--out")">
+                        @(CanPurchase ? L["In stock"] : L["Out of stock"])
+                    </span>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(_product.Description))
+                {
+                    <p class="description">@_product.Description</p>
+                }
+
                 @if (_variants.Count > 0)
                 {
                     <fieldset class="variant-selector">
-                        <legend>Option <span>· @_selectedVariant?.Name</span></legend>
+                        <legend>@L["Option:"] <span class="selected-variant-name">@_selectedVariant?.Name</span></legend>
                         <div class="variant-options">
                             @foreach (var variant in _variants)
                             {
                                 var thumbnail = _gallery.FirstOrDefault(image => image.Id == variant.PrimaryImageId);
-                                <button type="button" class="variant-option" aria-pressed="@(variant.Id == _selectedVariant?.Id ? "true" : "false")"
+                                var isSelected = variant.Id == _selectedVariant?.Id;
+                                <button type="button" class="variant-chip @(isSelected ? "variant-chip--selected" : "")"
+                                        aria-pressed="@(isSelected ? "true" : "false")"
                                         @onclick="() => SelectVariant(variant)">
-                                    @if (thumbnail is not null) { <img src="@thumbnail.Url" alt="" width="44" height="44" loading="lazy" /> }
-                                    <span class="variant-label">@variant.Name@if (!variant.InStock) { <small>Out of stock</small> }</span>
-                                    @if (variant.Id == _selectedVariant?.Id) { <MudIcon Icon="@Icons.Material.Outlined.Check" Size="Size.Small" aria-hidden="true" /> }
+                                    @if (thumbnail is not null)
+                                    {
+                                        <img src="@thumbnail.Url" alt="" width="32" height="32" loading="lazy" />
+                                    }
+                                    <span class="variant-chip-label">@variant.Name</span>
+                                    @if (!variant.InStock)
+                                    {
+                                        <small class="variant-chip-out">@L["(Out)"]</small>
+                                    }
                                 </button>
                             }
                         </div>
                     </fieldset>
                 }
+
+                @if (Session.IsStaff)
+                {
+                    <div class="purchase-controls">
+                        <MudButton Href="@($"/admin/products/{Id}")" Variant="Variant.Outlined" Color="Color.Primary" Class="app-button"
+                                   StartIcon="@Icons.Material.Outlined.AdminPanelSettings">@(Session.Current?.Role == "Admin" ? L["Edit in admin"] : L["View in admin"])</MudButton>
+                    </div>
+                }
+                else
+                {
                 <div class="purchase-controls">
-                    <div class="desktop-quantity"><QuantitySelector @bind-Value="_quantity" Min="1" Max="99" Disabled="@(!CanPurchase)" /></div>
-                    <AppButton OnClick="RequestAddToCart" Busy="@_adding" BusyText="Adding…" Disabled="@(!CanPurchase || _openingSheet || _quantity < 1 || _quantity > 99)" Class="detail-add">@(CanPurchase ? "Add to cart" : "Out of stock")</AppButton>
+                    <div class="quantity-col">
+                        <QuantitySelector @bind-Value="_quantity" Min="1" Max="99" Disabled="@(!CanPurchase)" />
+                    </div>
+                    <AppButton OnClick="RequestAddToCart" Busy="@_adding" BusyText="@L["Adding…"]" Disabled="@(!CanPurchase || _openingSheet || _quantity < 1 || _quantity > 99)" Class="detail-add-btn">
+                        <MudIcon Icon="@Icons.Material.Outlined.AddShoppingCart" Size="Size.Small" />
+                        <span>@(CanPurchase ? L["Add to cart"] : L["Out of stock"])</span>
+                    </AppButton>
                 </div>
+                }
+
+                <!-- Desktop-only trust features -->
+                <div class="desktop-perks">
+                    <div class="perk-item">
+                        <MudIcon Icon="@Icons.Material.Outlined.LocalShipping" Size="Size.Small" />
+                        <span>@L["Free express delivery on orders over 500k"]</span>
+                    </div>
+                    <div class="perk-item">
+                        <MudIcon Icon="@Icons.Material.Outlined.VerifiedUser" Size="Size.Small" />
+                        <span>@L["100% genuine with official warranty"]</span>
+                    </div>
+                    <div class="perk-item">
+                        <MudIcon Icon="@Icons.Material.Outlined.PublishedWithChanges" Size="Size.Small" />
+                        <span>@L["30-day hassle-free returns"]</span>
+                    </div>
+                </div>
+
+                <!-- Product Specifications -->
                 <section class="product-information" aria-labelledby="information-title">
-                    <h2 id="information-title">Product information</h2>
-                    <dl><div><dt>Category</dt><dd>@_product.Category.Name</dd></div><div><dt>Brand</dt><dd>@_product.Brand</dd></div><div><dt>Product code</dt><dd>@(_selectedVariant?.ProductCode ?? _product.Id.ToString())</dd></div></dl>
+                    <h2 id="information-title">@L["Product information"]</h2>
+                    <dl class="specs-list">
+                        <div><dt>@L["Category"]</dt><dd>@_product.Category.Name</dd></div>
+                        <div><dt>@L["Brand"]</dt><dd>@_product.Brand</dd></div>
+                        <div><dt>@L["Product code"]</dt><dd>@(_selectedVariant?.ProductCode ?? _product.Id.ToString())</dd></div>
+                    </dl>
                 </section>
             </section>
         </div>
+
         @if (_related.Count > 0)
         {
-            <section class="related" aria-labelledby="related-title">
-                <h2 id="related-title">You may also like</h2>
+            <section class="related-section" aria-labelledby="related-title">
+                <h2 id="related-title">@L["You may also like"]</h2>
                 <ProductGrid>
                     @foreach (var product in _related)
                     {
-                        <ProductCard @key="product.Id" Name="@product.Name" Category="@_product.Category.Name" PriceText="@PriceFormatter.FormatRange(product.MinPrice, product.MaxPrice, product.Currency)" ImageUrl="@product.ImageUrl" DetailsHref="@($"/products/{product.Id}")" />
+                        <ProductCard @key="product.Id" Name="@product.Name" Category="@_product.Category.Name"
+                                     PriceText="@PriceFormatter.FormatRange(product.MinPrice, product.MaxPrice, product.Currency)"
+                                     ImageUrl="@product.ImageUrl" DetailsHref="@($"/products/{product.Id}")" />
                     }
                 </ProductGrid>
             </section>
         }
     }
 </main>
+
 @code {
     [Parameter] public string Id { get; set; } = "";
     [CascadingParameter] private HttpContext? HttpContext { get; set; }
@@ -159,7 +235,7 @@
             if (!long.TryParse(Id, out var productId)) { _notFound = true; return; }
 
             var result = await Gateway.GetProductAsync(productId);
-            if (_loadedId != Id) return; // navigated to another product while loading
+            if (_loadedId != Id) return;
             if (!result.Ok || result.Value is null)
             {
                 _notFound = result.NotFound;
@@ -170,7 +246,7 @@
             _product = result.Value;
             var product = _product;
             _gallery = product.Images.OrderBy(image => image.SortOrder)
-                .Select((image, index) => new ProductImage(image.Id.ToString(), image.Url, $"{product.Name} · photo {index + 1}"))
+                .Select((image, index) => new ProductImage(image.Id.ToString(), image.Url, L["{0} · photo {1}", product.Name, index + 1]))
                 .ToList();
             _prices.Clear();
             foreach (var variant in product.Variants) _prices[variant.Id.ToString()] = variant.Price;
@@ -241,7 +317,7 @@
                 NoHeader = true, BackdropClick = true, CloseOnEscapeKey = true,
                 CloseOnNavigation = true, BackgroundClass = "cart-sheet-backdrop"
             };
-            var dialog = await DialogService.ShowAsync<AddToCartSheet>("Add to cart", parameters, options);
+            var dialog = await DialogService.ShowAsync<AddToCartSheet>(L["Add to cart"], parameters, options);
             var result = await dialog.Result;
             if (Id == productId && _selectedVariant?.Id == variantId && result is { Canceled: false, Data: int quantity })
             {
@@ -260,9 +336,9 @@
         {
             var result = await Cart.AddAsync(long.Parse(_selectedVariant.Id), _quantity);
             if (result.Ok)
-                Snackbar.Add($"{_quantity} × {_product.Name} · {_selectedVariant.Name} added to your cart.", Severity.Success);
+                Snackbar.Add($"{_quantity} × {_product.Name} added to your cart.", Severity.Success);
             else
-                Snackbar.Add(result.Error ?? "Unable to add this product.", Severity.Error);
+                Snackbar.Add(result.Error ?? L["Unable to add this product."], Severity.Error);
         }
         finally { _adding = false; }
     }

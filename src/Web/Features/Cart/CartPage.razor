@@ -9,22 +9,22 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
 
-<PageTitle>Your cart | Vendora</PageTitle>
+<PageTitle>@L["Your cart"] | Vendora</PageTitle>
 @if (Viewport.IsCompact)
 {
     <header class="cart-topbar">
-        <button type="button" class="cart-back" @onclick="GoBack" aria-label="Back"><MudIcon Icon="@Icons.Material.Outlined.ArrowBack" aria-hidden="true" /></button>
-        <h1>Your cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</h1>
+        <button type="button" class="cart-back" @onclick="GoBack" aria-label="@L["Back"]"><MudIcon Icon="@Icons.Material.Outlined.ArrowBack" aria-hidden="true" /></button>
+        <h1>@(Cart.Count > 0 ? L["Your cart ({0})", Cart.Count] : L["Your cart"])</h1>
     </header>
 }
 else
 {
     <StoreHeader>
-        <MudButton Href="/" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button">Continue shopping</MudButton>
+        <MudButton Href="/" Variant="Variant.Text" Color="Color.Primary" Size="Size.Small" Class="app-button">@L["Continue shopping"]</MudButton>
     </StoreHeader>
 }
 <main id="home-content" class="cart-page" tabindex="-1">
-    @if (!Viewport.IsCompact) { <h1 class="cart-page-title">Your cart@(Cart.Count > 0 ? $" ({Cart.Count})" : "")</h1> }
+    @if (!Viewport.IsCompact) { <h1 class="cart-page-title">@(Cart.Count > 0 ? L["Your cart ({0})", Cart.Count] : L["Your cart"])</h1> }
     @if (_ready) { <CartView Mode="CartViewMode.Page" OnContinueShopping="ContinueShopping" OnCheckedOut="OnCheckedOut" /> }
 </main>
 @code {
@@ -39,6 +39,11 @@ else
         if (!Session.IsAuthenticated)
         {
             Navigation.NavigateTo($"/login?returnUrl={Uri.EscapeDataString("/cart")}", replace: true);
+            return;
+        }
+        if (Session.IsStaff)
+        {
+            Navigation.NavigateTo("/", replace: true); // staff accounts don't shop (see the role-visibility plan, Q1)
             return;
         }
         await Viewport.EnsureInitializedAsync();
