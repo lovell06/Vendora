@@ -6,6 +6,11 @@
 # secrets
 [Ss]ecrets/
 
+# Design docs
+[Dd]esigns/
+AGENTS.md
+.claude/
+
 # agents
 **/.agents/
 
