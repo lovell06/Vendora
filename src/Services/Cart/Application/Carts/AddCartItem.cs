@@ -46,7 +46,7 @@ public static class AddCartItem
                     cmd.ProductVariantId,
                     cmd.UserId);
 
-                itemInCart.IncreaseQuantity(itemInCart.Quantity + cmd.Quantity, utcNow);
+                itemInCart.IncreaseQuantity(cmd.Quantity, utcNow);
             }
             else
             {
