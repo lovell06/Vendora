@@ -14,7 +14,7 @@ public sealed class EfCoreOutboxRepository(
             Id = Guid.CreateVersion7(),
             Type = typeName,
             Payload = payload,
-            RetryCount = 0,
+            AttemptCount = 0,
             CreatedAt = createdAt,
             ProcessedAt = null
         });
