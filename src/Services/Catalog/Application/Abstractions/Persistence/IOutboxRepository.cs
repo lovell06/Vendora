@@ -13,8 +13,9 @@ public class OutboxMessage
     public Guid Id { get; init; }
     public required string Type { get; init; }
     public required string Payload { get; init; }
-    public int RetryCount { get; set; }
+    public int AttemptCount { get; set; }
     public DateTimeOffset CreatedAt { get; init; }
     public DateTimeOffset? ProcessedAt { get; set; }
-    public string? Error { get; set; }
+    public DateTimeOffset? NextAttemptAt { get; set; }
+    public string? LastError { get; set; }
 }

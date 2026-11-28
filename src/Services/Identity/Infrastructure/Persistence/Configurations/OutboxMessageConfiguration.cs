@@ -11,7 +11,7 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
 
         builder.Property(message => message.Id)
             .HasColumnName("id");
-        
+
         builder.Property(message => message.Type)
             .HasColumnName("type")
             .HasMaxLength(256)
@@ -21,8 +21,8 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
             .HasColumnName("payload")
             .IsRequired();
 
-        builder.Property(message => message.RetryCount)
-            .HasColumnName("retry_count")
+        builder.Property(message => message.AttemptCount)
+            .HasColumnName("attempt_count")
             .IsRequired();
 
         builder.Property(message => message.CreatedAt)
@@ -33,8 +33,12 @@ public sealed class OutboxMessageConfiguration : IEntityTypeConfiguration<Outbox
             .HasColumnName("processed_at")
             .IsRequired(false);
 
-        builder.Property(message => message.Error)
-            .HasColumnName("error")
+        builder.Property(message => message.NextAttemptAt)
+            .HasColumnName("next_attempt_at")
+            .IsRequired(false);
+
+        builder.Property(message => message.LastError)
+            .HasColumnName("last_error")
             .IsRequired(false);
     }
 }
