@@ -44,9 +44,12 @@ public class OutboxMessageWorker(
                 }
                 finally
                 {
-                    await unitOfWork.SaveChangesAsync(stoppingToken);
+                    ++outboxMessage.AttemptCount;
                 }
             }
+
+            await unitOfWork.SaveChangesAsync(stoppingToken);
+            
             await Task.Delay(1000, stoppingToken);
         }
     }
